@@ -1,0 +1,1410 @@
+2025-07-13 19:38:49 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 19:38:49 - workforce_analytics - INFO - ================================================================================
+2025-07-13 19:38:49 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 19:38:49 - workforce_analytics - INFO - ================================================================================
+2025-07-13 19:38:49 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 19:38:49 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 19:38:49 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 19:38:49 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 19:38:49 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 19:38:49 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 19:38:49 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 19:38:49 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 19:38:49 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 19:38:49 - workforce_analytics - ERROR - Failed Facility Data Loading after 0.00s: NaTType does not support strftime
+2025-07-13 19:38:49 - workforce_analytics.error_handler - ERROR - Unexpected error in main: NaTType does not support strftime
+2025-07-13 19:38:49 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 242, in main
+    facility_df = load_facility_data(args.facility_data)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/ingestion/hours_loader.py", line 93, in load_facility_data
+    logger.info(f"Data spans {df['Date'].min().strftime(DATE_FORMAT)} to {df['Date'].max().strftime(DATE_FORMAT)}")
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "nattype.pyx", line 54, in pandas._libs.tslibs.nattype._make_error_func.f
+ValueError: NaTType does not support strftime
+2025-07-13 19:38:49 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 19:52:56 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 19:52:56 - workforce_analytics - INFO - ================================================================================
+2025-07-13 19:52:56 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 19:52:56 - workforce_analytics - INFO - ================================================================================
+2025-07-13 19:52:56 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 19:52:56 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 19:52:56 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 19:52:56 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 19:52:56 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 19:52:56 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 19:52:57 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 19:52:57 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 19:52:57 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 19:52:57 - workforce_analytics - ERROR - Failed Facility Data Loading after 0.00s: NaTType does not support strftime
+2025-07-13 19:52:57 - workforce_analytics.error_handler - ERROR - Unexpected error in main: NaTType does not support strftime
+2025-07-13 19:52:57 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 293, in main
+    facility_df = load_facility_data(args.facility_data)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/ingestion/hours_loader.py", line 93, in load_facility_data
+    logger.info(f"Data spans {df['Date'].min().strftime(DATE_FORMAT)} to {df['Date'].max().strftime(DATE_FORMAT)}")
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "nattype.pyx", line 54, in pandas._libs.tslibs.nattype._make_error_func.f
+ValueError: NaTType does not support strftime
+2025-07-13 19:52:57 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 19:57:51 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 19:57:51 - workforce_analytics - INFO - ================================================================================
+2025-07-13 19:57:51 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 19:57:51 - workforce_analytics - INFO - ================================================================================
+2025-07-13 19:57:51 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 19:57:51 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 19:57:51 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 19:57:51 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 19:57:51 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 19:57:51 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 19:57:51 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 19:57:51 - workforce_analytics - INFO - Completed Model Data Loading in 0.03s
+2025-07-13 19:57:51 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 19:57:51 - workforce_analytics - ERROR - Failed Facility Data Loading after 0.00s: NaTType does not support strftime
+2025-07-13 19:57:51 - workforce_analytics.error_handler - ERROR - Unexpected error in main: NaTType does not support strftime
+2025-07-13 19:57:51 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "main.py", line 293, in main
+    facility_df = load_facility_data(args.facility_data)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/ingestion/hours_loader.py", line 93, in load_facility_data
+    logger.info(f"Data spans {df['Date'].min().strftime(DATE_FORMAT)} to {df['Date'].max().strftime(DATE_FORMAT)}")
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "nattype.pyx", line 54, in pandas._libs.tslibs.nattype._make_error_func.f
+ValueError: NaTType does not support strftime
+2025-07-13 19:57:51 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 20:00:10 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 20:00:10 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:10 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:00:10 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:10 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 20:00:10 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 20:00:10 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:00:10 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:00:10 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:00:10 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:00:10 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:00:10 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 20:00:10 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:00:10 - workforce_analytics - INFO - Loaded 0 facility records from 0 facilities
+2025-07-13 20:00:10 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 20:00:10 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 20:00:10 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 20:00:10 - workforce_analytics - INFO - Normalized data: 0 facility records, 0 model records
+2025-07-13 20:00:10 - workforce_analytics - INFO - Completed Data Normalization in 0.00s
+2025-07-13 20:00:10 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 20:00:10 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 20:00:10 - workforce_analytics - INFO - Aggregated to 0 weekly records
+2025-07-13 20:00:10 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 20:00:10 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 20:00:10 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 20:00:10 - workforce_analytics - INFO - Calculated statistics for 0 facility-role combinations
+2025-07-13 20:00:10 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.00s
+2025-07-13 20:00:10 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 20:00:10 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 20:00:10 - workforce_analytics - INFO - Detected 0 variance exceptions
+2025-07-13 20:00:10 - workforce_analytics - INFO - Completed Variance Detection in 0.00s
+2025-07-13 20:00:10 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 20:00:10 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 20:00:10 - workforce_analytics - INFO - Analyzed trends for 0 facility-role combinations
+2025-07-13 20:00:10 - workforce_analytics - INFO - Completed Trend Analysis in 0.00s
+2025-07-13 20:00:10 - workforce_analytics - INFO - Step 7: Exception Compilation
+2025-07-13 20:00:10 - workforce_analytics - INFO - Starting Exception Compilation
+2025-07-13 20:00:10 - workforce_analytics - INFO - Compiled 0 exceptions for reporting
+2025-07-13 20:00:10 - workforce_analytics - INFO - Completed Exception Compilation in 0.00s
+2025-07-13 20:00:10 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:10 - workforce_analytics - INFO - ANALYSIS COMPLETE - SUMMARY
+2025-07-13 20:00:10 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:10 - workforce_analytics - INFO - Facilities Analyzed: 0
+2025-07-13 20:00:10 - workforce_analytics - INFO - Roles Analyzed: 0
+2025-07-13 20:00:10 - workforce_analytics - INFO - Total Exceptions: 0
+2025-07-13 20:00:10 - workforce_analytics - INFO - Facilities with Exceptions: 0
+2025-07-13 20:00:10 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:00:10 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:10 - workforce_analytics - INFO - Analysis completed with no exceptions found
+2025-07-13 20:00:53 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 20:00:53 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:53 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:00:53 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:53 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 20:00:53 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 20:00:53 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:00:53 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:00:53 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:00:53 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:00:53 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:00:53 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 20:00:53 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:00:53 - workforce_analytics - INFO - Loaded 0 facility records from 0 facilities
+2025-07-13 20:00:53 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 20:00:53 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 20:00:53 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 20:00:53 - workforce_analytics - INFO - Normalized data: 0 facility records, 0 model records
+2025-07-13 20:00:53 - workforce_analytics - INFO - Completed Data Normalization in 0.00s
+2025-07-13 20:00:53 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 20:00:53 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 20:00:53 - workforce_analytics - INFO - Aggregated to 0 weekly records
+2025-07-13 20:00:53 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 20:00:53 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 20:00:53 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 20:00:53 - workforce_analytics - INFO - Calculated statistics for 0 facility-role combinations
+2025-07-13 20:00:53 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.00s
+2025-07-13 20:00:53 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 20:00:53 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 20:00:53 - workforce_analytics - INFO - Detected 0 variance exceptions
+2025-07-13 20:00:53 - workforce_analytics - INFO - Completed Variance Detection in 0.00s
+2025-07-13 20:00:53 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 20:00:53 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 20:00:53 - workforce_analytics - INFO - Analyzed trends for 0 facility-role combinations
+2025-07-13 20:00:53 - workforce_analytics - INFO - Completed Trend Analysis in 0.00s
+2025-07-13 20:00:53 - workforce_analytics - INFO - Step 7: Exception Compilation
+2025-07-13 20:00:53 - workforce_analytics - INFO - Starting Exception Compilation
+2025-07-13 20:00:53 - workforce_analytics - INFO - Compiled 0 exceptions for reporting
+2025-07-13 20:00:53 - workforce_analytics - INFO - Completed Exception Compilation in 0.00s
+2025-07-13 20:00:53 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:53 - workforce_analytics - INFO - ANALYSIS COMPLETE - SUMMARY
+2025-07-13 20:00:53 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:53 - workforce_analytics - INFO - Facilities Analyzed: 0
+2025-07-13 20:00:53 - workforce_analytics - INFO - Roles Analyzed: 0
+2025-07-13 20:00:53 - workforce_analytics - INFO - Total Exceptions: 0
+2025-07-13 20:00:53 - workforce_analytics - INFO - Facilities with Exceptions: 0
+2025-07-13 20:00:53 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:00:53 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:00:53 - workforce_analytics - INFO - Analysis completed with no exceptions found
+2025-07-13 20:01:27 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 20:01:27 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:01:27 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:01:27 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:01:27 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 20:01:27 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 20:01:27 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:01:27 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:01:27 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:01:27 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:01:27 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:01:27 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 20:01:27 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:01:27 - workforce_analytics - INFO - Loaded 0 facility records from 0 facilities
+2025-07-13 20:01:27 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 20:01:27 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 20:01:27 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 20:01:27 - workforce_analytics - INFO - Normalized data: 0 facility records, 0 model records
+2025-07-13 20:01:27 - workforce_analytics - INFO - Completed Data Normalization in 0.00s
+2025-07-13 20:01:27 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 20:01:27 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 20:01:27 - workforce_analytics - INFO - Aggregated to 0 weekly records
+2025-07-13 20:01:27 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 20:01:27 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 20:01:27 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 20:01:27 - workforce_analytics - INFO - Calculated statistics for 0 facility-role combinations
+2025-07-13 20:01:27 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.00s
+2025-07-13 20:01:27 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 20:01:27 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 20:01:27 - workforce_analytics - INFO - Detected 0 variance exceptions
+2025-07-13 20:01:27 - workforce_analytics - INFO - Completed Variance Detection in 0.00s
+2025-07-13 20:01:27 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 20:01:27 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 20:01:27 - workforce_analytics - INFO - Analyzed trends for 0 facility-role combinations
+2025-07-13 20:01:27 - workforce_analytics - INFO - Completed Trend Analysis in 0.00s
+2025-07-13 20:01:27 - workforce_analytics - INFO - Step 7: Exception Compilation
+2025-07-13 20:01:27 - workforce_analytics - INFO - Starting Exception Compilation
+2025-07-13 20:01:27 - workforce_analytics - INFO - Compiled 0 exceptions for reporting
+2025-07-13 20:01:27 - workforce_analytics - INFO - Completed Exception Compilation in 0.00s
+2025-07-13 20:01:27 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:01:27 - workforce_analytics - INFO - ANALYSIS COMPLETE - SUMMARY
+2025-07-13 20:01:27 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:01:27 - workforce_analytics - INFO - Facilities Analyzed: 0
+2025-07-13 20:01:27 - workforce_analytics - INFO - Roles Analyzed: 0
+2025-07-13 20:01:27 - workforce_analytics - INFO - Total Exceptions: 0
+2025-07-13 20:01:27 - workforce_analytics - INFO - Facilities with Exceptions: 0
+2025-07-13 20:01:27 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:01:27 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:01:27 - workforce_analytics - INFO - Analysis completed with no exceptions found
+2025-07-13 20:02:38 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 20:02:38 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:02:38 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:02:38 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:02:38 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 20:02:38 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 20:02:38 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:02:38 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:02:38 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:02:38 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:02:38 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:02:38 - workforce_analytics - INFO - Completed Model Data Loading in 0.03s
+2025-07-13 20:02:38 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:02:43 - workforce_analytics - INFO - Loaded 0 facility records from 0 facilities
+2025-07-13 20:02:43 - workforce_analytics - INFO - Completed Facility Data Loading in 4.91s
+2025-07-13 20:09:04 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 20:09:04 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:09:04 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:09:04 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:09:04 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 20:09:04 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 20:09:04 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:09:04 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:09:04 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:09:04 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:09:04 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:09:04 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 20:09:04 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:09:04 - workforce_analytics - INFO - Loaded 0 facility records from 0 facilities
+2025-07-13 20:09:04 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 20:09:04 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 20:09:04 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 20:09:04 - workforce_analytics - INFO - Normalized data: 0 facility records, 0 model records
+2025-07-13 20:09:04 - workforce_analytics - INFO - Completed Data Normalization in 0.00s
+2025-07-13 20:09:04 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 20:09:04 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 20:09:04 - workforce_analytics - INFO - Aggregated to 0 weekly records
+2025-07-13 20:09:04 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 20:09:04 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 20:09:04 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 20:09:04 - workforce_analytics - INFO - Calculated statistics for 0 facility-role combinations
+2025-07-13 20:09:04 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.00s
+2025-07-13 20:09:04 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 20:09:04 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 20:09:04 - workforce_analytics - INFO - Detected 0 variance exceptions
+2025-07-13 20:09:04 - workforce_analytics - INFO - Completed Variance Detection in 0.00s
+2025-07-13 20:09:04 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 20:09:04 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 20:09:04 - workforce_analytics - INFO - Analyzed trends for 0 facility-role combinations
+2025-07-13 20:09:04 - workforce_analytics - INFO - Completed Trend Analysis in 0.00s
+2025-07-13 20:09:04 - workforce_analytics - INFO - Step 7: Exception Compilation
+2025-07-13 20:09:04 - workforce_analytics - INFO - Starting Exception Compilation
+2025-07-13 20:09:04 - workforce_analytics - INFO - Compiled 0 exceptions for reporting
+2025-07-13 20:09:04 - workforce_analytics - INFO - Completed Exception Compilation in 0.00s
+2025-07-13 20:09:04 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:09:04 - workforce_analytics - INFO - ANALYSIS COMPLETE - SUMMARY
+2025-07-13 20:09:04 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:09:04 - workforce_analytics - INFO - Facilities Analyzed: 0
+2025-07-13 20:09:04 - workforce_analytics - INFO - Roles Analyzed: 0
+2025-07-13 20:09:04 - workforce_analytics - INFO - Total Exceptions: 0
+2025-07-13 20:09:04 - workforce_analytics - INFO - Facilities with Exceptions: 0
+2025-07-13 20:09:04 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:09:04 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:09:04 - workforce_analytics - INFO - Analysis completed with no exceptions found
+2025-07-13 20:15:06 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 20:15:06 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:15:06 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:15:06 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:15:06 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 20:15:06 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 20:15:06 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:15:06 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:15:06 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:15:06 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:15:06 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:15:06 - workforce_analytics - INFO - Completed Model Data Loading in 0.03s
+2025-07-13 20:15:06 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:15:06 - workforce_analytics - INFO - Loaded 0 facility records from 0 facilities
+2025-07-13 20:15:06 - workforce_analytics - INFO - Completed Facility Data Loading in 0.01s
+2025-07-13 20:19:41 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 20:19:41 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:19:41 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:19:41 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:19:41 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 20:19:41 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 20:19:41 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:19:41 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:19:41 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:19:41 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:19:41 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:19:41 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 20:19:41 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:20:52 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 20:20:52 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:20:52 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:20:52 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:20:52 - workforce_analytics - INFO - Facility Data: input/SampleFacilityData.csv
+2025-07-13 20:20:52 - workforce_analytics - INFO - Model Data: input/SampleModelData.csv
+2025-07-13 20:20:52 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:20:52 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:20:52 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:20:52 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:20:52 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:20:52 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 20:20:52 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:21:18 - workforce_analytics - INFO - Loaded 0 facility records from 0 facilities
+2025-07-13 20:21:18 - workforce_analytics - INFO - Completed Facility Data Loading in 25.75s
+2025-07-13 20:21:47 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 20:21:47 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:21:47 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:21:47 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:21:47 - workforce_analytics - INFO - Facility Data: input/SampleFacilityData.csv
+2025-07-13 20:21:47 - workforce_analytics - INFO - Model Data: input/SampleModelData.csv
+2025-07-13 20:21:47 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:21:47 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:21:47 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:21:47 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:21:48 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:21:48 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 20:21:48 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:32:57 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 20:32:57 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:32:57 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:32:57 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:32:57 - workforce_analytics - INFO - Facility Data: input/SampleFacilityData.csv
+2025-07-13 20:32:57 - workforce_analytics - INFO - Model Data: input/SampleModelData.csv
+2025-07-13 20:32:57 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:32:57 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:32:57 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:32:57 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:32:58 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:32:58 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 20:32:58 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:34:29 - workforce_analytics - INFO - Loaded 147 facility records from 1 facilities
+2025-07-13 20:34:29 - workforce_analytics - INFO - Completed Facility Data Loading in 91.32s
+2025-07-13 20:34:36 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 20:35:30 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 20:35:30 - workforce_analytics - INFO - Normalized data: 147 facility records, 0 model records
+2025-07-13 20:35:30 - workforce_analytics - INFO - Completed Data Normalization in 0.03s
+2025-07-13 20:55:14 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 20:55:14 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:55:14 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 20:55:14 - workforce_analytics - INFO - ================================================================================
+2025-07-13 20:55:14 - workforce_analytics - INFO - Facility Data: input/SampleFacilityData.csv
+2025-07-13 20:55:14 - workforce_analytics - INFO - Model Data: input/SampleModelData.csv
+2025-07-13 20:55:14 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 20:55:14 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 20:55:14 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 20:55:14 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 20:55:14 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 20:55:14 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 20:55:14 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 20:56:48 - workforce_analytics - INFO - Loaded 147 facility records from 1 facilities
+2025-07-13 20:56:48 - workforce_analytics - INFO - Completed Facility Data Loading in 93.82s
+2025-07-13 20:56:54 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 20:56:54 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 20:56:54 - workforce_analytics - INFO - Normalized data: 147 facility records, 308 model records
+2025-07-13 20:56:54 - workforce_analytics - INFO - Completed Data Normalization in 0.02s
+2025-07-13 20:57:12 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 20:57:12 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 20:57:12 - workforce_analytics - INFO - Aggregated to 24 weekly records
+2025-07-13 20:57:12 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.02s
+2025-07-13 20:57:32 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 20:57:32 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 20:57:32 - workforce_analytics - INFO - Calculated statistics for 24 facility-role combinations
+2025-07-13 20:57:32 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.02s
+2025-07-13 21:05:35 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:05:35 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:05:35 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:05:35 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:05:35 - workforce_analytics - INFO - Facility Data: input/SampleFacilityData.csv
+2025-07-13 21:06:03 - workforce_analytics - INFO - Model Data: input/SampleModelData.csv
+2025-07-13 21:06:03 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:06:03 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:06:03 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:06:03 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:06:03 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:06:03 - workforce_analytics - INFO - Completed Model Data Loading in 0.03s
+2025-07-13 21:06:03 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:11:44 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:11:44 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:11:44 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:11:44 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:11:44 - workforce_analytics - INFO - Facility Data: input/SampleFacilityData.csv
+2025-07-13 21:11:44 - workforce_analytics - INFO - Model Data: input/SampleModelData.csv
+2025-07-13 21:11:44 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:11:44 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:11:44 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:11:44 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:11:44 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:11:44 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:11:44 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:11:44 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:11:44 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 21:12:08 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 21:12:08 - workforce_analytics - INFO - Completed Facility Data Loading in 23.31s
+2025-07-13 21:12:10 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 21:12:10 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 21:12:10 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 21:12:10 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 21:12:10 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 21:12:10 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 21:12:10 - workforce_analytics - INFO - Completed Data Normalization in 0.02s
+2025-07-13 21:12:37 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 21:12:37 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 21:12:37 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 21:12:37 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.01s
+2025-07-13 21:12:47 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 21:12:55 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 21:15:56 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:15:56 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:15:56 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:15:56 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:15:56 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 21:15:56 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 21:15:56 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:15:56 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:15:56 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:15:56 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:15:56 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:15:56 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:15:56 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:15:56 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:20:32 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:20:32 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:20:32 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:20:32 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:20:32 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 21:20:32 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 21:20:32 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:20:32 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:20:32 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:20:32 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:20:32 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:20:32 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:20:32 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:20:32 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:20:38 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 21:20:38 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 21:20:38 - workforce_analytics - INFO - Completed Facility Data Loading in 6.40s
+2025-07-13 21:20:42 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 21:20:42 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 21:20:42 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 21:20:42 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 21:20:42 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 21:20:42 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 21:20:42 - workforce_analytics - INFO - Completed Data Normalization in 0.14s
+2025-07-13 21:20:45 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 21:20:45 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 21:20:45 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 21:20:45 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.03s
+2025-07-13 21:20:55 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 21:20:57 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 21:27:31 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 21:27:31 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 394.49s
+2025-07-13 21:28:23 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 21:28:42 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 21:37:14 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:37:14 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:37:14 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:37:14 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:37:14 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 21:37:14 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 21:37:14 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:37:14 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:37:14 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:37:14 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:37:14 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:37:14 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:37:14 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:37:14 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:37:19 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 21:37:19 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 21:37:19 - workforce_analytics - INFO - Completed Facility Data Loading in 4.83s
+2025-07-13 21:37:20 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 21:37:20 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 21:37:21 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 21:37:21 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 21:37:21 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 21:37:21 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 21:37:21 - workforce_analytics - INFO - Completed Data Normalization in 0.15s
+2025-07-13 21:37:21 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 21:37:21 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 21:37:21 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 21:37:21 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.02s
+2025-07-13 21:37:23 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 21:37:23 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 21:37:23 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 21:37:23 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.04s
+2025-07-13 21:37:26 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 21:37:26 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 21:45:26 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:45:26 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:45:26 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:45:26 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:45:26 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 21:45:26 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 21:45:26 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:45:26 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:45:26 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:45:26 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:45:26 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:45:26 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:45:26 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:45:26 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:45:31 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 21:45:31 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 21:45:31 - workforce_analytics - INFO - Completed Facility Data Loading in 4.56s
+2025-07-13 21:45:32 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 21:45:32 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 21:45:32 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 21:45:32 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 21:45:32 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 21:45:32 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 21:45:32 - workforce_analytics - INFO - Completed Data Normalization in 0.15s
+2025-07-13 21:45:33 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 21:45:33 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 21:45:33 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 21:45:33 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.03s
+2025-07-13 21:45:34 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 21:45:34 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 21:45:34 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 21:45:34 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.03s
+2025-07-13 21:45:35 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 21:45:35 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 21:45:40 - workforce_analytics - ERROR - Failed Variance Detection after 4.39s: 'DayOfWeek'
+2025-07-13 21:45:54 - workforce_analytics.error_handler - ERROR - Unexpected error in main: 'DayOfWeek'
+2025-07-13 21:46:08 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:46:08 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:46:08 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:46:08 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:46:08 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 21:46:08 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 21:46:08 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:46:08 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:46:08 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:46:08 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:46:08 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:46:08 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:46:08 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:46:08 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:46:09 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 21:46:09 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 21:46:09 - workforce_analytics - INFO - Completed Facility Data Loading in 0.68s
+2025-07-13 21:46:09 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 21:46:09 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 21:46:10 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 21:46:10 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 21:46:10 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 21:46:10 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 21:46:10 - workforce_analytics - INFO - Completed Data Normalization in 0.14s
+2025-07-13 21:46:10 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 21:46:10 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 21:46:10 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 21:46:10 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.02s
+2025-07-13 21:46:10 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 21:46:10 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 21:46:10 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 21:46:10 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.03s
+2025-07-13 21:46:11 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 21:46:11 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 21:46:26 - workforce_analytics - ERROR - Failed Variance Detection after 10.89s: 'DayOfWeek'
+2025-07-13 21:46:40 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:46:40 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:46:40 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:46:40 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:46:40 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 21:46:40 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 21:46:40 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:46:40 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:46:40 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:46:40 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:46:40 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:46:40 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:46:40 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:46:40 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:46:41 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 21:46:41 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 21:46:41 - workforce_analytics - INFO - Completed Facility Data Loading in 1.08s
+2025-07-13 21:46:42 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 21:46:42 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 21:46:42 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 21:46:42 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 21:46:42 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 21:46:42 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 21:46:42 - workforce_analytics - INFO - Completed Data Normalization in 0.15s
+2025-07-13 21:46:42 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 21:46:42 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 21:46:42 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 21:46:42 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.02s
+2025-07-13 21:46:43 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 21:46:43 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 21:46:43 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 21:46:43 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.04s
+2025-07-13 21:46:45 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 21:46:45 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 21:47:04 - workforce_analytics - ERROR - Failed Variance Detection after 13.28s: 'DayOfWeek'
+2025-07-13 21:47:11 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:47:11 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:47:11 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:47:11 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:47:11 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 21:47:11 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 21:47:11 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:47:11 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:47:11 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:47:11 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:47:11 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:47:11 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:47:11 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:47:11 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:47:13 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 21:47:13 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 21:47:13 - workforce_analytics - INFO - Completed Facility Data Loading in 1.23s
+2025-07-13 21:47:13 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 21:47:13 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 21:47:13 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 21:47:13 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 21:47:13 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 21:47:13 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 21:47:13 - workforce_analytics - INFO - Completed Data Normalization in 0.13s
+2025-07-13 21:47:13 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 21:47:13 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 21:47:13 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 21:47:13 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.01s
+2025-07-13 21:47:14 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 21:47:14 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 21:47:14 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 21:47:14 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.04s
+2025-07-13 21:47:16 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 21:47:16 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 21:52:08 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 21:52:08 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:52:08 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 21:52:08 - workforce_analytics - INFO - ================================================================================
+2025-07-13 21:52:08 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 21:52:08 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 21:52:08 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 21:52:08 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 21:52:08 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 21:52:08 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 21:52:08 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 21:52:08 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 21:52:08 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 21:52:08 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 21:52:11 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 21:52:11 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 21:52:11 - workforce_analytics - INFO - Completed Facility Data Loading in 3.29s
+2025-07-13 21:52:13 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 21:52:13 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 21:52:13 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 21:52:13 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 21:52:13 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 21:52:13 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 21:52:13 - workforce_analytics - INFO - Completed Data Normalization in 0.15s
+2025-07-13 21:52:15 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 21:52:15 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 21:52:15 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 21:52:15 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.03s
+2025-07-13 21:52:16 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 21:52:16 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 21:52:16 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 21:52:16 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.04s
+2025-07-13 21:52:17 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 21:52:17 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 21:52:35 - workforce_analytics - ERROR - Failed Variance Detection after 15.23s: 'DayOfWeek'
+2025-07-13 22:05:20 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:05:20 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:05:20 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:05:20 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:05:20 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:05:20 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:05:20 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:05:20 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:05:20 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:05:20 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:05:20 - workforce_analytics - ERROR - Failed Model Data Loading after 0.01s: 'Facility'
+2025-07-13 22:05:20 - workforce_analytics.error_handler - ERROR - Unexpected error in main: 'Facility'
+2025-07-13 22:05:20 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'Facility'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 348, in main
+    logger.info(f"Loaded {len(model_df)} model records from {model_df['Facility'].nunique()} facilities")
+                                                             ~~~~~~~~^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/frame.py", line 4102, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'Facility'
+2025-07-13 22:05:20 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 22:05:51 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:05:51 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:05:51 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:05:51 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:05:51 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:05:51 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:05:51 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:05:51 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:05:51 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:05:51 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:05:51 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:05:51 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:05:51 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:05:51 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:05:51 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:05:51 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:05:51 - workforce_analytics - INFO - Completed Facility Data Loading in 0.01s
+2025-07-13 22:05:51 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:05:51 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:05:51 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:05:51 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:05:51 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:05:51 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:05:51 - workforce_analytics - INFO - Completed Data Normalization in 0.01s
+2025-07-13 22:05:51 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:05:51 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:05:51 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:05:51 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:05:51 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:05:51 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:05:51 - workforce_analytics - ERROR - Failed Descriptive Statistics Calculation after 0.00s: 'Facility'
+2025-07-13 22:05:51 - workforce_analytics.error_handler - ERROR - Unexpected error in main: 'Facility'
+2025-07-13 22:05:51 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 407, in main
+    statistics = calculate_facility_role_statistics(weekly_facility_df, normalized_model_df)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/statistics.py", line 228, in calculate_facility_role_statistics
+    grouped = df.groupby(['Facility', 'Role'])
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/frame.py", line 9183, in groupby
+    return DataFrameGroupBy(
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/groupby/groupby.py", line 1329, in __init__
+    grouper, exclusions, obj = get_grouper(
+                               ^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/groupby/grouper.py", line 1043, in get_grouper
+    raise KeyError(gpr)
+KeyError: 'Facility'
+2025-07-13 22:05:51 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 22:06:55 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:06:55 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:06:55 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:06:55 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:06:55 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:06:55 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:06:55 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:06:55 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:06:55 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:06:55 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:06:55 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:06:55 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:06:55 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:06:55 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:06:55 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:06:55 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:06:55 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 22:06:55 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:06:55 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:06:55 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:06:55 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:06:55 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:06:55 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:06:55 - workforce_analytics - INFO - Completed Data Normalization in 0.01s
+2025-07-13 22:06:55 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:06:55 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:06:55 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:06:55 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:06:55 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:06:55 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:06:55 - workforce_analytics - INFO - Calculated statistics for 25 facility-role combinations
+2025-07-13 22:06:55 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.01s
+2025-07-13 22:06:55 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:06:55 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:06:55 - workforce_analytics - ERROR - Failed Variance Detection after 0.00s: 'DAY_OF_WEEK'
+2025-07-13 22:06:55 - workforce_analytics.error_handler - ERROR - Unexpected error in main: 'DAY_OF_WEEK'
+2025-07-13 22:06:55 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 417, in main
+    variances = detect_all_variances(
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/variance.py", line 254, in detect_all_variances
+    model_variances = detect_model_variances(df, model_df, control_vars)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/variance.py", line 44, in detect_model_variances
+    grouped = df.groupby([FileColumns.FACILITY_LOCATION_NAME, FileColumns.FACILITY_STAFF_ROLE_NAME, FileColumns.FACILITY_DAY_OF_WEEK])
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/frame.py", line 9183, in groupby
+    return DataFrameGroupBy(
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/groupby/groupby.py", line 1329, in __init__
+    grouper, exclusions, obj = get_grouper(
+                               ^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/groupby/grouper.py", line 1043, in get_grouper
+    raise KeyError(gpr)
+KeyError: 'DAY_OF_WEEK'
+2025-07-13 22:06:55 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 22:07:24 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:07:24 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:07:24 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:07:24 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:07:24 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:07:24 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:07:24 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:07:24 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:07:24 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:07:24 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:07:24 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:07:24 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:07:24 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:07:24 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:07:24 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:07:24 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:07:24 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 22:07:24 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:07:24 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:07:24 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:07:24 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:07:24 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:07:24 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:07:24 - workforce_analytics - INFO - Completed Data Normalization in 0.00s
+2025-07-13 22:07:24 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:07:24 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:07:24 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:07:24 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:07:24 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:07:24 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:07:24 - workforce_analytics - INFO - Calculated statistics for 25 facility-role combinations
+2025-07-13 22:07:24 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.01s
+2025-07-13 22:07:24 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:07:24 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:07:24 - workforce_analytics - ERROR - Failed Variance Detection after 0.00s: 'DAY_OF_WEEK'
+2025-07-13 22:07:24 - workforce_analytics.error_handler - ERROR - Unexpected error in main: 'DAY_OF_WEEK'
+2025-07-13 22:07:24 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 417, in main
+    variances = detect_all_variances(
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/variance.py", line 254, in detect_all_variances
+    model_variances = detect_model_variances(df, model_df, control_vars)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/variance.py", line 44, in detect_model_variances
+    grouped = df.groupby([FileColumns.FACILITY_LOCATION_NAME, FileColumns.FACILITY_STAFF_ROLE_NAME, FileColumns.FACILITY_DAY_OF_WEEK])
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/frame.py", line 9183, in groupby
+    return DataFrameGroupBy(
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/groupby/groupby.py", line 1329, in __init__
+    grouper, exclusions, obj = get_grouper(
+                               ^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/groupby/grouper.py", line 1043, in get_grouper
+    raise KeyError(gpr)
+KeyError: 'DAY_OF_WEEK'
+2025-07-13 22:07:24 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 22:07:44 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:07:44 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:07:44 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:07:44 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:07:44 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:07:44 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:07:44 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:07:44 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:07:44 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:07:44 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:07:44 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:07:44 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:07:44 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:07:44 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:07:44 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:07:44 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:07:44 - workforce_analytics - INFO - Completed Facility Data Loading in 0.01s
+2025-07-13 22:07:44 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:07:44 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:07:44 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:07:44 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:07:44 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:07:44 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:07:44 - workforce_analytics - INFO - Completed Data Normalization in 0.01s
+2025-07-13 22:07:44 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:07:44 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:07:44 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:07:44 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:07:44 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:07:44 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:07:44 - workforce_analytics - INFO - Calculated statistics for 25 facility-role combinations
+2025-07-13 22:07:44 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.01s
+2025-07-13 22:07:44 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:07:44 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:07:44 - workforce_analytics - INFO - Detected 158 variance exceptions
+2025-07-13 22:07:44 - workforce_analytics - INFO - Completed Variance Detection in 0.03s
+2025-07-13 22:07:44 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 22:07:44 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 22:07:44 - workforce_analytics - ERROR - Failed Trend Analysis after 0.00s: "None of [Index(['Facility', 'Role'], dtype='object')] are in the [columns]"
+2025-07-13 22:07:44 - workforce_analytics.error_handler - ERROR - Unexpected error in main: "None of [Index(['Facility', 'Role'], dtype='object')] are in the [columns]"
+2025-07-13 22:07:44 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 430, in main
+    trend_results = analyze_trends_for_all_facilities(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/trends.py", line 179, in analyze_trends_for_all_facilities
+    combinations = df[['Facility', 'Role']].drop_duplicates()
+                   ~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/frame.py", line 4108, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 6200, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/indexes/base.py", line 6249, in _raise_if_missing
+    raise KeyError(f"None of [{key}] are in the [{axis_name}]")
+KeyError: "None of [Index(['Facility', 'Role'], dtype='object')] are in the [columns]"
+2025-07-13 22:07:44 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 22:08:35 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:08:35 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:08:35 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:08:35 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:08:35 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:08:35 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:08:35 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:08:35 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:08:35 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:08:35 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:08:35 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:08:35 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:08:35 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:08:35 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:08:35 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:08:35 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:08:35 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 22:08:35 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:08:35 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:08:35 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:08:35 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:08:35 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:08:35 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:08:35 - workforce_analytics - INFO - Completed Data Normalization in 0.00s
+2025-07-13 22:08:35 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:08:35 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:08:35 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:08:35 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:08:35 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:08:35 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:08:35 - workforce_analytics - INFO - Calculated statistics for 25 facility-role combinations
+2025-07-13 22:08:35 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.01s
+2025-07-13 22:08:35 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:08:35 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:08:35 - workforce_analytics - INFO - Detected 158 variance exceptions
+2025-07-13 22:08:35 - workforce_analytics - INFO - Completed Variance Detection in 0.02s
+2025-07-13 22:08:35 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 22:08:35 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 22:08:35 - workforce_analytics - ERROR - Failed Trend Analysis after 0.00s: 'Date'
+2025-07-13 22:08:35 - workforce_analytics.error_handler - ERROR - Unexpected error in main: 'Date'
+2025-07-13 22:08:35 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 430, in main
+    trend_results = analyze_trends_for_all_facilities(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/trends.py", line 187, in analyze_trends_for_all_facilities
+    trend_result = analyze_facility_role_trend(df, facility, role, control_vars.weeks_for_trends)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/trends.py", line 92, in analyze_facility_role_trend
+    subset = subset.sort_values('Date')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/frame.py", line 7189, in sort_values
+    k = self._get_label_or_level_values(by[0], axis=axis)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/generic.py", line 1911, in _get_label_or_level_values
+    raise KeyError(key)
+KeyError: 'Date'
+2025-07-13 22:08:35 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 22:09:17 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:09:17 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:09:17 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:09:17 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:09:17 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:09:17 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:09:17 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:09:17 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:09:17 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:09:17 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:09:17 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:09:17 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:09:17 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:09:17 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:09:17 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:09:17 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:09:17 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 22:09:17 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:09:17 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:09:17 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:09:17 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:09:17 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:09:17 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:09:17 - workforce_analytics - INFO - Completed Data Normalization in 0.01s
+2025-07-13 22:09:17 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:09:17 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:09:17 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:09:17 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:09:17 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:09:17 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:09:17 - workforce_analytics - INFO - Calculated statistics for 25 facility-role combinations
+2025-07-13 22:09:17 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.01s
+2025-07-13 22:09:17 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:09:17 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:09:17 - workforce_analytics - INFO - Detected 158 variance exceptions
+2025-07-13 22:09:17 - workforce_analytics - INFO - Completed Variance Detection in 0.03s
+2025-07-13 22:09:17 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 22:09:17 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 22:09:17 - workforce_analytics - ERROR - Failed Trend Analysis after 0.00s: 'HOURS_DATE'
+2025-07-13 22:09:17 - workforce_analytics.error_handler - ERROR - Unexpected error in main: 'HOURS_DATE'
+2025-07-13 22:09:17 - workforce_analytics.error_handler - ERROR - Full traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 430, in main
+    trend_results = analyze_trends_for_all_facilities(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/trends.py", line 187, in analyze_trends_for_all_facilities
+    trend_result = analyze_facility_role_trend(df, facility, role, control_vars.weeks_for_trends)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/analysis/trends.py", line 92, in analyze_facility_role_trend
+    subset = subset.sort_values(FileColumns.FACILITY_HOURS_DATE)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/frame.py", line 7189, in sort_values
+    k = self._get_label_or_level_values(by[0], axis=axis)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/miniconda3/lib/python3.12/site-packages/pandas/core/generic.py", line 1911, in _get_label_or_level_values
+    raise KeyError(key)
+KeyError: 'HOURS_DATE'
+2025-07-13 22:09:17 - workforce_analytics.error_handler - CRITICAL - Exiting with code 1
+2025-07-13 22:09:40 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:09:40 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:09:40 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:09:40 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:09:40 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:09:40 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:09:40 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:09:40 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:09:40 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:09:40 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:09:40 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:09:40 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:09:40 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:09:40 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:09:40 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:09:40 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:09:40 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 22:09:40 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:09:40 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:09:40 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:09:40 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:09:40 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:09:40 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:09:40 - workforce_analytics - INFO - Completed Data Normalization in 0.00s
+2025-07-13 22:09:40 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:09:40 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:09:40 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:09:40 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:09:40 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:09:40 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:09:40 - workforce_analytics - INFO - Calculated statistics for 25 facility-role combinations
+2025-07-13 22:09:40 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.01s
+2025-07-13 22:09:40 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:09:40 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:09:40 - workforce_analytics - INFO - Detected 158 variance exceptions
+2025-07-13 22:09:40 - workforce_analytics - INFO - Completed Variance Detection in 0.02s
+2025-07-13 22:09:40 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 22:09:40 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 22:09:40 - workforce_analytics - INFO - Analyzed trends for 0 facility-role combinations
+2025-07-13 22:09:40 - workforce_analytics - INFO - Completed Trend Analysis in 0.01s
+2025-07-13 22:09:40 - workforce_analytics - INFO - Step 7: Exception Compilation
+2025-07-13 22:09:40 - workforce_analytics - INFO - Starting Exception Compilation
+2025-07-13 22:09:40 - workforce_analytics - INFO - Compiled 158 exceptions for reporting
+2025-07-13 22:09:40 - workforce_analytics - INFO - Completed Exception Compilation in 0.00s
+2025-07-13 22:09:40 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:09:40 - workforce_analytics - INFO - ANALYSIS COMPLETE - SUMMARY
+2025-07-13 22:09:40 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:09:40 - workforce_analytics - INFO - Facilities Analyzed: 1
+2025-07-13 22:09:40 - workforce_analytics - INFO - Roles Analyzed: 25
+2025-07-13 22:09:40 - workforce_analytics - INFO - Total Exceptions: 158
+2025-07-13 22:09:40 - workforce_analytics - INFO - Facilities with Exceptions: 1
+2025-07-13 22:09:40 - workforce_analytics - INFO - Exception Rate: 100.0%
+2025-07-13 22:09:40 - workforce_analytics - INFO - Exception Breakdown:
+2025-07-13 22:09:40 - workforce_analytics - INFO -   Model Variances: 133
+2025-07-13 22:09:40 - workforce_analytics - INFO -   Statistical Exceptions: 25
+2025-07-13 22:09:40 - workforce_analytics - INFO -   Trend Exceptions: 0
+2025-07-13 22:09:40 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:09:40 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:09:40 - workforce_analytics - INFO - Analysis completed with 158 exceptions found
+2025-07-13 22:12:19 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 22:12:19 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:12:19 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:12:19 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:12:19 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 22:12:19 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 22:12:19 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 22:12:19 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:12:19 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:12:19 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:12:19 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:12:19 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:12:19 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 22:12:19 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:12:19 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 22:12:19 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 22:12:19 - workforce_analytics - INFO - Completed Facility Data Loading in 0.14s
+2025-07-13 22:12:19 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:12:19 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:12:19 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 22:12:19 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 22:12:19 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 22:12:19 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:12:19 - workforce_analytics - INFO - Completed Data Normalization in 0.12s
+2025-07-13 22:12:28 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:12:28 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:12:28 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 22:12:28 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.02s
+2025-07-13 22:12:28 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:12:28 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:12:30 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 22:12:30 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 1.66s
+2025-07-13 22:12:30 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:12:30 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:15:01 - workforce_analytics - INFO - Detected 20984 variance exceptions
+2025-07-13 22:15:01 - workforce_analytics - INFO - Completed Variance Detection in 151.58s
+2025-07-13 22:16:20 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 22:16:20 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 22:16:20 - workforce_analytics - INFO - Analyzed trends for 0 facility-role combinations
+2025-07-13 22:16:20 - workforce_analytics - INFO - Completed Trend Analysis in 0.11s
+2025-07-13 22:21:36 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:21:36 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:21:36 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:21:36 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:21:36 - workforce_analytics - INFO - Facility Data: examples/SampleFacilityData.csv
+2025-07-13 22:21:36 - workforce_analytics - INFO - Model Data: examples/SampleModelData.csv
+2025-07-13 22:21:36 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:21:36 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:21:36 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:21:36 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:21:36 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:21:36 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:21:36 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:21:36 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:21:36 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:21:36 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:21:36 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 22:21:36 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:21:36 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:21:36 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:21:36 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:21:36 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:21:36 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:21:36 - workforce_analytics - INFO - Completed Data Normalization in 0.01s
+2025-07-13 22:21:36 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:21:36 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:21:36 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:21:36 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:21:36 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:21:36 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:21:36 - workforce_analytics - INFO - Calculated statistics for 25 facility-role combinations
+2025-07-13 22:21:36 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.01s
+2025-07-13 22:21:36 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:21:36 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:21:36 - workforce_analytics - INFO - Detected 158 variance exceptions
+2025-07-13 22:21:36 - workforce_analytics - INFO - Completed Variance Detection in 0.03s
+2025-07-13 22:21:36 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 22:21:36 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 22:21:36 - workforce_analytics - INFO - Analyzed trends for 12 facility-role combinations
+2025-07-13 22:21:36 - workforce_analytics - INFO - Completed Trend Analysis in 0.02s
+2025-07-13 22:21:36 - workforce_analytics - INFO - Step 7: Exception Compilation
+2025-07-13 22:21:36 - workforce_analytics - INFO - Starting Exception Compilation
+2025-07-13 22:21:36 - workforce_analytics - INFO - Compiled 158 exceptions for reporting
+2025-07-13 22:21:36 - workforce_analytics - INFO - Completed Exception Compilation in 0.00s
+2025-07-13 22:21:36 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:21:36 - workforce_analytics - INFO - ANALYSIS COMPLETE - SUMMARY
+2025-07-13 22:21:36 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:21:36 - workforce_analytics - INFO - Facilities Analyzed: 1
+2025-07-13 22:21:36 - workforce_analytics - INFO - Roles Analyzed: 25
+2025-07-13 22:21:36 - workforce_analytics - INFO - Total Exceptions: 158
+2025-07-13 22:21:36 - workforce_analytics - INFO - Facilities with Exceptions: 1
+2025-07-13 22:21:36 - workforce_analytics - INFO - Exception Rate: 100.0%
+2025-07-13 22:21:36 - workforce_analytics - INFO - Exception Breakdown:
+2025-07-13 22:21:36 - workforce_analytics - INFO -   Model Variances: 133
+2025-07-13 22:21:36 - workforce_analytics - INFO -   Statistical Exceptions: 25
+2025-07-13 22:21:36 - workforce_analytics - INFO -   Trend Exceptions: 0
+2025-07-13 22:21:36 - workforce_analytics - INFO - Output Directory: /tmp/workforce_test
+2025-07-13 22:21:36 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:21:36 - workforce_analytics - INFO - Analysis completed with 158 exceptions found
+2025-07-13 22:22:54 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:22:54 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:22:54 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:22:54 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:22:54 - workforce_analytics - INFO - Facility Data: input/SampleFacilityData.csv
+2025-07-13 22:22:54 - workforce_analytics - INFO - Model Data: input/SampleModelData.csv
+2025-07-13 22:22:54 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 22:22:54 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:22:54 - workforce_analytics.error_handler - ERROR - Application error in main: Facility data file not found: input/SampleFacilityData.csv (Details: file_path=input/SampleFacilityData.csv)
+2025-07-13 22:22:54 - workforce_analytics.error_handler - DEBUG - Traceback for main:
+Traceback (most recent call last):
+  File "/Users/chrisjohnson/gitRepositories/workforce/src/utils/error_handlers.py", line 132, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chrisjohnson/gitRepositories/workforce/main.py", line 330, in main
+    raise WorkforceAnalyticsError(
+src.utils.error_handlers.WorkforceAnalyticsError: Facility data file not found: input/SampleFacilityData.csv (Details: file_path=input/SampleFacilityData.csv)
+2025-07-13 22:22:54 - workforce_analytics.error_handler - CRITICAL - Exiting with code 4
+2025-07-13 22:23:47 - workforce_analytics - INFO - Logging initialized - Level: DEBUG, File: logs/workforce_analytics.log
+2025-07-13 22:23:47 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:23:47 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:23:47 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:23:47 - workforce_analytics - INFO - Facility Data: input/SampleFacilityData.csv
+2025-07-13 22:23:47 - workforce_analytics - INFO - Model Data: input/SampleModelData.csv
+2025-07-13 22:23:47 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 22:23:47 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:23:47 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:23:47 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:23:48 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:23:48 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed Model Data Loading in 0.01s
+2025-07-13 22:23:48 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:23:48 - workforce_analytics - INFO - Loaded 150 facility records from 1 facilities
+2025-07-13 22:23:48 - workforce_analytics - INFO - Facility data loading captured 3 data quality issues
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed Facility Data Loading in 0.00s
+2025-07-13 22:23:48 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:23:48 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:23:48 - workforce_analytics - INFO - Normalized data: 150 facility records, 308 model records
+2025-07-13 22:23:48 - workforce_analytics - INFO - Total data quality issues captured: 3
+2025-07-13 22:23:48 - workforce_analytics - INFO -   Facility loader: 3, Model loader: 0
+2025-07-13 22:23:48 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed Data Normalization in 0.01s
+2025-07-13 22:23:48 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:23:48 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:23:48 - workforce_analytics - INFO - Aggregated to 25 weekly records
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.00s
+2025-07-13 22:23:48 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:23:48 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:23:48 - workforce_analytics - INFO - Calculated statistics for 25 facility-role combinations
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 0.01s
+2025-07-13 22:23:48 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:23:48 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:23:48 - workforce_analytics - INFO - Detected 158 variance exceptions
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed Variance Detection in 0.02s
+2025-07-13 22:23:48 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 22:23:48 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 22:23:48 - workforce_analytics - INFO - Analyzed trends for 12 facility-role combinations
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed Trend Analysis in 0.02s
+2025-07-13 22:23:48 - workforce_analytics - INFO - Step 7: Exception Compilation
+2025-07-13 22:23:48 - workforce_analytics - INFO - Starting Exception Compilation
+2025-07-13 22:23:48 - workforce_analytics - INFO - Compiled 158 exceptions for reporting
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed Exception Compilation in 0.00s
+2025-07-13 22:23:48 - workforce_analytics - INFO - Step 9: PDF Report Generation
+2025-07-13 22:23:48 - workforce_analytics - INFO - PDF generation available - generating facility reports
+2025-07-13 22:23:48 - workforce_analytics - INFO - Starting PDF Report Generation
+2025-07-13 22:23:48 - workforce_analytics.error_collector - ERROR - Error in Report generation for Ansley Park: Failed to generate report for Ansley Park: Failed to generate PDF report: 'axes.grid.alpha is not a valid rc parameter (see rcParams.keys() for a list of valid parameters)' (Details: facility=Ansley Park) (Details: facility=Ansley Park)
+2025-07-13 22:23:48 - workforce_analytics.error_collector - ERROR - Error Summary: 1 total errors
+2025-07-13 22:23:48 - workforce_analytics.error_collector - ERROR -   Critical: 0, Warnings: 1
+2025-07-13 22:23:48 - workforce_analytics.error_collector - ERROR -   ReportGenerationError: 1
+2025-07-13 22:23:48 - workforce_analytics - ERROR - PDF report generation failed: Unknown error
+2025-07-13 22:23:48 - workforce_analytics - INFO - Completed PDF Report Generation in 0.12s
+2025-07-13 22:23:48 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:23:48 - workforce_analytics - INFO - ANALYSIS COMPLETE - SUMMARY
+2025-07-13 22:23:48 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:23:48 - workforce_analytics - INFO - Facilities Analyzed: 1
+2025-07-13 22:23:48 - workforce_analytics - INFO - Roles Analyzed: 25
+2025-07-13 22:23:48 - workforce_analytics - INFO - Total Exceptions: 158
+2025-07-13 22:23:48 - workforce_analytics - INFO - Facilities with Exceptions: 1
+2025-07-13 22:23:48 - workforce_analytics - INFO - Exception Rate: 100.0%
+2025-07-13 22:23:48 - workforce_analytics - INFO - Exception Breakdown:
+2025-07-13 22:23:48 - workforce_analytics - INFO -   Model Variances: 133
+2025-07-13 22:23:48 - workforce_analytics - INFO -   Statistical Exceptions: 25
+2025-07-13 22:23:48 - workforce_analytics - INFO -   Trend Exceptions: 0
+2025-07-13 22:23:48 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 22:23:48 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:23:48 - workforce_analytics - INFO - Analysis completed with 158 exceptions found
+2025-07-13 22:26:01 - workforce_analytics - INFO - Logging initialized - Level: INFO, File: logs/workforce_analytics.log
+2025-07-13 22:26:01 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:26:01 - workforce_analytics - INFO - WORKFORCE ANALYTICS SYSTEM - STARTING ANALYSIS
+2025-07-13 22:26:01 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:26:01 - workforce_analytics - INFO - Facility Data: input/input.csv
+2025-07-13 22:26:01 - workforce_analytics - INFO - Model Data: input/modeldata.csv
+2025-07-13 22:26:01 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 22:26:01 - workforce_analytics - INFO - Control Variables: weeks_control=12, weeks_trends=8, variance_threshold=15.0%
+2025-07-13 22:26:01 - workforce_analytics - INFO - Step 1: Data Ingestion
+2025-07-13 22:26:01 - workforce_analytics - INFO - Starting Model Data Loading
+2025-07-13 22:26:01 - workforce_analytics - INFO - Loaded 308 model records from 1 facilities
+2025-07-13 22:26:01 - workforce_analytics - INFO - Model data loading captured 0 data quality issues
+2025-07-13 22:26:01 - workforce_analytics - INFO - Completed Model Data Loading in 0.02s
+2025-07-13 22:26:01 - workforce_analytics - INFO - Starting Facility Data Loading
+2025-07-13 22:26:01 - workforce_analytics - INFO - Loaded 16539 facility records from 5 facilities
+2025-07-13 22:26:01 - workforce_analytics - INFO - Facility data loading captured 34 data quality issues
+2025-07-13 22:26:01 - workforce_analytics - INFO - Completed Facility Data Loading in 0.14s
+2025-07-13 22:26:01 - workforce_analytics - INFO - Step 2: Data Normalization
+2025-07-13 22:26:01 - workforce_analytics - INFO - Starting Data Normalization
+2025-07-13 22:26:01 - workforce_analytics - INFO - Normalized data: 16539 facility records, 308 model records
+2025-07-13 22:26:01 - workforce_analytics - INFO - Total data quality issues captured: 34
+2025-07-13 22:26:01 - workforce_analytics - INFO -   Facility loader: 34, Model loader: 0
+2025-07-13 22:26:01 - workforce_analytics - INFO -   Facility normalizer: 0, Model normalizer: 0
+2025-07-13 22:26:01 - workforce_analytics - INFO - Completed Data Normalization in 0.12s
+2025-07-13 22:26:05 - workforce_analytics - INFO - Step 3: Weekly Aggregation
+2025-07-13 22:26:05 - workforce_analytics - INFO - Starting Weekly Aggregation
+2025-07-13 22:26:05 - workforce_analytics - INFO - Aggregated to 1244 weekly records
+2025-07-13 22:26:05 - workforce_analytics - INFO - Completed Weekly Aggregation in 0.02s
+2025-07-13 22:26:05 - workforce_analytics - INFO - Step 4: Statistical Analysis
+2025-07-13 22:26:05 - workforce_analytics - INFO - Starting Descriptive Statistics Calculation
+2025-07-13 22:26:09 - workforce_analytics - INFO - Calculated statistics for 33 facility-role combinations
+2025-07-13 22:26:09 - workforce_analytics - INFO - Completed Descriptive Statistics Calculation in 4.13s
+2025-07-13 22:26:10 - workforce_analytics - INFO - Step 5: Variance Detection
+2025-07-13 22:26:10 - workforce_analytics - INFO - Starting Variance Detection
+2025-07-13 22:26:18 - workforce_analytics - INFO - Detected 20984 variance exceptions
+2025-07-13 22:26:18 - workforce_analytics - INFO - Completed Variance Detection in 8.34s
+2025-07-13 22:26:21 - workforce_analytics - INFO - Step 6: Trend Analysis
+2025-07-13 22:26:21 - workforce_analytics - INFO - Starting Trend Analysis
+2025-07-13 22:26:21 - workforce_analytics - INFO - Analyzed trends for 28 facility-role combinations
+2025-07-13 22:26:21 - workforce_analytics - INFO - Completed Trend Analysis in 0.09s
+2025-07-13 22:26:53 - workforce_analytics - INFO - Step 7: Exception Compilation
+2025-07-13 22:26:53 - workforce_analytics - INFO - Starting Exception Compilation
+2025-07-13 22:26:54 - workforce_analytics - INFO - Compiled 20985 exceptions for reporting
+2025-07-13 22:26:54 - workforce_analytics - INFO - Completed Exception Compilation in 0.06s
+2025-07-13 22:27:49 - workforce_analytics - INFO - Step 9: PDF Report Generation
+2025-07-13 22:27:49 - workforce_analytics - INFO - PDF generation available - generating facility reports
+2025-07-13 22:27:49 - workforce_analytics - INFO - Starting PDF Report Generation
+2025-07-13 22:27:49 - workforce_analytics.error_collector - ERROR - Error in Report generation for Ansley Park: Failed to generate report for Ansley Park: Failed to generate PDF report: 'axes.grid.alpha is not a valid rc parameter (see rcParams.keys() for a list of valid parameters)' (Details: facility=Ansley Park) (Details: facility=Ansley Park)
+2025-07-13 22:27:49 - workforce_analytics.error_collector - ERROR - Error in Report generation for Avalon: Failed to generate report for Avalon: Failed to generate PDF report: 'axes.grid.alpha is not a valid rc parameter (see rcParams.keys() for a list of valid parameters)' (Details: facility=Avalon) (Details: facility=Avalon)
+2025-07-13 22:27:49 - workforce_analytics.error_collector - ERROR - Error in Report generation for Harrington Park: Failed to generate report for Harrington Park: Failed to generate PDF report: 'axes.grid.alpha is not a valid rc parameter (see rcParams.keys() for a list of valid parameters)' (Details: facility=Harrington Park) (Details: facility=Harrington Park)
+2025-07-13 22:27:49 - workforce_analytics.error_collector - ERROR - Error in Report generation for Traditions: Failed to generate report for Traditions: Failed to generate PDF report: 'axes.grid.alpha is not a valid rc parameter (see rcParams.keys() for a list of valid parameters)' (Details: facility=Traditions) (Details: facility=Traditions)
+2025-07-13 22:27:49 - workforce_analytics.error_collector - ERROR - Error in Report generation for Waycross: Failed to generate report for Waycross: Failed to generate PDF report: 'axes.grid.alpha is not a valid rc parameter (see rcParams.keys() for a list of valid parameters)' (Details: facility=Waycross) (Details: facility=Waycross)
+2025-07-13 22:27:49 - workforce_analytics.error_collector - ERROR - Error Summary: 5 total errors
+2025-07-13 22:27:49 - workforce_analytics.error_collector - ERROR -   Critical: 0, Warnings: 5
+2025-07-13 22:27:49 - workforce_analytics.error_collector - ERROR -   ReportGenerationError: 5
+2025-07-13 22:27:49 - workforce_analytics - ERROR - PDF report generation failed: Unknown error
+2025-07-13 22:27:49 - workforce_analytics - INFO - Completed PDF Report Generation in 0.25s
+2025-07-13 22:29:50 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:29:50 - workforce_analytics - INFO - ANALYSIS COMPLETE - SUMMARY
+2025-07-13 22:29:50 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:29:50 - workforce_analytics - INFO - Facilities Analyzed: 5
+2025-07-13 22:29:50 - workforce_analytics - INFO - Roles Analyzed: 29
+2025-07-13 22:29:50 - workforce_analytics - INFO - Total Exceptions: 20985
+2025-07-13 22:29:50 - workforce_analytics - INFO - Facilities with Exceptions: 5
+2025-07-13 22:29:56 - workforce_analytics - INFO - Exception Rate: 100.0%
+2025-07-13 22:29:56 - workforce_analytics - INFO - Exception Breakdown:
+2025-07-13 22:29:56 - workforce_analytics - INFO -   Model Variances: 13898
+2025-07-13 22:29:56 - workforce_analytics - INFO -   Statistical Exceptions: 7086
+2025-07-13 22:29:56 - workforce_analytics - INFO -   Trend Exceptions: 1
+2025-07-13 22:29:56 - workforce_analytics - INFO - Output Directory: output
+2025-07-13 22:29:56 - workforce_analytics - INFO - ================================================================================
+2025-07-13 22:30:02 - workforce_analytics - INFO - Analysis completed with 20985 exceptions found

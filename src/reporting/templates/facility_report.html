@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workforce Analytics Report - {{ facility_name }}</title>
+    <style>
+        /* Professional styling for PDF reports */
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        .report-date {
+            color: #95a5a6;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        
+        .section {
+            margin: 30px 0;
+            page-break-inside: avoid;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 20px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .kpi-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .kpi-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+        }
+        
+        .kpi-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .kpi-card.variance {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .kpi-card.hours {
+            border-left: 4px solid #3498db;
+        }
+        
+        .kpi-card.exceptions {
+            border-left: 4px solid #f39c12;
+        }
+        
+        .kpi-card.roles {
+            border-left: 4px solid #27ae60;
+        }
+        
+        /* Charts */
+        .chart-container {
+            text-align: center;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 12px;
+        }
+        
+        .data-table th {
+            background-color: #34495e;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .data-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .data-table tr:hover {
+            background-color: #e3f2fd;
+        }
+        
+        /* Exception severity styling */
+        .severity-high {
+            background-color: #ffebee !important;
+            color: #c62828;
+            font-weight: bold;
+        }
+        
+        .severity-medium {
+            background-color: #fff3e0 !important;
+            color: #ef6c00;
+        }
+        
+        .severity-low {
+            background-color: #f1f8e9 !important;
+            color: #2e7d32;
+        }
+        
+        /* Summary boxes */
+        .summary-box {
+            background: #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .summary-box h4 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        /* Page breaks for PDF */
+        .page-break {
+            page-break-before: always;
+        }
+        
+        .no-break {
+            page-break-inside: avoid;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        
+        /* Print-specific styles */
+        @media print {
+            body { margin: 0; }
+            .header { page-break-after: avoid; }
+            .section { page-break-inside: avoid; }
+            .chart-container { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <!-- F-6a: Cover page with date range -->
+    <div class="header">
+        <h1>Workforce Analytics Report</h1>
+        <div class="subtitle">{{ facility_name }}</div>
+        <div class="report-date">
+            Analysis Period: {{ analysis_start_date }} to {{ analysis_end_date }}
+        </div>
+        <div class="report-date">
+            Generated: {{ generation_date }}
+        </div>
+    </div>
+
+    <!-- F-6b: KPI summary table -->
+    <div class="section">
+        <h2>Executive Summary</h2>
+        
+        <div class="kpi-grid">
+            <div class="kpi-card hours">
+                <span class="kpi-value">{{ kpis.total_model_hours|round(0)|int }}</span>
+                <div class="kpi-label">Model Hours</div>
+            </div>
+            <div class="kpi-card hours">
+                <span class="kpi-value">{{ kpis.total_actual_hours|round(0)|int }}</span>
+                <div class="kpi-label">Actual Hours</div>
+            </div>
+            <div class="kpi-card variance">
+                <span class="kpi-value">{{ kpis.variance_percentage|round(1) }}%</span>
+                <div class="kpi-label">Overall Variance</div>
+            </div>
+            <div class="kpi-card exceptions">
+                <span class="kpi-value">{{ summary.total_exceptions }}</span>
+                <div class="kpi-label">Total Exceptions</div>
+            </div>
+            <div class="kpi-card roles">
+                <span class="kpi-value">{{ kpis.roles_analyzed }}</span>
+                <div class="kpi-label">Roles Analyzed</div>
+            </div>
+            <div class="kpi-card exceptions">
+                <span class="kpi-value">{{ kpis.exception_rate|round(1) }}%</span>
+                <div class="kpi-label">Exception Rate</div>
+            </div>
+        </div>
+
+        {% if summary.total_exceptions > 0 %}
+        <div class="alert alert-warning">
+            <strong>⚠️ Attention Required:</strong> 
+            This facility has {{ summary.total_exceptions }} exceptions across {{ summary.roles_with_exceptions|length }} roles 
+            that require review and potential action.
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <strong>✅ No Exceptions:</strong> 
+            This facility is operating within expected parameters with no statistical exceptions detected.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- F-6c: Variance heat-map & trend charts -->
+    <div class="section page-break">
+        <h2>Visual Analysis</h2>
+        
+        <h3>Key Performance Indicators</h3>
+        <div class="chart-container">
+            <img src="data:image/png;base64,{{ kpi_chart }}" alt="KPI Summary Chart">
+        </div>
+
+        {% if variance_heatmap %}
+        <h3>Variance Heat-map</h3>
+        <div class="chart-container">
+            <img src="data:image/png;base64,{{ variance_heatmap }}" alt="Variance Heat-map">
+        </div>
+        {% endif %}
+
+        {% if trend_charts %}
+        <h3>Trend Analysis</h3>
+        <div class="chart-container">
+            <img src="data:image/png;base64,{{ trend_charts }}" alt="Trend Analysis Charts">
+        </div>
+        {% endif %}
+
+        {% if control_limits_chart %}
+        <h3>Statistical Control Limits</h3>
+        <div class="chart-container">
+            <img src="data:image/png;base64,{{ control_limits_chart }}" alt="Control Limits Chart">
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- F-6d: Detailed exception list -->
+    {% if exceptions_list %}
+    <div class="section page-break">
+        <h2>Exception Details</h2>
+        
+        <div class="summary-box">
+            <h4>Exception Summary</h4>
+            <p><strong>Model Variances:</strong> {{ summary.model_variances }} exceptions</p>
+            <p><strong>Statistical Exceptions:</strong> {{ summary.statistical_exceptions }} exceptions</p>
+            <p><strong>Trend Exceptions:</strong> {{ summary.trend_exceptions }} exceptions</p>
+            <p><strong>Most Problematic Role:</strong> {{ kpis.most_problematic_role or 'N/A' }}</p>
+            <p><strong>Average Severity:</strong> {{ summary.severity_score|round(1) }}/100</p>
+        </div>
+
+        <h3>Detailed Exception List</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Role</th>
+                    <th>Exception Type</th>
+                    <th>Severity</th>
+                    <th>Description</th>
+                    <th>Variance</th>
+                    <th>Threshold</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exception in exceptions_list %}
+                <tr class="{% if exception.severity >= 70 %}severity-high{% elif exception.severity >= 40 %}severity-medium{% else %}severity-low{% endif %}">
+                    <td>{{ exception.date.strftime('%m/%d/%Y') if exception.date else 'N/A' }}</td>
+                    <td>{{ exception.role }}</td>
+                    <td>{{ exception.exception_type.title() }}</td>
+                    <td>{{ exception.severity|round(1) }}</td>
+                    <td>{{ exception.description }}</td>
+                    <td>
+                        {% if exception.variance_percentage %}
+                            {{ exception.variance_percentage|round(1) }}%
+                        {% elif exception.variance_value %}
+                            {{ exception.variance_value|round(2) }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if exception.threshold_used %}
+                            {{ exception.threshold_used|round(1) }}{% if exception.exception_type == 'model' %}%{% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Statistical Summary -->
+    {% if statistics_summary %}
+    <div class="section page-break">
+        <h2>Statistical Summary</h2>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Sample Size</th>
+                    <th>Mean Hours</th>
+                    <th>Control Method</th>
+                    <th>Upper Control Limit</th>
+                    <th>Lower Control Limit</th>
+                    <th>Normal Distribution</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in statistics_summary %}
+                <tr>
+                    <td>{{ stat.role }}</td>
+                    <td>{{ stat.n_samples }}</td>
+                    <td>{{ stat.mean|round(2) }}</td>
+                    <td>{{ stat.control_method.title() }}</td>
+                    <td>{{ stat.upper_control_limit|round(2) }}</td>
+                    <td>{{ stat.lower_control_limit|round(2) }}</td>
+                    <td>{{ 'Yes' if stat.is_normal_distribution else 'No' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Workforce Analytics System | Generated with statistical rigor using control limits and trend analysis</p>
+        <p>Report contains {{ kpis.roles_analyzed }} roles analyzed over {{ (analysis_end_date - analysis_start_date).days }} days</p>
+    </div>
+</body>
+</html>
