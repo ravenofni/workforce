@@ -44,7 +44,8 @@ class ReportOrchestrator:
         """
         self.settings = settings
         self.pdf_generator = PDFReportGenerator(
-            output_dir=settings.directories.reports_dir
+            output_dir=settings.directories.reports_dir,
+            timeout_seconds=settings.pdf_timeout_seconds
         )
         self.error_collector = ErrorCollector(max_errors=50)
         
@@ -57,7 +58,8 @@ class ReportOrchestrator:
                                           statistics: List[StatisticalSummary],
                                           trend_results: List[TrendAnalysisResult],
                                           analysis_start_date: datetime,
-                                          analysis_end_date: datetime) -> Dict[str, Any]:
+                                          analysis_end_date: datetime,
+                                          daily_facility_data: Optional[pd.DataFrame] = None) -> Dict[str, Any]:
         """
         Generate PDF reports for all facilities with exceptions.
         
@@ -69,6 +71,7 @@ class ReportOrchestrator:
             trend_results: List of trend analysis results
             analysis_start_date: Start date of analysis period
             analysis_end_date: End date of analysis period
+            daily_facility_data: Optional daily facility data for trend charts
             
         Returns:
             Dictionary with generation results and summary
@@ -111,7 +114,8 @@ class ReportOrchestrator:
                 statistics,
                 trend_results,
                 analysis_start_date,
-                analysis_end_date
+                analysis_end_date,
+                daily_facility_data
             )
             
             # Create summary
@@ -166,7 +170,8 @@ class ReportOrchestrator:
                                              statistics: List[StatisticalSummary],
                                              trend_results: List[TrendAnalysisResult],
                                              analysis_start_date: datetime,
-                                             analysis_end_date: datetime) -> List[str]:
+                                             analysis_end_date: datetime,
+                                             daily_facility_data: Optional[pd.DataFrame] = None) -> List[str]:
         """
         Generate PDF reports for the specified facilities.
         
@@ -179,6 +184,7 @@ class ReportOrchestrator:
             trend_results: Trend analysis results
             analysis_start_date: Analysis start date
             analysis_end_date: Analysis end date
+            daily_facility_data: Optional daily facility data for trend charts
             
         Returns:
             List of paths to successfully generated PDF files
@@ -198,7 +204,8 @@ class ReportOrchestrator:
                         statistics=statistics,
                         trend_results=trend_results,
                         analysis_start_date=analysis_start_date,
-                        analysis_end_date=analysis_end_date
+                        analysis_end_date=analysis_end_date,
+                        daily_facility_data=daily_facility_data
                     )
                     
                     generated_reports.append(pdf_path)
@@ -375,7 +382,8 @@ async def generate_comprehensive_reports(settings: AppSettings,
                                        trend_results: List[TrendAnalysisResult],
                                        analysis_start_date: datetime,
                                        analysis_end_date: datetime,
-                                       data_quality_exceptions: Optional[List[DataQualityException]] = None) -> Dict[str, Any]:
+                                       data_quality_exceptions: Optional[List[DataQualityException]] = None,
+                                       daily_facility_data: Optional[pd.DataFrame] = None) -> Dict[str, Any]:
     """
     Convenience function to generate comprehensive reports for all facilities.
     
@@ -389,6 +397,7 @@ async def generate_comprehensive_reports(settings: AppSettings,
         analysis_start_date: Analysis start date
         analysis_end_date: Analysis end date
         data_quality_exceptions: Optional list of data quality issues found during normalization
+        daily_facility_data: Optional daily facility data for trend charts
         
     Returns:
         Dictionary with generation results
@@ -402,5 +411,6 @@ async def generate_comprehensive_reports(settings: AppSettings,
         statistics=statistics,
         trend_results=trend_results,
         analysis_start_date=analysis_start_date,
-        analysis_end_date=analysis_end_date
+        analysis_end_date=analysis_end_date,
+        daily_facility_data=daily_facility_data
     )

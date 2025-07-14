@@ -35,6 +35,7 @@ from src.reporting.exceptions import compile_exceptions, display_exceptions_summ
 from src.reporting.report_orchestrator import generate_comprehensive_reports
 from src.reporting.pdf_generator import check_pdf_generation_availability
 from src.models.data_models import DataQualityException
+from src.utils.date_calculator import calculate_analysis_date_range, validate_date_range
 
 
 def get_env_default(env_var: str, default_value, value_type=str):
@@ -146,6 +147,21 @@ Environment variables: FACILITY_DATA_PATH, MODEL_DATA_PATH, DEBUG_MODE, OUTPUT_D
         type=float,
         default=get_env_default('VARIANCE_THRESHOLD', None, float),
         help='Variance percentage threshold for model exceptions (overrides config)'
+    )
+    
+    # Date range override arguments
+    parser.add_argument(
+        '--analysis-start-date',
+        type=str,
+        default=get_env_default('ANALYSIS_START_DATE', None),
+        help='Analysis start date (YYYY-MM-DD format) - overrides automatic calculation'
+    )
+    
+    parser.add_argument(
+        '--analysis-end-date',
+        type=str,
+        default=get_env_default('ANALYSIS_END_DATE', None),
+        help='Analysis end date (YYYY-MM-DD format) - overrides automatic calculation'
     )
     
     # Operation mode arguments
@@ -444,9 +460,30 @@ def main():
     
     display_exceptions_summary(exceptions_df)
     
-    # Step 8: Export Results (if requested)
+    # Step 8: Calculate Analysis Date Range
+    logger.info("Step 8: Calculate Analysis Date Range")
+    
+    with TimedOperation(logger, "Date Range Calculation"):
+        # Calculate analysis date range using F-0 control variables and overrides
+        analysis_start_date, analysis_end_date = calculate_analysis_date_range(
+            normalized_facility_df,
+            settings.control_variables,
+            args.analysis_start_date,
+            args.analysis_end_date
+        )
+        
+        # Validate the date range
+        if not validate_date_range(analysis_start_date, analysis_end_date):
+            logger.error("Invalid date range calculated - using data min/max as fallback")
+            analysis_start_date = normalized_facility_df[FileColumns.FACILITY_HOURS_DATE].min() if not normalized_facility_df.empty else datetime.now()
+            analysis_end_date = normalized_facility_df[FileColumns.FACILITY_HOURS_DATE].max() if not normalized_facility_df.empty else datetime.now()
+        
+        logger.info(f"Final analysis period: {analysis_start_date.strftime('%m/%d/%Y')} to {analysis_end_date.strftime('%m/%d/%Y')}")
+        logger.info(f"Analysis period duration: {(analysis_end_date - analysis_start_date).days + 1} days")
+    
+    # Step 9: Export Results (if requested)
     if args.export_csv:
-        logger.info("Step 8: Exporting Results to CSV")
+        logger.info("Step 9: Exporting Results to CSV")
         
         # Export exceptions
         exceptions_csv_path = os.path.join(args.output_dir, 'exceptions.csv')
@@ -460,9 +497,9 @@ def main():
         stats_df.to_csv(stats_csv_path, index=False)
         logger.info(f"Exported statistics summary to {stats_csv_path}")
     
-    # Step 9: PDF Report Generation (if not display-only)
+    # Step 10: PDF Report Generation (if not display-only)
     if not args.display_only:
-        logger.info("Step 9: PDF Report Generation")
+        logger.info("Step 10: PDF Report Generation")
         
         # Check if PDF generation is available
         if check_pdf_generation_availability():
@@ -478,9 +515,10 @@ def main():
                         model_data=normalized_model_df,
                         statistics=statistics,
                         trend_results=trend_results,
-                        analysis_start_date=weekly_facility_df['WeekStart'].min() if not weekly_facility_df.empty else datetime.now(),
-                        analysis_end_date=weekly_facility_df['WeekStart'].max() if not weekly_facility_df.empty else datetime.now(),
-                        data_quality_exceptions=all_data_quality_exceptions
+                        analysis_start_date=analysis_start_date,
+                        analysis_end_date=analysis_end_date,
+                        data_quality_exceptions=all_data_quality_exceptions,
+                        daily_facility_data=normalized_facility_df  # Pass daily data for trend charts
                     ))
                     
                     if report_results['success']:

@@ -51,14 +51,14 @@ class ControlMethod(str, Enum):
 
 
 class DayOfWeek(int, Enum):
-    """Day of week enumeration for F-0c"""
-    MONDAY = 1
-    TUESDAY = 2
-    WEDNESDAY = 3
-    THURSDAY = 4
-    FRIDAY = 5
-    SATURDAY = 6
-    SUNDAY = 7
+    """Day of week enumeration for F-0c - Sunday=1 to match upstream data"""
+    SUNDAY = 1
+    MONDAY = 2
+    TUESDAY = 3
+    WEDNESDAY = 4
+    THURSDAY = 5
+    FRIDAY = 6
+    SATURDAY = 7
 
 
 # File path patterns - default paths for debug mode
@@ -78,6 +78,7 @@ PDF_MARGIN_INCHES = 1.0
 PDF_FORMAT = "A4"
 DATE_FORMAT = "%m/%d/%Y"            # MMDDYYYY format as specified in F-2
 DATETIME_FORMAT = "%m/%d/%Y %H:%M:%S"
+
 
 # Logging constants
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

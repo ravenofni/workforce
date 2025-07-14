@@ -5,3 +5,6 @@ __pycache__
 .pytest_cache
 .env.example
 .env
+output/
+logs/
+.vscode/

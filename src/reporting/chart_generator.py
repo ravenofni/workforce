@@ -5,10 +5,12 @@ Creates statistical visualizations using matplotlib and seaborn for PDF reports.
 
 import pandas as pd
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 import io
 import base64
+import warnings
 from typing import List, Dict, Any, Optional, Tuple
 import logging
 from datetime import datetime, timedelta
@@ -24,6 +26,23 @@ from src.models.data_models import (
 
 logger = logging.getLogger(__name__)
 
+# Suppress matplotlib font warnings that pollute logs
+def suppress_font_warnings():
+    """Suppress repetitive matplotlib font warnings."""
+    # Set matplotlib to use a more restrictive logging level for font warnings
+    matplotlib_logger = logging.getLogger('matplotlib.font_manager')
+    matplotlib_logger.setLevel(logging.ERROR)
+    
+    # Also suppress specific findfont warnings
+    warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
+    warnings.filterwarnings('ignore', message='.*Font family.*not found.*')
+    
+    # Set matplotlib to use backend that doesn't spam font warnings
+    matplotlib.pyplot.rcParams['font.family'] = ['Arial', 'Helvetica', 'sans-serif']
+
+# Apply font warning suppression
+suppress_font_warnings()
+
 # Set consistent styling for all charts
 plt.style.use('default')
 sns.set_palette("husl")
@@ -37,11 +56,11 @@ def setup_chart_style() -> None:
         'figure.facecolor': 'white',
         'axes.facecolor': 'white',
         'axes.grid': True,
-        'axes.grid.alpha': 0.3,
+        'grid.alpha': 0.3,
         'axes.spines.top': False,
         'axes.spines.right': False,
         'font.size': 10,
-        'font.family': ['Arial', 'DejaVu Sans', 'Liberation Sans'],
+        'font.family': ['Arial', 'Helvetica', 'DejaVu Sans', 'sans-serif'],
         'axes.titlesize': 14,
         'axes.labelsize': 12,
         'xtick.labelsize': 10,
@@ -344,8 +363,12 @@ def create_control_limits_chart(statistics: List[StatisticalSummary], facility: 
         x_pos = np.arange(len(roles))
         
         # Plot control limits as error bars
+        # Calculate absolute distances from mean to control limits
+        lower_errors = np.abs(np.array(means) - np.array(lcls))
+        upper_errors = np.abs(np.array(ucls) - np.array(means))
+        
         ax.errorbar(x_pos, means, 
-                   yerr=[np.array(means) - np.array(lcls), np.array(ucls) - np.array(means)],
+                   yerr=[lower_errors, upper_errors],
                    fmt='o', capsize=5, capthick=2, markersize=8, alpha=0.8)
         
         # Add mean points
@@ -371,8 +394,9 @@ def create_control_limits_chart(statistics: List[StatisticalSummary], facility: 
         
     except Exception as e:
         logger.error(f"Error creating control limits chart for {facility}: {str(e)}")
+        logger.debug(f"Statistics data: means={means}, ucls={ucls}, lcls={lcls}")
         plt.close('all')
-        return create_error_chart(f"Error creating control limits chart: {str(e)}")
+        return create_no_data_chart(f"Error creating control limits chart: {str(e)}", facility)
 
 
 def fig_to_base64(fig) -> str:

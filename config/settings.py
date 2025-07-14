@@ -30,7 +30,7 @@ class ControlVariables(BaseModel):
     # F-0c: New Data Day - The day of the week to consider having clean data
     new_data_day: int = Field(
         default=int(os.getenv("NEW_DATA_DAY", "1")),
-        description="F-0c: Day of week for clean data (1=Monday, 7=Sunday)"
+        description="F-0c: Day of week for clean data (1=Sunday, 2=Monday, 7=Saturday)"
     )
     
     # F-0d: Use Data Day - A true/false variable indicating whether the new day-to-day should be used
@@ -127,6 +127,16 @@ class AppSettings(BaseModel):
     pdf_timeout_seconds: int = Field(
         default=60,
         description="Timeout for PDF generation operations"
+    )
+    
+    max_exceptions_per_page: int = Field(
+        default=100,
+        description="Maximum number of exceptions to display per page in PDF reports"
+    )
+    
+    max_exceptions_summary: int = Field(
+        default=20,
+        description="Maximum number of exceptions to show in summary table before truncating"
     )
 
 

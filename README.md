@@ -47,7 +47,9 @@ python main.py --facility-data examples/SampleFacilityData.csv --model-data exam
 - **Trend Detection**: Linear regression with significance testing
 
 ### Data Processing
-- **MMDDYYYY Date Handling**: Explicit format parsing
+- **F-0 Control Variables**: Dynamic date range calculation with configurable parameters
+- **Sunday=1 Day Convention**: Day-of-week numbering matches upstream systems (Sunday=1, Monday=2, etc.)
+- **MMDDYYYY Date Handling**: Explicit format parsing with flexible fallback
 - **Multi-facility Support**: CSV files with location key separation
 - **Weekly Aggregation**: Sunday-Saturday weekly data summaries
 - **Role Name Harmonization**: Consistent naming and case handling
@@ -80,6 +82,7 @@ workforce/
 │   │   └── templates/          # HTML templates for PDF reports
 │   │       └── facility_report.html # Professional facility report template
 │   └── utils/
+│       ├── date_calculator.py  # F-0 control variables date calculation
 │       ├── logging_config.py   # Comprehensive logging (F-7)
 │       └── error_handlers.py   # Error handling (F-8)
 ├── examples/
@@ -106,7 +109,7 @@ DAYS_TO_DROP=7
 # F-0b: Days to look back from period end date  
 DAYS_TO_PROCESS=84
 
-# F-0c: Day of week for clean data (1=Monday, 7=Sunday)
+# F-0c: Day of week for clean data (1=Sunday, 2=Monday, 7=Saturday)
 NEW_DATA_DAY=1
 
 # F-0d: Use new data day vs days to drop
@@ -152,6 +155,11 @@ python main.py --facility-data data/hours.csv --model-data data/model.csv \
   --weeks-for-control 16 \
   --weeks-for-trends 12
 
+# Analyze specific date range
+python main.py --facility-data data/hours.csv --model-data data/model.csv \
+  --analysis-start-date 2025-05-01 \
+  --analysis-end-date 2025-05-31
+
 # Export results to CSV
 python main.py --facility-data data/hours.csv --model-data data/model.csv --export-csv
 
@@ -186,6 +194,12 @@ Analysis Control:
                            Environment: WEEKS_FOR_TRENDS
   --variance-threshold N    Override variance percentage threshold
                            Environment: VARIANCE_THRESHOLD
+
+Date Range Control:
+  --analysis-start-date YYYY-MM-DD  Override analysis start date
+                                   Environment: ANALYSIS_START_DATE
+  --analysis-end-date YYYY-MM-DD    Override analysis end date  
+                                   Environment: ANALYSIS_END_DATE
 
 Output Control:
   --display-only           Only display results, don't generate PDFs
@@ -224,6 +238,19 @@ DISPLAY_ONLY=false
 ```
 
 **Priority Order**: Command line arguments > Environment variables > Built-in defaults
+
+### VS Code Development Configurations
+
+For development and testing, VS Code launch.json configurations are provided in `.vscode/launch.json`:
+
+- **Debug - Default (Dynamic Calculation)** - Tests automatic F-0 date calculation
+- **Debug - Weekly Test Period** - Tests specific 1-week analysis period  
+- **Debug - Monthly Test Period** - Tests 1-month analysis period
+- **Debug - Custom Date Range** - Tests custom date range scenario
+- **Debug - Display Only (No PDF)** - Fast testing without PDF generation
+- **Production - Dynamic Calculation** - Simulates production environment
+
+These configurations eliminate the need for hard-coded date constants while providing comprehensive testing scenarios.
 
 ## 📊 Data Format
 
@@ -344,9 +371,17 @@ uv run mypy src/ config/
 ### Phase 2: Report Generation ✅
 - [x] HTML template system with Jinja2
 - [x] Chart generation with matplotlib/seaborn
-- [x] PDF conversion with pyppeteer
+- [x] PDF conversion with Playwright
 - [x] Per-facility report generation (F-6)
 - [x] Professional styling and formatting
+
+### Phase 2.5: Date Calculation & Production Safety ✅
+- [x] F-0 control variables implementation
+- [x] Dynamic date range calculation
+- [x] Sunday=1 day-of-week convention
+- [x] Command line date overrides
+- [x] VS Code development configurations
+- [x] Production safety (eliminated constants)
 
 ### Phase 3 (Future): Real-time Capabilities
 - [ ] Interactive HTML dashboards

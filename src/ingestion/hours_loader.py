@@ -197,9 +197,18 @@ def add_weekly_aggregation(df: pd.DataFrame) -> pd.DataFrame:
     def get_week_start(date):
         """
         Given a pandas Timestamp, return the date of the Sunday for that week.
-        Mirrors examples/data_processing.py line 79-83
+        Updated to use Sunday=1 convention matching upstream data.
         """
-        return date - pd.Timedelta(days=date.weekday() + 1) if date.weekday() != 6 else date
+        # Convert Python weekday (Mon=0, Sun=6) to Sunday=1 convention
+        # Python: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6
+        # Target: Sun=1, Mon=2, Tue=3, Wed=4, Thu=5, Fri=6, Sat=7
+        python_weekday = date.weekday()
+        if python_weekday == 6:  # Sunday in Python
+            return date  # Already Sunday
+        else:
+            # Days to subtract to get to Sunday (always go backwards)
+            days_to_subtract = python_weekday + 1
+            return date - pd.Timedelta(days=days_to_subtract)
     
     df = df.copy()
     df['WeekStart'] = df[FileColumns.FACILITY_HOURS_DATE].apply(get_week_start)

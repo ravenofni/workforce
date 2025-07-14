@@ -53,13 +53,14 @@ class PDFReportGenerator:
     PDF Report Generator implementing F-6 requirements.
     """
     
-    def __init__(self, template_dir: str = None, output_dir: str = "output/reports"):
+    def __init__(self, template_dir: str = None, output_dir: str = "output/reports", timeout_seconds: int = None):
         """
         Initialize PDF report generator.
         
         Args:
             template_dir: Directory containing HTML templates
             output_dir: Directory for generated PDF reports
+            timeout_seconds: Timeout for PDF generation operations (from settings)
         """
         if template_dir is None:
             # Default to templates directory relative to this file
@@ -68,7 +69,14 @@ class PDFReportGenerator:
         
         self.template_dir = template_dir
         self.output_dir = output_dir
-        self.timeout = 60000  # 60 seconds timeout for PDF generation
+        
+        # Use provided timeout or default from settings
+        if timeout_seconds is not None:
+            self.timeout = timeout_seconds * 1000  # Convert to milliseconds for Playwright
+        else:
+            from config.settings import get_settings
+            settings = get_settings()
+            self.timeout = settings.pdf_timeout_seconds * 1000
         
         # Ensure output directory exists
         os.makedirs(output_dir, exist_ok=True)
@@ -99,7 +107,8 @@ class PDFReportGenerator:
                                      statistics: List[StatisticalSummary],
                                      trend_results: List[TrendAnalysisResult],
                                      analysis_start_date: datetime,
-                                     analysis_end_date: datetime) -> str:
+                                     analysis_end_date: datetime,
+                                     daily_facility_data=None) -> str:
         """
         Generate comprehensive PDF report for a facility (F-6 complete implementation).
         
@@ -112,6 +121,7 @@ class PDFReportGenerator:
             trend_results: List of trend analysis results
             analysis_start_date: Start date of analysis period
             analysis_end_date: End date of analysis period
+            daily_facility_data: Optional daily facility data for trend charts
             
         Returns:
             Path to generated PDF file
@@ -131,7 +141,8 @@ class PDFReportGenerator:
             # Prepare report data
             report_data = await self._prepare_report_data(
                 facility, exceptions_df, facility_data, model_data,
-                statistics, trend_results, analysis_start_date, analysis_end_date
+                statistics, trend_results, analysis_start_date, analysis_end_date,
+                daily_facility_data
             )
             
             # Generate HTML content
@@ -173,7 +184,8 @@ class PDFReportGenerator:
                                   statistics: List[StatisticalSummary],
                                   trend_results: List[TrendAnalysisResult],
                                   analysis_start_date: datetime,
-                                  analysis_end_date: datetime) -> Dict[str, Any]:
+                                  analysis_end_date: datetime,
+                                  daily_facility_data=None) -> Dict[str, Any]:
         """
         Prepare all data needed for report generation.
         
@@ -186,6 +198,7 @@ class PDFReportGenerator:
             trend_results: Trend analysis results
             analysis_start_date: Analysis start date
             analysis_end_date: Analysis end date
+            daily_facility_data: Optional daily facility data for trend charts
             
         Returns:
             Dictionary with all report data
@@ -219,17 +232,40 @@ class PDFReportGenerator:
         # F-6c: Trend charts
         trend_charts = None
         if facility_trends:
-            trend_charts = create_trend_charts(facility_data, facility_trends, facility)
+            # Use daily facility data for trend charts if available, otherwise fallback to facility_data
+            trend_data = daily_facility_data if daily_facility_data is not None else facility_data
+            trend_charts = create_trend_charts(trend_data, facility_trends, facility)
         
         # Control limits chart
         control_limits_chart = None
         if facility_statistics:
             control_limits_chart = create_control_limits_chart(facility_statistics, facility)
         
-        # Prepare exceptions list for detailed display
+        # Prepare exceptions list for detailed display with pagination
         exceptions_list = []
+        exceptions_pagination = {}
         if not facility_exceptions.empty:
-            exceptions_list = facility_exceptions.to_dict('records')
+            from config.settings import get_settings
+            settings = get_settings()
+            max_per_page = settings.max_exceptions_per_page
+            max_summary = settings.max_exceptions_summary
+            
+            all_exceptions = facility_exceptions.to_dict('records')
+            
+            # For summary display (limited count)
+            exceptions_list = all_exceptions[:max_summary]
+            
+            # For pagination info
+            total_exceptions = len(all_exceptions)
+            total_pages = (total_exceptions + max_per_page - 1) // max_per_page  # Ceiling division
+            
+            exceptions_pagination = {
+                'total_exceptions': total_exceptions,
+                'total_pages': total_pages,
+                'max_per_page': max_per_page,
+                'showing_summary': total_exceptions > max_summary,
+                'truncated_count': max(0, total_exceptions - max_summary)
+            }
         
         return {
             'facility_name': facility,
@@ -239,6 +275,7 @@ class PDFReportGenerator:
             'summary': exception_summary,
             'kpis': kpis,
             'exceptions_list': exceptions_list,
+            'exceptions_pagination': exceptions_pagination,
             'statistics_summary': facility_statistics,
             'kpi_chart': kpi_chart,
             'variance_heatmap': variance_heatmap,

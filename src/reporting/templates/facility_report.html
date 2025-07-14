@@ -338,6 +338,16 @@
         </div>
 
         <h3>Detailed Exception List</h3>
+        
+        {% if exceptions_pagination.showing_summary %}
+        <div class="alert alert-info">
+            <strong>📋 Large Dataset Notice:</strong> 
+            Showing first {{ exceptions_list|length }} of {{ exceptions_pagination.total_exceptions }} exceptions. 
+            {{ exceptions_pagination.truncated_count }} additional exceptions are summarized in the statistics above.
+            Full dataset would span {{ exceptions_pagination.total_pages }} pages at {{ exceptions_pagination.max_per_page }} exceptions per page.
+        </div>
+        {% endif %}
+        
         <table class="data-table">
             <thead>
                 <tr>
@@ -378,6 +388,15 @@
                 {% endfor %}
             </tbody>
         </table>
+        
+        {% if exceptions_pagination.showing_summary %}
+        <div class="summary-box">
+            <h4>Dataset Summary</h4>
+            <p><strong>Total Exceptions:</strong> {{ exceptions_pagination.total_exceptions }}</p>
+            <p><strong>Displayed:</strong> {{ exceptions_list|length }} ({{ ((exceptions_list|length / exceptions_pagination.total_exceptions) * 100)|round(1) }}%)</p>
+            <p><strong>Report Optimization:</strong> Large datasets are summarized for optimal PDF performance. Consider filtering by role or time period for detailed analysis.</p>
+        </div>
+        {% endif %}
     </div>
     {% endif %}
 
@@ -418,7 +437,7 @@
     <!-- Footer -->
     <div class="footer">
         <p>Workforce Analytics System | Generated with statistical rigor using control limits and trend analysis</p>
-        <p>Report contains {{ kpis.roles_analyzed }} roles analyzed over {{ (analysis_end_date - analysis_start_date).days }} days</p>
+        <p>Report contains {{ kpis.roles_analyzed }} roles analyzed over {{ control_variables.analysis_period_days }} days</p>
     </div>
 </body>
 </html>
