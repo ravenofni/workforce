@@ -17,9 +17,9 @@ from src.models.data_models import (
     VarianceResult, 
     TrendAnalysisResult,
     ExceptionSummary,
-    FacilityKPI,
-    ReportMetadata
+    FacilityKPI
 )
+from src.utils.role_display_mapper import get_short_display_name
 from src.reporting.chart_generator import (
     create_variance_heatmap,
     create_trend_charts,
@@ -33,6 +33,7 @@ from src.reporting.exceptions import (
     calculate_facility_kpis
 )
 from src.utils.error_handlers import ReportGenerationError, handle_exceptions
+from src.utils.weekday_converter import sunday_first_to_python_weekday
 
 
 logger = logging.getLogger(__name__)
@@ -99,6 +100,205 @@ class PDFReportGenerator:
         except (ValueError, TypeError):
             return value
     
+    def _generate_exception_management_table(self, facility_exceptions_df, 
+                                           analysis_start_date: datetime, analysis_end_date: datetime) -> str:
+        """
+        Generate HTML table for exception management showing variances by role and day.
+        
+        Args:
+            facility_exceptions_df: DataFrame with facility exceptions
+            analysis_start_date: Start date of analysis
+            analysis_end_date: End date of analysis
+            
+        Returns:
+            HTML table string
+        """
+        if facility_exceptions_df.empty:
+            return "<p>No model variance exceptions found for this period.</p>"
+        
+        # Filter for model variance exceptions only and within the analysis period
+        model_exceptions = facility_exceptions_df[
+            (facility_exceptions_df['exception_type'] == 'model') &
+            (facility_exceptions_df['date'].dt.date >= analysis_start_date.date()) &
+            (facility_exceptions_df['date'].dt.date <= analysis_end_date.date())
+        ].copy()
+        
+        
+        if model_exceptions.empty:
+            return "<p>No model variance exceptions found for this period.</p>"
+        
+        # Always use day-of-week aggregation for weekly-oriented reports
+        return self._generate_day_of_week_exception_table(model_exceptions, analysis_start_date, analysis_end_date)
+    
+    def _generate_day_of_week_exception_table(self, model_exceptions, _start_date: datetime, _end_date: datetime) -> str:
+        """Generate day-of-week aggregated exception management table with manual page breaks."""
+        # Get unique roles
+        roles = sorted(model_exceptions['role'].unique())
+        
+        # Days of week in order starting with Sunday
+        days_of_week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        
+        # Configuration for page breaks - break table after this many rows
+        MAX_ROWS_PER_PAGE = 16
+        
+        def create_table_header(is_continued=False):
+            """Create table header HTML with optional continuation indicator."""
+            continuation_text = " (continued)" if is_continued else ""
+            header = '<table class="exception-management-table" style="width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">\n'
+            header += '  <thead>\n    <tr>\n'
+            header += f'      <th class="role-cell" style="width: 26%; border: 1px solid #bdc3c7; background-color: #f8f9fa; color: #2c3e50; padding: 8px 6px;">Role{continuation_text}</th>\n'
+            
+            # Each day gets equal width from remaining space (64% / 7 days ≈ 9% each)
+            for day in days_of_week:
+                header += f'      <th class="day-header" style="width: 9%; border: 1px solid #bdc3c7; background-color: #f8f9fa; color: #2c3e50; font-size: 9px; writing-mode: vertical-rl; text-orientation: mixed; padding: 8px 6px;">{day}</th>\n'
+            
+            # Add total column
+            header += '      <th class="day-header" style="width: 10%; border: 1px solid #bdc3c7; background-color: #f8f9fa; color: #2c3e50; font-size: 9px; writing-mode: vertical-rl; text-orientation: mixed; padding: 8px 6px;">Total</th>\n'
+            header += '    </tr>\n  </thead>\n  <tbody>\n'
+            return header
+        
+        # Build table with manual page breaks
+        complete_html = ""
+        current_table_html = create_table_header(is_continued=False)
+        rows_in_current_table = 0
+        table_count = 0
+        
+        for role_index, role in enumerate(roles):
+            # Check if we need to break the table
+            if rows_in_current_table >= MAX_ROWS_PER_PAGE and role_index < len(roles) - 1:
+                # Close current table properly with bottom border
+                current_table_html += '  </tbody>\n</table>\n'
+                complete_html += current_table_html
+                # Add page break container
+                complete_html += '<div style="page-break-before: always; margin-top: 20px;"></div>\n'
+                # Start new table with continuation header
+                current_table_html = create_table_header(is_continued=True)
+                rows_in_current_table = 0
+                table_count += 1
+                
+            role_exceptions = model_exceptions[model_exceptions['role'] == role]
+            # Use short display name for the role
+            try:
+                display_role = get_short_display_name(role)
+            except KeyError:
+                display_role = role  # Fallback to original if mapping not found
+            row_html = f'    <tr>\n      <td class="role-cell" style="word-wrap: break-word; overflow-wrap: break-word; padding: 2px 8px; border: 1px solid #bdc3c7; background-color: #2c3e50; color: white; font-weight: bold;">{display_role}</td>\n'
+            
+            # Collect daily variances and hours for average calculation
+            daily_variances = []
+            daily_hours = []
+            
+            # For each day of week, aggregate all instances across the analysis period
+            for day_idx, _ in enumerate(days_of_week):
+                # Convert our Sunday-first index to Python weekday format
+                # day_idx: 0=Sun, 1=Mon, 2=Tue, ..., 6=Sat
+                python_weekday = sunday_first_to_python_weekday(day_idx)
+                
+                # Filter exceptions for this day of week
+                day_exceptions = role_exceptions[
+                    role_exceptions['date'].dt.weekday == python_weekday
+                ]
+                
+                if not day_exceptions.empty:
+                    # Calculate sum of actual hours and model hours for this day
+                    sum_actual_hours = day_exceptions['actual_hours'].sum()
+                    sum_model_hours = day_exceptions['model_hours'].sum()
+                    daily_hours.append(sum_actual_hours)
+                    
+                    # Calculate variance percentage based on sums
+                    if sum_model_hours > 0:
+                        day_variance = ((sum_actual_hours - sum_model_hours) / sum_model_hours) * 100
+                    else:
+                        day_variance = 999.0 if sum_actual_hours > 0 else 0.0
+                    daily_variances.append(day_variance)
+                    
+                    # Handle special case of ±999% (zero model hours)
+                    if abs(day_variance) >= 999:
+                        # For infinite values, show hours with stop sign beneath and sign on left
+                        inf_sign = "+" if day_variance >= 0 else "−"
+                        
+                        inf_cell_content = f'''
+                        <div style="display: flex; align-items: center; justify-content: center; min-height: 25px;">
+                            <span style="font-size: 12px; font-weight: bold; margin-right: 8px; color: #c62828;">{inf_sign}</span>
+                            <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.2;">
+                                <div style="font-size: 10px; margin-bottom: 2px; font-family: monospace;">{sum_actual_hours:.1f}H</div>
+                                <div style="font-size: 12px; text-align: center;">🛑</div>
+                            </div>
+                        </div>
+                        '''
+                        
+                        row_html += f'      <td style="padding: 2px 12px; text-align: center; vertical-align: middle; border: 1px solid #bdc3c7;">{inf_cell_content}</td>\n'
+                    else:
+                        # No background color classes - using alternating row shading instead
+                        
+                        # Create flexbox layout with sign on left, values on right
+                        sign = "+" if day_variance >= 0 else "−"
+                        
+                        cell_content = f'''
+                        <div style="display: flex; align-items: center; justify-content: center; min-height: 25px;">
+                            <span style="font-size: 11px; font-weight: bold; margin-right: 4px; color: #c62828;">{sign}</span>
+                            <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;">
+                                <div style="font-size: 9px; margin-bottom: 1px; font-family: monospace;">{sum_actual_hours:.1f}H</div>
+                                <div style="font-size: 9px; font-family: monospace;">{abs(day_variance):.0f}%</div>
+                            </div>
+                        </div>
+                        '''
+                        
+                        row_html += f'      <td style="padding: 2px 12px; text-align: center; vertical-align: middle; border: 1px solid #bdc3c7;">{cell_content}</td>\n'
+                else:
+                    row_html += '      <td style="font-size: 14px; text-align: center; vertical-align: middle; padding: 2px 8px; border: 1px solid #bdc3c7;">✓</td>\n'
+            
+            # Calculate and add total column
+            if daily_variances and daily_hours:
+                overall_total_variance = sum(daily_variances) / len(daily_variances)  # Average variance across days
+                overall_total_hours = sum(daily_hours)  # Total hours across all days
+                
+                # Handle special case of ±999% total
+                if abs(overall_total_variance) >= 999:
+                    # For infinite total values, show hours with stop sign beneath and sign on left
+                    total_inf_sign = "+" if overall_total_variance >= 0 else "−"
+                    
+                    total_inf_cell_content = f'''
+                    <div style="display: flex; align-items: center; justify-content: center; min-height: 25px;">
+                        <span style="font-size: 12px; font-weight: bold; margin-right: 8px; color: #c62828;">{total_inf_sign}</span>
+                        <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.2;">
+                            <div style="font-size: 10px; margin-bottom: 2px; font-family: monospace;">{overall_total_hours:.1f}H</div>
+                            <div style="font-size: 12px; text-align: center;">🛑</div>
+                        </div>
+                    </div>
+                    '''
+                    
+                    row_html += f'      <td style="padding: 2px 12px; text-align: center; vertical-align: middle; border: 1px solid #bdc3c7;">{total_inf_cell_content}</td>\n'
+                else:
+                    # No background color classes - using alternating row shading instead
+                    
+                    # Create flexbox layout for total column
+                    total_sign = "+" if overall_total_variance >= 0 else "−"
+                    
+                    total_cell_content = f'''
+                    <div style="display: flex; align-items: center; justify-content: center; min-height: 25px;">
+                        <span style="font-size: 12px; font-weight: bold; margin-right: 8px; color: #c62828;">{total_sign}</span>
+                        <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.2;">
+                            <div style="font-size: 10px; margin-bottom: 2px; font-family: monospace;">{overall_total_hours:.1f}H</div>
+                            <div style="font-size: 10px; font-family: monospace;">{abs(overall_total_variance):.0f}%</div>
+                        </div>
+                    </div>
+                    '''
+                    
+                    row_html += f'      <td style="padding: 2px 12px; text-align: center; vertical-align: middle; border: 1px solid #bdc3c7;">{total_cell_content}</td>\n'
+            else:
+                row_html += '      <td style="font-size: 14px; text-align: center; vertical-align: middle; padding: 2px 12px; border: 1px solid #bdc3c7;">✓</td>\n'
+            
+            row_html += '    </tr>\n'
+            current_table_html += row_html
+            rows_in_current_table += 1
+        
+        # Close final table
+        current_table_html += '  </tbody>\n</table>\n'
+        complete_html += current_table_html
+        
+        return complete_html
+    
     async def generate_facility_report(self,
                                      facility: str,
                                      exceptions_df,
@@ -151,17 +351,7 @@ class PDFReportGenerator:
             # Convert to PDF
             pdf_path = await self._convert_html_to_pdf(facility, html_content)
             
-            # Create report metadata
-            metadata = ReportMetadata(
-                facility=facility,
-                generated_at=datetime.now(),
-                analysis_period_start=analysis_start_date,
-                analysis_period_end=analysis_end_date,
-                control_variables_used=report_data['control_variables'],
-                total_data_points=report_data['total_data_points'],
-                has_exceptions=report_data['summary'].total_exceptions > 0,
-                report_file_path=pdf_path
-            )
+            # Report metadata could be created here if needed for future enhancements
             
             logger.info(f"Successfully generated PDF report for {facility}: {pdf_path}")
             return pdf_path
@@ -215,7 +405,8 @@ class PDFReportGenerator:
         
         # Calculate KPIs
         kpis = calculate_facility_kpis(
-            exceptions_df, facility_data, model_data, facility
+            exceptions_df, facility_data, model_data, facility,
+            analysis_start_date, analysis_end_date
         )
         
         # Generate charts
@@ -267,6 +458,36 @@ class PDFReportGenerator:
                 'truncated_count': max(0, total_exceptions - max_summary)
             }
         
+        # Generate exception management table
+        exception_management_table = self._generate_exception_management_table(
+            facility_exceptions, analysis_start_date, analysis_end_date
+        )
+        
+        # Calculate top 3 problematic roles by total hours deviation
+        top_problem_roles = []
+        if not facility_exceptions.empty:
+            # Group exceptions by role and calculate total hours deviation (with sign)
+            role_hours_deviation = facility_exceptions.groupby('role').agg({
+                'actual_hours': 'sum',
+                'model_hours': 'sum'
+            })
+            role_hours_deviation['signed_deviation'] = (
+                role_hours_deviation['actual_hours'] - role_hours_deviation['model_hours']
+            )
+            role_hours_deviation['abs_deviation'] = abs(role_hours_deviation['signed_deviation'])
+            
+            # Get top 3 by absolute deviation for ranking, but keep the sign
+            top_3 = role_hours_deviation.nlargest(3, 'abs_deviation')
+            for role, row in top_3.iterrows():
+                try:
+                    display_role = get_short_display_name(role)
+                except KeyError:
+                    display_role = role  # Fallback to original if mapping not found
+                
+                # Format with sign
+                sign = "+" if row['signed_deviation'] >= 0 else ""
+                top_problem_roles.append(f"{display_role}|{sign}{row['signed_deviation']:.0f}h")
+        
         return {
             'facility_name': facility,
             'analysis_start_date': analysis_start_date.strftime(DATE_FORMAT),
@@ -276,6 +497,7 @@ class PDFReportGenerator:
             'kpis': kpis,
             'exceptions_list': exceptions_list,
             'exceptions_pagination': exceptions_pagination,
+            'exception_management_table': exception_management_table,
             'statistics_summary': facility_statistics,
             'kpi_chart': kpi_chart,
             'variance_heatmap': variance_heatmap,
@@ -286,7 +508,8 @@ class PDFReportGenerator:
                 'total_exceptions': len(exceptions_list),
                 'roles_analyzed': len(facility_statistics)
             },
-            'total_data_points': len(facility_data[facility_data[FileColumns.FACILITY_LOCATION_NAME] == facility]) if not facility_data.empty else 0
+            'total_data_points': len(facility_data[facility_data[FileColumns.FACILITY_LOCATION_NAME] == facility]) if not facility_data.empty else 0,
+            'top_problem_roles': top_problem_roles
         }
     
     def _render_html_template(self, report_data: Dict[str, Any]) -> str:

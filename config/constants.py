@@ -89,6 +89,23 @@ DEFAULT_VARIANCE_THRESHOLD = 15.0   # Default percentage variance threshold
 DEFAULT_WEEKS_FOR_CONTROL = 12     # Default weeks for control limit calculation
 DEFAULT_WEEKS_FOR_TRENDS = 8       # Default weeks for trend analysis
 
+# Role display preferences
+class RoleDisplayPreference(str, Enum):
+    """Role display name preferences for different contexts"""
+    STANDARD = "standard"  # Full, user-friendly display names
+    SHORT = "short"        # Abbreviated names for space-constrained contexts
+    MODEL = "model"        # Original model data role names
+
+# Default display preferences by context
+DEFAULT_ROLE_DISPLAY_PREFERENCES = {
+    "reports": RoleDisplayPreference.STANDARD,     # PDF reports use full names
+    "charts": RoleDisplayPreference.SHORT,        # Charts use abbreviated names
+    "tables": RoleDisplayPreference.STANDARD,     # Tables use full names by default
+    "mobile": RoleDisplayPreference.SHORT,        # Mobile interfaces use short names
+    "api": RoleDisplayPreference.MODEL,           # API responses preserve model names
+    "export": RoleDisplayPreference.STANDARD,     # Data exports use readable names
+}
+
 # Required columns for validation
 MODEL_REQUIRED_COLUMNS: List[str] = [
     FileColumns.MODEL_LOCATION_KEY,

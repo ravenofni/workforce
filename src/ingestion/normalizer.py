@@ -155,7 +155,7 @@ def convert_hours_to_float(df: pd.DataFrame, hours_columns: List[str],
         negative_mask = (df[col] < 0)
         negative_count = negative_mask.sum()
         if negative_count > 0:
-            logger.warning(f"Found {negative_count} negative values in {col} - capturing as data quality exceptions")
+            logger.warning(f"Found {negative_count} negative values in {col} - excluding from analysis as data quality exceptions")
             
             # Create exceptions for negative hours
             for idx in df[negative_mask].index:
@@ -169,20 +169,23 @@ def convert_hours_to_float(df: pd.DataFrame, hours_columns: List[str],
                     issue_type='negative_hours',
                     field_name=col,
                     original_value=str(original_val),
-                    corrected_value="0.0",
+                    corrected_value="EXCLUDED",
                     severity='medium',
-                    description=f"Negative hours value {original_val} found, corrected to 0",
+                    description=f"Negative hours value {original_val} found, excluded from analysis",
                     suggested_action="Review data source for negative hour entries and correct at source"
                 )
                 data_quality_exceptions.append(exception)
             
-            # Set negative values to 0
-            df.loc[negative_mask, col] = 0.0
+            # Remove rows with negative values entirely from analysis
+            df = df[~negative_mask]
+            logger.info(f"Excluded {negative_count} rows with negative hours from analysis")
         
         # Round to 2 decimal places for consistency
         df[col] = df[col].round(2)
         
-        logger.info(f"Successfully processed {col}: {original_count} records ({len([e for e in data_quality_exceptions if e.field_name == col])} with quality issues)")
+        current_count = len(df)
+        removed_count = original_count - current_count
+        logger.info(f"Successfully processed {col}: {current_count} records remaining from {original_count} original ({removed_count} excluded, {len([e for e in data_quality_exceptions if e.field_name == col])} total quality issues)")
     
     return df, data_quality_exceptions
 
@@ -221,50 +224,26 @@ def harmonize_role_names(df: pd.DataFrame, role_column: str = 'Role') -> pd.Data
 
 def _harmonize_single_role(role_name: str) -> str:
     """
-    Apply harmonization rules to a single role name.
+    Apply basic harmonization rules to a single role name (case and whitespace only).
+    
+    NOTE: This function now only performs basic cleanup and does NOT modify model role names.
+    For display purposes, use the role_display_mapper module instead.
     
     Args:
         role_name: Original role name
         
     Returns:
-        Harmonized role name
+        Role name with basic cleanup applied
     """
     if pd.isna(role_name) or not isinstance(role_name, str):
         return str(role_name)
     
-    # Basic cleaning
+    # Basic cleaning only - preserve exact role names from model data
     harmonized = role_name.strip()
     
-    # Standardize common abbreviations and variations
-    harmonization_rules = {
-        # Nursing roles
-        r'\bRN\b': 'RN',
-        r'\bLPN\b': 'LPN',
-        r'\bCNA\b': 'CNA',
-        r'\bADON\b': 'ADON',
-        r'\bDON\b': 'DON',
-        
-        # Common abbreviations
-        r'\bSuprv\.?\b': 'Supervisor',
-        r'\bSupervisor\b': 'Supervisor',
-        r'\bHskpg\.?\b': 'Housekeeping',
-        r'\bHousekeeping\b': 'Housekeeping',
-        r'\bMed\.?\b': 'Medication',
-        r'\bCert\.?\b': 'Certified',
-        r'\bAsst\.?\b': 'Assistant',
-        r'\bWknd\.?\b': 'Weekend',
-        
-        # Standardize spacing and punctuation
-        r'\s+': ' ',  # Multiple spaces to single space
-        r'\.+': '.',  # Multiple periods to single period
-    }
-    
-    # Apply rules
-    for pattern, replacement in harmonization_rules.items():
-        harmonized = re.sub(pattern, replacement, harmonized, flags=re.IGNORECASE)
-    
-    # Title case for consistency
-    harmonized = harmonized.title()
+    # Standardize spacing and punctuation only
+    harmonized = re.sub(r'\s+', ' ', harmonized)  # Multiple spaces to single space
+    harmonized = re.sub(r'\.{2,}', '.', harmonized)  # Multiple periods to single period
     
     # Final cleanup
     harmonized = harmonized.strip()
