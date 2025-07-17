@@ -111,7 +111,7 @@ DEFAULT_ROLE_DISPLAY_PREFERENCES = {
 REPORT_SHOW_FACILITY_MODEL_ADHERENCE = True     # KPI group showing model vs actual hours
 REPORT_SHOW_FACILITY_ROLE_ADHERENCE = True      # KPI group showing role-level exceptions
 REPORT_SHOW_VARIANCE_BY_DAY = False             # Variance by day of week table
-REPORT_SHOW_UNMAPPED_HOURS = False              # Unmapped hours breakdown section
+REPORT_SHOW_UNMAPPED_HOURS = True              # Unmapped hours breakdown section
 REPORT_SHOW_VISUAL_ANALYSIS = False             # Visual analysis section with all charts
 REPORT_SHOW_KPI_CHART = False                   # KPI summary chart (within visual analysis)
 REPORT_SHOW_VARIANCE_HEATMAP = False            # Variance heatmap chart
@@ -121,6 +121,8 @@ REPORT_SHOW_EXCEPTION_DETAILS = False           # Detailed exception list sectio
 REPORT_SHOW_STATISTICAL_SUMMARY = False         # Statistical summary table
 REPORT_SHOW_TOP_OVERTIME = True                 # Top N overtime employees section
 REPORT_TOP_OVERTIME_COUNT = 3                   # Number of top overtime employees to show
+REPORT_SHOW_TOP_UNMAPPED = True                 # Top N unmapped hours employees section
+REPORT_TOP_UNMAPPED_COUNT = 3                   # Number of top unmapped employees to show
 
 # Required columns for validation
 MODEL_REQUIRED_COLUMNS: List[str] = [

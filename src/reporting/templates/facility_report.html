@@ -468,101 +468,341 @@
         {% if show_unmapped_hours and unmapped_hours.has_unmapped_hours %}
         <div class="kpi-group page-break">
             <h3>Unmapped Hours Breakdown</h3>
-            <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
-                Detailed breakdown of unmapped hours by category and employee for the analysis period<br>
-                Shows employees who worked in unmapped categories and their total hours contribution
-            </p>
             
             <!-- Summary Statistics -->
-            <div style="margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+            <div style="margin-bottom: 12px; padding: 8px; background-color: #f8f9fa; border-radius: 5px;">
                 <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
                     <div>Total Unmapped Hours: <span style="color: #e74c3c;">{{ unmapped_hours.total_unmapped_hours|round(2) }}</span></div>
-                    <div>Categories: <span style="color: #3498db;">{{ unmapped_hours.total_categories }}</span></div>
-                    <div>Employees: <span style="color: #27ae60;">{{ unmapped_hours.total_employees }}</span></div>
+                    <div>Categories: <span style="color: #e74c3c;">{{ unmapped_hours.total_categories }}</span></div>
+                    <div>Employees: <span style="color: #e74c3c;">{{ unmapped_hours.total_employees }}</span></div>
                 </div>
             </div>
             
             <!-- Category Breakdown Tables -->
             {% for category in unmapped_hours.categories %}
-            <div style="margin-bottom: 25px;">
-                <h4 style="color: #2c3e50; margin-bottom: 10px; padding: 8px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
-                    {{ category.display_name }} 
-                    <span style="font-weight: normal; font-size: 12px; color: #666;">
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ category.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
                         ({{ category.total_hours|round(2) }} hours, {{ category.percentage_of_total_unmapped|round(1) }}% of total unmapped)
                     </span>
                 </h4>
                 
                 {% if category.employees %}
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
                     <thead>
                         <tr style="background-color: #34495e; color: white;">
-                            <th style="border: 1px solid #bdc3c7; padding: 8px; text-align: left; width: 40%;">Employee Name</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 8px; text-align: center; width: 20%;">Employee ID</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 8px; text-align: center; width: 20%;">Hours</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 8px; text-align: center; width: 20%;">% of Category</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">ID</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">% of Category</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for employee in category.employees %}
                         <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
-                            <td style="border: 1px solid #bdc3c7; padding: 6px;">{{ employee.employee_name }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 6px; text-align: center;">{{ employee.employee_id }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; font-weight: bold;">{{ employee.total_hours|round(2) }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 6px; text-align: center;">{{ employee.percentage_of_category|round(1) }}%</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold;">{{ employee.total_hours|round(2) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.percentage_of_category|round(1) }}%</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                
-                <div style="font-size: 11px; color: #666; margin-bottom: 10px;">
-                    Category Summary: {{ category.employee_count }} employees, {{ category.average_hours_per_employee|round(2) }} avg hours per employee
-                </div>
                 {% else %}
-                <p style="color: #666; font-style: italic; margin-bottom: 15px;">No employees found in this category for the analysis period.</p>
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No employees found in this category for the analysis period.</p>
                 {% endif %}
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
-        <!-- Top N Overtime Section -->
-        {% if show_top_overtime and overtime_analysis.top_employees %}
+        <!-- Top N Unmapped Hours Section -->
+        {% if show_top_unmapped and (top_unmapped_analysis.clinical_group or top_unmapped_analysis.non_clinical_group or top_unmapped_analysis.top_employees) %}
         <div class="kpi-group">
-            <h3>Top {{ overtime_analysis.top_count_requested }} Overtime</h3>
+            <h3 style="margin-bottom: 8px;">Top {{ top_unmapped_analysis.top_count_requested }} Unmapped Hours</h3>
+            
+            <!-- Summary Statistics -->
+            <div style="margin-bottom: 12px; padding: 8px; background-color: #f8f9fa; border-radius: 5px;">
+                <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
+                    <div>Total Facility Unmapped: <span style="color: #e74c3c;">{{ top_unmapped_analysis.total_unmapped_hours_facility|round(2) }} hours</span></div>
+                    <div>Employees w/ Unmapped: <span style="color: #e74c3c;">{{ top_unmapped_analysis.total_employees_with_unmapped }}</span></div>
+                </div>
+            </div>
+            
+            <!-- Clinical Associates Group -->
+            {% if top_unmapped_analysis.clinical_group %}
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ top_unmapped_analysis.clinical_group.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ top_unmapped_analysis.clinical_group.total_unmapped_hours|round(2) }} hours, {{ top_unmapped_analysis.clinical_group.total_employees_in_function }} employees with unmapped hours)
+                    </span>
+                </h4>
+                
+                {% if top_unmapped_analysis.clinical_group.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Category</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">Unmapped Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">Unmapped Days</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">Average Daily</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in top_unmapped_analysis.clinical_group.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_category }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_unmapped_hours|round(2) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_unmapped|round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No clinical employees found with unmapped hours for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Non-Clinical Associates Group -->
+            {% if top_unmapped_analysis.non_clinical_group %}
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ top_unmapped_analysis.non_clinical_group.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ top_unmapped_analysis.non_clinical_group.total_unmapped_hours|round(2) }} hours, {{ top_unmapped_analysis.non_clinical_group.total_employees_in_function }} employees with unmapped hours)
+                    </span>
+                </h4>
+                
+                {% if top_unmapped_analysis.non_clinical_group.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Category</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">Unmapped Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">Unmapped Days</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">Average Daily</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in top_unmapped_analysis.non_clinical_group.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_category }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_unmapped_hours|round(2) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_unmapped|round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No non-clinical employees found with unmapped hours for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Fallback: Show ungrouped data if no function groups are available -->
+            {% if not top_unmapped_analysis.clinical_group and not top_unmapped_analysis.non_clinical_group and top_unmapped_analysis.top_employees %}
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    Top Unmapped Associates
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        (Function grouping unavailable)
+                    </span>
+                </h4>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Category</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">Unmapped Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">Unmapped Days</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">Average Daily</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in top_unmapped_analysis.top_employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_category }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_unmapped_hours|round(2) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_unmapped|round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            
+            <!-- Footer Note -->
+            <div style="font-size: 10px; color: #666; margin-top: 5px; line-height: 1.3;">
+                Total hours includes unmapped hours from all categories worked by an employee. Only their primary category is shown. Unmapped hours were aggregated across all unmapped categories.
+            </div>
+        </div>
+        {% elif show_top_unmapped %}
+        <div class="kpi-group">
+            <h3>Top {{ top_unmapped_analysis.top_count_requested }} Unmapped Hours</h3>
+            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 5px; color: #27ae60;">
+                <span style="font-size: 24px;">✅</span><br>
+                <strong>Excellent!</strong> No unmapped hours found during this period.
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Top N Overtime Section -->
+        {% if show_top_overtime and (overtime_analysis.clinical_group or overtime_analysis.non_clinical_group or overtime_analysis.top_employees) %}
+        <div class="kpi-group">
+            <h3 style="margin-bottom: 8px;">Top {{ overtime_analysis.top_count_requested }} Overtime</h3>
+            
+            <!-- DEBUG INFO -->
+            <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 8px; margin: 8px 0; font-size: 11px;">
+                DEBUG: Total employees with overtime: {{ overtime_analysis.total_employees_with_overtime }} | 
+                Clinical group exists: {{ overtime_analysis.clinical_group is not none }} | 
+                Non-clinical group exists: {{ overtime_analysis.non_clinical_group is not none }} | 
+                Legacy top employees count: {{ overtime_analysis.top_employees|length }}
+            </div>
             
             <!-- Summary Statistics -->
             <div style="margin-bottom: 12px; padding: 8px; background-color: #f8f9fa; border-radius: 5px;">
                 <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
                     <div>Total Facility Overtime: <span style="color: #e74c3c;">{{ overtime_analysis.total_overtime_hours_facility|round(2) }} hours</span></div>
-                    <div>Employees w/ Overtime: <span style="color: #3498db;">{{ overtime_analysis.total_employees_with_overtime }}</span></div>
+                    <div>Employees w/ Overtime: <span style="color: #e74c3c;">{{ overtime_analysis.total_employees_with_overtime }}</span></div>
                 </div>
             </div>
             
-            <!-- Top Overtime Employees Table -->
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
-                <thead>
-                    <tr style="background-color: #34495e; color: white;">
-                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
-                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
-                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Role</th>
-                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">OT Hours</th>
-                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">OT Days</th>
-                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">OT Average</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for employee in overtime_analysis.top_employees %}
-                    <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
-                        <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
-                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
-                        <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
-                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_overtime_hours|round(2) }}</td>
-                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_overtime }}</td>
-                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_overtime|round(2) }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <!-- Clinical Associates Group -->
+            {% if overtime_analysis.clinical_group %}
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ overtime_analysis.clinical_group.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ overtime_analysis.clinical_group.total_overtime_hours|round(2) }} hours, {{ overtime_analysis.clinical_group.total_employees_in_function }} employees with overtime)
+                    </span>
+                </h4>
+                
+                {% if overtime_analysis.clinical_group.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">OT Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">OT Days</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">OT Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in overtime_analysis.clinical_group.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_overtime_hours|round(2) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_overtime }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_overtime|round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No clinical employees found with overtime for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Non-Clinical Associates Group -->
+            {% if overtime_analysis.non_clinical_group %}
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ overtime_analysis.non_clinical_group.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ overtime_analysis.non_clinical_group.total_overtime_hours|round(2) }} hours, {{ overtime_analysis.non_clinical_group.total_employees_in_function }} employees with overtime)
+                    </span>
+                </h4>
+                
+                {% if overtime_analysis.non_clinical_group.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">OT Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">OT Days</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">OT Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in overtime_analysis.non_clinical_group.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_overtime_hours|round(2) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_overtime }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_overtime|round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No non-clinical employees found with overtime for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Fallback: Show ungrouped data if no function groups are available -->
+            {% if not overtime_analysis.clinical_group and not overtime_analysis.non_clinical_group and overtime_analysis.top_employees %}
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    Top Overtime Associates
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        (Function grouping unavailable)
+                    </span>
+                </h4>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">OT Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">OT Days</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">OT Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in overtime_analysis.top_employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_overtime_hours|round(2) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_overtime }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_overtime|round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
             
             <!-- Footer Note -->
             <div style="font-size: 10px; color: #666; margin-top: 5px; line-height: 1.3;">

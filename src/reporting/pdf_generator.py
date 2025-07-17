@@ -19,7 +19,8 @@ from config.constants import (
     REPORT_SHOW_VARIANCE_HEATMAP, REPORT_SHOW_TREND_CHARTS,
     REPORT_SHOW_CONTROL_LIMITS_CHART, REPORT_SHOW_EXCEPTION_DETAILS,
     REPORT_SHOW_STATISTICAL_SUMMARY, REPORT_SHOW_TOP_OVERTIME,
-    REPORT_TOP_OVERTIME_COUNT
+    REPORT_TOP_OVERTIME_COUNT, REPORT_SHOW_TOP_UNMAPPED,
+    REPORT_TOP_UNMAPPED_COUNT
 )
 from src.models.data_models import (
     StatisticalSummary,
@@ -45,6 +46,7 @@ from src.utils.error_handlers import ReportGenerationError, handle_exceptions
 from src.utils.weekday_converter import sunday_first_to_python_weekday
 from src.analysis.unmapped_analysis import analyze_unmapped_hours_for_facility, format_unmapped_hours_for_display
 from src.analysis.overtime_analysis import calculate_overtime_analysis
+from src.analysis.top_unmapped_analysis import calculate_top_unmapped_analysis
 
 
 logger = logging.getLogger(__name__)
@@ -570,6 +572,43 @@ class PDFReportGenerator:
                 analysis_period_end=analysis_end_date
             )
         
+        # Analyze top unmapped hours for this facility
+        logger.debug(f"Analyzing top unmapped hours for {facility}")
+        try:
+            # Use daily facility data for unmapped analysis (need individual daily records)
+            data_for_unmapped_top = daily_facility_data if daily_facility_data is not None else facility_data
+            
+            # Filter facility data for this specific facility
+            facility_df_unmapped = data_for_unmapped_top[data_for_unmapped_top[FileColumns.FACILITY_LOCATION_NAME] == facility].copy()
+            logger.debug(f"Filtered unmapped data shape: {facility_df_unmapped.shape}")
+            
+            top_unmapped_analysis = calculate_top_unmapped_analysis(
+                facility_df=facility_df_unmapped,
+                facility_name=facility,
+                analysis_start_date=analysis_start_date,
+                analysis_end_date=analysis_end_date,
+                top_count=REPORT_TOP_UNMAPPED_COUNT
+            )
+            
+            if top_unmapped_analysis.total_employees_with_unmapped > 0:
+                logger.info(f"Found {top_unmapped_analysis.total_employees_with_unmapped} employees with unmapped hours "
+                           f"({top_unmapped_analysis.total_unmapped_hours_facility:.2f} total hours) for {facility}")
+            else:
+                logger.info(f"No unmapped hours found for {facility}")
+                
+        except Exception as e:
+            logger.warning(f"Failed to analyze top unmapped hours for {facility}: {str(e)}")
+            from src.models.data_models import TopUnmappedAnalysis
+            top_unmapped_analysis = TopUnmappedAnalysis(
+                facility=facility,
+                top_employees=[],
+                total_employees_with_unmapped=0,
+                top_count_requested=REPORT_TOP_UNMAPPED_COUNT,
+                total_unmapped_hours_facility=0.0,
+                analysis_period_start=analysis_start_date,
+                analysis_period_end=analysis_end_date
+            )
+        
         return {
             'facility_name': facility,
             'analysis_start_date': analysis_start_date.strftime(DATE_FORMAT),
@@ -594,6 +633,7 @@ class PDFReportGenerator:
             'top_problem_roles': top_problem_roles,
             'unmapped_hours': unmapped_hours_data,
             'overtime_analysis': overtime_analysis,
+            'top_unmapped_analysis': top_unmapped_analysis,
             # Report display controls
             'show_facility_model_adherence': REPORT_SHOW_FACILITY_MODEL_ADHERENCE,
             'show_facility_role_adherence': REPORT_SHOW_FACILITY_ROLE_ADHERENCE,
@@ -606,7 +646,8 @@ class PDFReportGenerator:
             'show_control_limits_chart': REPORT_SHOW_CONTROL_LIMITS_CHART,
             'show_exception_details': REPORT_SHOW_EXCEPTION_DETAILS,
             'show_statistical_summary': REPORT_SHOW_STATISTICAL_SUMMARY,
-            'show_top_overtime': REPORT_SHOW_TOP_OVERTIME
+            'show_top_overtime': REPORT_SHOW_TOP_OVERTIME,
+            'show_top_unmapped': REPORT_SHOW_TOP_UNMAPPED
         }
     
     def _render_html_template(self, report_data: Dict[str, Any]) -> str:

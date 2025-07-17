@@ -280,11 +280,27 @@ class OvertimeEmployee(BaseModel):
         return round(v, 2)
 
 
+class OvertimeFunctionGroup(BaseModel):
+    """Overtime employees grouped by function (clinical/non-clinical)"""
+    
+    function: str = Field(description="Function type: clinical or non-clinical")
+    display_name: str = Field(description="Display name for the function group")
+    employees: List[OvertimeEmployee] = Field(description="Top employees in this function group")
+    total_overtime_hours: float = Field(description="Total overtime hours for this function", ge=0)
+    total_employees_in_function: int = Field(description="Total employees with overtime in this function", ge=0)
+    
+    @validator('total_overtime_hours')
+    def round_group_hours(cls, v):
+        return round(v, 2)
+
+
 class OvertimeAnalysis(BaseModel):
     """Overtime analysis results for a facility"""
     
     facility: str = Field(description="Facility name")
-    top_employees: List[OvertimeEmployee] = Field(description="Top N employees by overtime hours")
+    top_employees: List[OvertimeEmployee] = Field(description="Top N employees by overtime hours (legacy)")
+    clinical_group: Optional[OvertimeFunctionGroup] = Field(default=None, description="Clinical employees group")
+    non_clinical_group: Optional[OvertimeFunctionGroup] = Field(default=None, description="Non-clinical employees group")
     total_employees_with_overtime: int = Field(description="Total employees with any overtime", ge=0)
     top_count_requested: int = Field(description="Number of top employees requested", ge=1)
     total_overtime_hours_facility: float = Field(description="Total overtime hours for entire facility", ge=0)
@@ -292,5 +308,53 @@ class OvertimeAnalysis(BaseModel):
     analysis_period_end: datetime = Field(description="End of analysis period")
     
     @validator('total_overtime_hours_facility')
+    def round_facility_hours(cls, v):
+        return round(v, 2)
+
+
+class UnmappedEmployee(BaseModel):
+    """Employee unmapped hours data for reporting"""
+    
+    employee_id: str = Field(description="Employee identifier")
+    employee_name: str = Field(description="Employee name")
+    total_unmapped_hours: float = Field(description="Total unmapped hours during period", ge=0)
+    days_with_unmapped: int = Field(description="Number of days with unmapped hours", ge=0)
+    average_daily_unmapped: float = Field(description="Average daily unmapped hours", ge=0)
+    primary_category: str = Field(description="Most common unmapped category worked during period")
+    rank: int = Field(description="Rank in top unmapped list (1, 2, 3, etc.)", ge=1)
+    
+    @validator('total_unmapped_hours', 'average_daily_unmapped')
+    def round_hours(cls, v):
+        return round(v, 2)
+
+
+class UnmappedFunctionGroup(BaseModel):
+    """Unmapped hours employees grouped by function (clinical/non-clinical)"""
+    
+    function: str = Field(description="Function type: clinical or non-clinical")
+    display_name: str = Field(description="Display name for the function group")
+    employees: List[UnmappedEmployee] = Field(description="Top employees in this function group")
+    total_unmapped_hours: float = Field(description="Total unmapped hours for this function", ge=0)
+    total_employees_in_function: int = Field(description="Total employees with unmapped hours in this function", ge=0)
+    
+    @validator('total_unmapped_hours')
+    def round_group_hours(cls, v):
+        return round(v, 2)
+
+
+class TopUnmappedAnalysis(BaseModel):
+    """Top unmapped hours analysis results for a facility"""
+    
+    facility: str = Field(description="Facility name")
+    top_employees: List[UnmappedEmployee] = Field(description="Top N employees by unmapped hours (legacy)")
+    clinical_group: Optional[UnmappedFunctionGroup] = Field(default=None, description="Clinical employees group")
+    non_clinical_group: Optional[UnmappedFunctionGroup] = Field(default=None, description="Non-clinical employees group")
+    total_employees_with_unmapped: int = Field(description="Total employees with any unmapped hours", ge=0)
+    top_count_requested: int = Field(description="Number of top employees requested", ge=1)
+    total_unmapped_hours_facility: float = Field(description="Total unmapped hours for entire facility", ge=0)
+    analysis_period_start: datetime = Field(description="Start of analysis period")
+    analysis_period_end: datetime = Field(description="End of analysis period")
+    
+    @validator('total_unmapped_hours_facility')
     def round_facility_hours(cls, v):
         return round(v, 2)

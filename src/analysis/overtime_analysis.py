@@ -31,8 +31,8 @@ from datetime import datetime
 from typing import List, Dict, Tuple, Optional
 from collections import defaultdict
 
-from src.models.data_models import OvertimeEmployee, OvertimeAnalysis
-from src.utils.role_display_mapper import get_standard_shift_hours, get_short_display_name
+from src.models.data_models import OvertimeEmployee, OvertimeAnalysis, OvertimeFunctionGroup
+from src.utils.role_display_mapper import get_standard_shift_hours, get_short_display_name, get_role_function
 from config.constants import FileColumns
 
 logger = logging.getLogger(__name__)
@@ -256,14 +256,84 @@ def calculate_overtime_analysis(facility_df: pd.DataFrame,
     # Sort employees by total overtime hours (descending)
     employee_overtime_data.sort(key=lambda x: x['total_overtime_hours'], reverse=True)
     
-    # Create top N overtime employees list
-    top_employees = []
-    for rank, emp_data in enumerate(employee_overtime_data[:top_count], 1):
+    # Group employees by function (clinical vs non-clinical)
+    clinical_employees = []
+    non_clinical_employees = []
+    
+    for emp_data in employee_overtime_data:
+        # Determine function of the employee's primary role
+        try:
+            role_function = get_role_function(emp_data['primary_role'])
+            logger.debug(f"Employee {emp_data['employee_name']} primary role '{emp_data['primary_role']}' classified as: {role_function}")
+        except KeyError:
+            logger.warning(f"No function found for role '{emp_data['primary_role']}', defaulting to non-clinical")
+            role_function = "non-clinical"
+        except Exception as e:
+            logger.error(f"Error getting function for role '{emp_data['primary_role']}': {str(e)}, defaulting to non-clinical")
+            role_function = "non-clinical"
+        
         # Convert role to short display name for reporting
         try:
             display_role = get_short_display_name(emp_data['primary_role'])
         except KeyError:
             logger.warning(f"No short display name found for role '{emp_data['primary_role']}', using original")
+            display_role = emp_data['primary_role']
+        
+        # Create OvertimeEmployee object
+        overtime_employee = OvertimeEmployee(
+            employee_id=emp_data['employee_id'],
+            employee_name=emp_data['employee_name'],
+            total_overtime_hours=emp_data['total_overtime_hours'],
+            days_with_overtime=emp_data['days_with_overtime'],
+            average_daily_overtime=emp_data['average_daily_overtime'],
+            primary_role=display_role,
+            rank=1  # Will be set properly when creating function groups
+        )
+        
+        # Group by function
+        if role_function == "clinical":
+            clinical_employees.append(overtime_employee)
+        else:
+            non_clinical_employees.append(overtime_employee)
+    
+    # Create function groups with top N employees each
+    clinical_group = None
+    non_clinical_group = None
+    
+    if clinical_employees:
+        # Set ranks for clinical employees
+        for rank, emp in enumerate(clinical_employees[:top_count], 1):
+            emp.rank = rank
+        
+        clinical_total_hours = sum(emp.total_overtime_hours for emp in clinical_employees)
+        clinical_group = OvertimeFunctionGroup(
+            function="clinical",
+            display_name="Clinical Associates",
+            employees=clinical_employees[:top_count],
+            total_overtime_hours=clinical_total_hours,
+            total_employees_in_function=len(clinical_employees)
+        )
+    
+    if non_clinical_employees:
+        # Set ranks for non-clinical employees
+        for rank, emp in enumerate(non_clinical_employees[:top_count], 1):
+            emp.rank = rank
+        
+        non_clinical_total_hours = sum(emp.total_overtime_hours for emp in non_clinical_employees)
+        non_clinical_group = OvertimeFunctionGroup(
+            function="non-clinical",
+            display_name="Non-Clinical Associates",
+            employees=non_clinical_employees[:top_count],
+            total_overtime_hours=non_clinical_total_hours,
+            total_employees_in_function=len(non_clinical_employees)
+        )
+    
+    # Create legacy top N list (for backward compatibility)
+    top_employees = []
+    for rank, emp_data in enumerate(employee_overtime_data[:top_count], 1):
+        try:
+            display_role = get_short_display_name(emp_data['primary_role'])
+        except KeyError:
             display_role = emp_data['primary_role']
         
         overtime_employee = OvertimeEmployee(
@@ -279,10 +349,15 @@ def calculate_overtime_analysis(facility_df: pd.DataFrame,
     
     logger.info(f"Overtime analysis complete: {len(employee_overtime_data)} employees with overtime, "
                 f"{total_facility_overtime:.2f} total facility overtime hours")
+    logger.info(f"Clinical employees with overtime: {len(clinical_employees)}, "
+                f"Non-clinical employees with overtime: {len(non_clinical_employees)}")
+    logger.info(f"Clinical group created: {clinical_group is not None}, Non-clinical group created: {non_clinical_group is not None}")
     
     return OvertimeAnalysis(
         facility=facility_name,
         top_employees=top_employees,
+        clinical_group=clinical_group,
+        non_clinical_group=non_clinical_group,
         total_employees_with_overtime=len(employee_overtime_data),
         top_count_requested=top_count,
         total_overtime_hours_facility=total_facility_overtime,

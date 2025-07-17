@@ -33,263 +33,308 @@ logger = logging.getLogger(__name__)
 
 # Complete role display mappings for all 44 model data roles
 # Key: Exact model role name (must be preserved)
-# Value: Dict with 'standard', 'short' display names, and 'standard_shift_hours'
+# Value: Dict with 'standard', 'short' display names, 'standard_shift_hours', and 'function'
 ROLE_DISPLAY_MAPPINGS: Dict[str, Dict[str, Union[str, float]]] = {
     # Nursing Leadership
     "Director of Nursing": {
         "standard": "Director of Nursing",
         "short": "DON",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "ADON": {
         "standard": "Assistant Director of Nursing",
         "short": "ADON",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     
     # Nursing Supervisory Roles
     "Nursing Supervisor (RN)": {
         "standard": "Nursing Supervisor (RN)",
         "short": "Nurse Supv",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "Nursing Supervisor Wknd (RN)": {
         "standard": "Weekend Nursing Supervisor (RN)",
         "short": "Wknd Nurse",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     
     # Assessment and Specialized Nursing
     "RAI (RN)": {
         "standard": "Resident Assessment Coordinator (RN)",
         "short": "RAI-RN",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "RAI (LPN)": {
         "standard": "Resident Assessment Coordinator (LPN)",
         "short": "RAI-LPN",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     
     # Direct Care Nursing
     "Charge Nurse (LPN)": {
         "standard": "Charge Nurse (LPN)",
         "short": "Charge RN",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "Wound Care Nurse (LPN)": {
         "standard": "Wound Care Nurse (LPN)",
         "short": "Wound Care",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "Certified Nursing Assistant": {
         "standard": "Certified Nursing Assistant",
         "short": "CNA",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "Certified Medication Aide": {
         "standard": "Certified Medication Aide",
         "short": "CMA",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     
     # Therapy Services
     "Physical Therapy": {
         "standard": "Physical Therapy",
         "short": "PT",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "Occupational Therapy": {
         "standard": "Occupational Therapy",
         "short": "OT",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "Speech Therapy": {
         "standard": "Speech Therapy",
         "short": "ST",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "Respiratory Therapy": {
         "standard": "Respiratory Therapy",
         "short": "RT",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     
     # Dietary Services
     "Dining and Nutrition Manager": {
         "standard": "Dining and Nutrition Manager",
         "short": "Dietary Mgr",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Assistant Dining and Nutrition Manager": {
         "standard": "Assistant Dining and Nutrition Manager",
         "short": "Asst Dietary",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Cooks": {
         "standard": "Cooks",
         "short": "Cooks",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Food Svcs. Asst.": {
         "standard": "Food Services Assistant",
         "short": "Food Svc",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     
     # Housekeeping and Environmental Services
     "Hskpg. Suprv.": {
         "standard": "Housekeeping Supervisor",
         "short": "Hskpg Supv",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Hskpg. Aide": {
         "standard": "Housekeeping Aide",
         "short": "Hskpg Aide",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Floor Tech": {
         "standard": "Floor Technician",
         "short": "Floor Tech",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Laun. Aid": {
         "standard": "Laundry Aide",
         "short": "Laundry",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     
     # Maintenance and Facilities
     "Maint. Suprv.": {
         "standard": "Maintenance Supervisor",
         "short": "Maint Supv",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Maint. Asst.": {
         "standard": "Maintenance Assistant",
         "short": "Maint Asst",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Weekend Maint. Asst.": {
         "standard": "Weekend Maintenance Assistant",
         "short": "Wknd Maint",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     
     # Social Services
     "Soc. Work. (Degreed)": {
         "standard": "Social Worker",
         "short": "Social Work",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     "Soc. Svcs. Coord": {
         "standard": "Social Services Coordinator",
         "short": "Soc Svcs",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     
     # Life Enrichment/Activities
     "Life Enrch. Dir.": {
         "standard": "Life Enrichment Director",
         "short": "Activities Dir",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Life Enrch. Asst.": {
         "standard": "Life Enrichment Assistant",
         "short": "Activities Asst",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     
     # Administration and Management
     "SNF Admin": {
         "standard": "SNF Administrator",
         "short": "Admin",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "SNF Asst. Admin": {
         "standard": "SNF Assistant Administrator",
         "short": "Asst Admin",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "Business Lead": {
         "standard": "Business Lead",
         "short": "Bus Lead",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     
     # Coordination and Support
     "Sched Coord": {
         "standard": "Scheduling Coordinator",
         "short": "Scheduling",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "HR Coord": {
         "standard": "HR Coordinator",
         "short": "HR",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     "HC Navigator (5 days)": {
         "standard": "Healthcare Navigator (5 days)",
         "short": "Navigator",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     
     # Health Information Management
     "HIM Tech (5 days)": {
         "standard": "Health Information Management Technician",
         "short": "HIM Tech",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "non-clinical"
     },
     
     # Clinical Support
     "Other Clinical": {
         "standard": "Other Clinical Staff",
         "short": "Other Clin",
-        "standard_shift_hours": 8.0
+        "standard_shift_hours": 8.0,
+        "function": "clinical"
     },
     
     # Unmapped Categories
     "Unmapped Nursing": {
         "standard": "Unmapped Nursing",
         "short": "Unmap Nurs",
-        "standard_shift_hours": 0.0
+        "standard_shift_hours": 0.0,
+        "function": "clinical"
     },
     "Unmapped Dietary": {
         "standard": "Unmapped Dietary",
         "short": "Unmap Diet",
-        "standard_shift_hours": 0.0
+        "standard_shift_hours": 0.0,
+        "function": "non-clinical"
     },
     "Unmapped Hskp": {
         "standard": "Unmapped Housekeeping",
         "short": "Unmap HK",
-        "standard_shift_hours": 0.0
+        "standard_shift_hours": 0.0,
+        "function": "non-clinical"
     },
     "Unmapped Life Enrichment": {
         "standard": "Unmapped Life Enrichment",
         "short": "Unmap Act",
-        "standard_shift_hours": 0.0
+        "standard_shift_hours": 0.0,
+        "function": "non-clinical"
     },
     "Unmapped Maintenance": {
         "standard": "Unmapped Maintenance",
         "short": "Unmap Maint",
-        "standard_shift_hours": 0.0
+        "standard_shift_hours": 0.0,
+        "function": "non-clinical"
     },
     "Unmapped Admin": {
         "standard": "Unmapped Administration",
         "short": "Unmap Admin",
-        "standard_shift_hours": 0.0
+        "standard_shift_hours": 0.0,
+        "function": "non-clinical"
     },
     "Other Unmapped": {
         "standard": "Other Unmapped",
         "short": "Other",
-        "standard_shift_hours": 0.0
+        "standard_shift_hours": 0.0,
+        "function": "non-clinical"
     },
     
     # Catch-all for unrecognized roles
     "Unknown": {
         "standard": "Unknown Role",
         "short": "Unknown",
-        "standard_shift_hours": 0.0
+        "standard_shift_hours": 0.0,
+        "function": "non-clinical"
     }
 }
 
@@ -354,6 +399,66 @@ def get_standard_shift_hours(model_role: str) -> float:
     return float(ROLE_DISPLAY_MAPPINGS[model_role]["standard_shift_hours"])
 
 
+def get_role_function(model_role: str) -> str:
+    """
+    Get the function classification (clinical/non-clinical) for a model role.
+    
+    Args:
+        model_role: Exact model role name from data
+        
+    Returns:
+        Role function: "clinical" or "non-clinical"
+        
+    Raises:
+        KeyError: If model role is not found in mappings
+    """
+    if model_role not in ROLE_DISPLAY_MAPPINGS:
+        logger.warning(f"Model role '{model_role}' not found in display mappings")
+        raise KeyError(f"No display mapping found for model role: '{model_role}'")
+    
+    return ROLE_DISPLAY_MAPPINGS[model_role]["function"]
+
+
+def get_roles_by_function(function: str) -> List[str]:
+    """
+    Get all roles that match a specific function classification.
+    
+    Args:
+        function: Function to filter by ("clinical" or "non-clinical")
+        
+    Returns:
+        List of role names that match the function
+        
+    Raises:
+        ValueError: If function is not "clinical" or "non-clinical"
+    """
+    if function not in ["clinical", "non-clinical"]:
+        raise ValueError(f"Function must be 'clinical' or 'non-clinical', got: {function}")
+    
+    return [role for role, mapping in ROLE_DISPLAY_MAPPINGS.items() 
+            if mapping["function"] == function]
+
+
+def get_clinical_roles() -> List[str]:
+    """
+    Get all clinical roles.
+    
+    Returns:
+        List of clinical role names
+    """
+    return get_roles_by_function("clinical")
+
+
+def get_non_clinical_roles() -> List[str]:
+    """
+    Get all non-clinical roles.
+    
+    Returns:
+        List of non-clinical role names
+    """
+    return get_roles_by_function("non-clinical")
+
+
 def get_all_roles_with_shift_hours() -> Dict[str, float]:
     """
     Get all roles with their standard shift hours.
@@ -363,6 +468,38 @@ def get_all_roles_with_shift_hours() -> Dict[str, float]:
     """
     return {role: float(mapping["standard_shift_hours"]) 
             for role, mapping in ROLE_DISPLAY_MAPPINGS.items()}
+
+
+def get_all_roles_with_functions() -> Dict[str, str]:
+    """
+    Get all roles with their function classifications.
+    
+    Returns:
+        Dictionary mapping role names to their function ("clinical" or "non-clinical")
+    """
+    return {role: mapping["function"] 
+            for role, mapping in ROLE_DISPLAY_MAPPINGS.items()}
+
+
+def get_role_functions_for_roles(role_list: List[str]) -> Dict[str, str]:
+    """
+    Get function classifications for a list of roles.
+    
+    Args:
+        role_list: List of role names to get functions for
+        
+    Returns:
+        Dictionary mapping role names to their functions
+        Roles not found in mappings will be excluded from results
+    """
+    result = {}
+    for role in role_list:
+        if role in ROLE_DISPLAY_MAPPINGS:
+            result[role] = ROLE_DISPLAY_MAPPINGS[role]["function"]
+        else:
+            logger.warning(f"Role '{role}' not found in display mappings")
+    
+    return result
 
 
 def update_role_shift_hours(model_role: str, hours: float) -> bool:
