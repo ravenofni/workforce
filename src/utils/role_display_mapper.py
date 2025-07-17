@@ -24,7 +24,7 @@ Example Usage:
 """
 
 import logging
-from typing import Dict, Optional, List, Tuple
+from typing import Dict, Optional, List, Tuple, Union, Any
 
 from config.constants import RoleDisplayPreference, DEFAULT_ROLE_DISPLAY_PREFERENCES
 
@@ -33,212 +33,263 @@ logger = logging.getLogger(__name__)
 
 # Complete role display mappings for all 44 model data roles
 # Key: Exact model role name (must be preserved)
-# Value: Dict with 'standard' and 'short' display names
-ROLE_DISPLAY_MAPPINGS: Dict[str, Dict[str, str]] = {
+# Value: Dict with 'standard', 'short' display names, and 'standard_shift_hours'
+ROLE_DISPLAY_MAPPINGS: Dict[str, Dict[str, Union[str, float]]] = {
     # Nursing Leadership
     "Director of Nursing": {
         "standard": "Director of Nursing",
-        "short": "DON"
+        "short": "DON",
+        "standard_shift_hours": 8.0
     },
     "ADON": {
         "standard": "Assistant Director of Nursing",
-        "short": "ADON"
+        "short": "ADON",
+        "standard_shift_hours": 8.0
     },
     
     # Nursing Supervisory Roles
     "Nursing Supervisor (RN)": {
         "standard": "Nursing Supervisor (RN)",
-        "short": "Nurse Supv"
+        "short": "Nurse Supv",
+        "standard_shift_hours": 8.0
     },
     "Nursing Supervisor Wknd (RN)": {
         "standard": "Weekend Nursing Supervisor (RN)",
-        "short": "Wknd Nurse"
+        "short": "Wknd Nurse",
+        "standard_shift_hours": 8.0
     },
     
     # Assessment and Specialized Nursing
     "RAI (RN)": {
         "standard": "Resident Assessment Coordinator (RN)",
-        "short": "RAI-RN"
+        "short": "RAI-RN",
+        "standard_shift_hours": 8.0
     },
     "RAI (LPN)": {
         "standard": "Resident Assessment Coordinator (LPN)",
-        "short": "RAI-LPN"
+        "short": "RAI-LPN",
+        "standard_shift_hours": 8.0
     },
     
     # Direct Care Nursing
     "Charge Nurse (LPN)": {
         "standard": "Charge Nurse (LPN)",
-        "short": "Charge RN"
+        "short": "Charge RN",
+        "standard_shift_hours": 8.0
     },
     "Wound Care Nurse (LPN)": {
         "standard": "Wound Care Nurse (LPN)",
-        "short": "Wound Care"
+        "short": "Wound Care",
+        "standard_shift_hours": 8.0
     },
     "Certified Nursing Assistant": {
         "standard": "Certified Nursing Assistant",
-        "short": "CNA"
+        "short": "CNA",
+        "standard_shift_hours": 8.0
     },
     "Certified Medication Aide": {
         "standard": "Certified Medication Aide",
-        "short": "CMA"
+        "short": "CMA",
+        "standard_shift_hours": 8.0
     },
     
     # Therapy Services
     "Physical Therapy": {
         "standard": "Physical Therapy",
-        "short": "PT"
+        "short": "PT",
+        "standard_shift_hours": 8.0
     },
     "Occupational Therapy": {
         "standard": "Occupational Therapy",
-        "short": "OT"
+        "short": "OT",
+        "standard_shift_hours": 8.0
     },
     "Speech Therapy": {
         "standard": "Speech Therapy",
-        "short": "ST"
+        "short": "ST",
+        "standard_shift_hours": 8.0
     },
     "Respiratory Therapy": {
         "standard": "Respiratory Therapy",
-        "short": "RT"
+        "short": "RT",
+        "standard_shift_hours": 8.0
     },
     
     # Dietary Services
     "Dining and Nutrition Manager": {
         "standard": "Dining and Nutrition Manager",
-        "short": "Dietary Mgr"
+        "short": "Dietary Mgr",
+        "standard_shift_hours": 8.0
     },
     "Assistant Dining and Nutrition Manager": {
         "standard": "Assistant Dining and Nutrition Manager",
-        "short": "Asst Dietary"
+        "short": "Asst Dietary",
+        "standard_shift_hours": 8.0
     },
     "Cooks": {
         "standard": "Cooks",
-        "short": "Cooks"
+        "short": "Cooks",
+        "standard_shift_hours": 8.0
     },
     "Food Svcs. Asst.": {
         "standard": "Food Services Assistant",
-        "short": "Food Svc"
+        "short": "Food Svc",
+        "standard_shift_hours": 8.0
     },
     
     # Housekeeping and Environmental Services
     "Hskpg. Suprv.": {
         "standard": "Housekeeping Supervisor",
-        "short": "Hskpg Supv"
+        "short": "Hskpg Supv",
+        "standard_shift_hours": 8.0
     },
     "Hskpg. Aide": {
         "standard": "Housekeeping Aide",
-        "short": "Hskpg Aide"
+        "short": "Hskpg Aide",
+        "standard_shift_hours": 8.0
     },
     "Floor Tech": {
         "standard": "Floor Technician",
-        "short": "Floor Tech"
+        "short": "Floor Tech",
+        "standard_shift_hours": 8.0
     },
     "Laun. Aid": {
         "standard": "Laundry Aide",
-        "short": "Laundry"
+        "short": "Laundry",
+        "standard_shift_hours": 8.0
     },
     
     # Maintenance and Facilities
     "Maint. Suprv.": {
         "standard": "Maintenance Supervisor",
-        "short": "Maint Supv"
+        "short": "Maint Supv",
+        "standard_shift_hours": 8.0
     },
     "Maint. Asst.": {
         "standard": "Maintenance Assistant",
-        "short": "Maint Asst"
+        "short": "Maint Asst",
+        "standard_shift_hours": 8.0
     },
     "Weekend Maint. Asst.": {
         "standard": "Weekend Maintenance Assistant",
-        "short": "Wknd Maint"
+        "short": "Wknd Maint",
+        "standard_shift_hours": 8.0
     },
     
     # Social Services
     "Soc. Work. (Degreed)": {
         "standard": "Social Worker",
-        "short": "Social Work"
+        "short": "Social Work",
+        "standard_shift_hours": 8.0
     },
     "Soc. Svcs. Coord": {
         "standard": "Social Services Coordinator",
-        "short": "Soc Svcs"
+        "short": "Soc Svcs",
+        "standard_shift_hours": 8.0
     },
     
     # Life Enrichment/Activities
     "Life Enrch. Dir.": {
         "standard": "Life Enrichment Director",
-        "short": "Activities Dir"
+        "short": "Activities Dir",
+        "standard_shift_hours": 8.0
     },
     "Life Enrch. Asst.": {
         "standard": "Life Enrichment Assistant",
-        "short": "Activities Asst"
+        "short": "Activities Asst",
+        "standard_shift_hours": 8.0
     },
     
     # Administration and Management
     "SNF Admin": {
         "standard": "SNF Administrator",
-        "short": "Admin"
+        "short": "Admin",
+        "standard_shift_hours": 8.0
     },
     "SNF Asst. Admin": {
         "standard": "SNF Assistant Administrator",
-        "short": "Asst Admin"
+        "short": "Asst Admin",
+        "standard_shift_hours": 8.0
     },
     "Business Lead": {
         "standard": "Business Lead",
-        "short": "Bus Lead"
+        "short": "Bus Lead",
+        "standard_shift_hours": 8.0
     },
     
     # Coordination and Support
     "Sched Coord": {
         "standard": "Scheduling Coordinator",
-        "short": "Scheduling"
+        "short": "Scheduling",
+        "standard_shift_hours": 8.0
     },
     "HR Coord": {
         "standard": "HR Coordinator",
-        "short": "HR"
+        "short": "HR",
+        "standard_shift_hours": 8.0
     },
     "HC Navigator (5 days)": {
         "standard": "Healthcare Navigator (5 days)",
-        "short": "Navigator"
+        "short": "Navigator",
+        "standard_shift_hours": 8.0
     },
     
     # Health Information Management
     "HIM Tech (5 days)": {
         "standard": "Health Information Management Technician",
-        "short": "HIM Tech"
+        "short": "HIM Tech",
+        "standard_shift_hours": 8.0
     },
     
     # Clinical Support
     "Other Clinical": {
         "standard": "Other Clinical Staff",
-        "short": "Other Clin"
+        "short": "Other Clin",
+        "standard_shift_hours": 8.0
     },
     
     # Unmapped Categories
     "Unmapped Nursing": {
         "standard": "Unmapped Nursing",
-        "short": "Unmap Nurs"
+        "short": "Unmap Nurs",
+        "standard_shift_hours": 0.0
     },
     "Unmapped Dietary": {
         "standard": "Unmapped Dietary",
-        "short": "Unmap Diet"
+        "short": "Unmap Diet",
+        "standard_shift_hours": 0.0
     },
     "Unmapped Hskp": {
         "standard": "Unmapped Housekeeping",
-        "short": "Unmap HK"
+        "short": "Unmap HK",
+        "standard_shift_hours": 0.0
     },
     "Unmapped Life Enrichment": {
         "standard": "Unmapped Life Enrichment",
-        "short": "Unmap Act"
+        "short": "Unmap Act",
+        "standard_shift_hours": 0.0
     },
     "Unmapped Maintenance": {
         "standard": "Unmapped Maintenance",
-        "short": "Unmap Maint"
+        "short": "Unmap Maint",
+        "standard_shift_hours": 0.0
     },
     "Unmapped Admin": {
         "standard": "Unmapped Administration",
-        "short": "Unmap Admin"
+        "short": "Unmap Admin",
+        "standard_shift_hours": 0.0
     },
     "Other Unmapped": {
         "standard": "Other Unmapped",
-        "short": "Other"
+        "short": "Other",
+        "standard_shift_hours": 0.0
+    },
+    
+    # Catch-all for unrecognized roles
+    "Unknown": {
+        "standard": "Unknown Role",
+        "short": "Unknown",
+        "standard_shift_hours": 0.0
     }
 }
 
@@ -281,6 +332,63 @@ def get_short_display_name(model_role: str) -> str:
         raise KeyError(f"No display mapping found for model role: '{model_role}'")
     
     return ROLE_DISPLAY_MAPPINGS[model_role]["short"]
+
+
+def get_standard_shift_hours(model_role: str) -> float:
+    """
+    Get the standard shift hours for a model role.
+    
+    Args:
+        model_role: Exact model role name from data
+        
+    Returns:
+        Standard shift hours for the role
+        
+    Raises:
+        KeyError: If model role is not found in mappings
+    """
+    if model_role not in ROLE_DISPLAY_MAPPINGS:
+        logger.warning(f"Model role '{model_role}' not found in display mappings")
+        raise KeyError(f"No display mapping found for model role: '{model_role}'")
+    
+    return float(ROLE_DISPLAY_MAPPINGS[model_role]["standard_shift_hours"])
+
+
+def get_all_roles_with_shift_hours() -> Dict[str, float]:
+    """
+    Get all roles with their standard shift hours.
+    
+    Returns:
+        Dictionary mapping role names to their standard shift hours
+    """
+    return {role: float(mapping["standard_shift_hours"]) 
+            for role, mapping in ROLE_DISPLAY_MAPPINGS.items()}
+
+
+def update_role_shift_hours(model_role: str, hours: float) -> bool:
+    """
+    Update standard shift hours for a role.
+    
+    Args:
+        model_role: Exact model role name
+        hours: New standard shift hours (must be positive)
+        
+    Returns:
+        True if successful, False if role not found
+        
+    Raises:
+        ValueError: If hours is negative or zero
+    """
+    if hours <= 0:
+        raise ValueError("Standard shift hours must be positive")
+    
+    if model_role not in ROLE_DISPLAY_MAPPINGS:
+        logger.warning(f"Cannot update shift hours - role '{model_role}' not found")
+        return False
+    
+    ROLE_DISPLAY_MAPPINGS[model_role]["standard_shift_hours"] = float(hours)
+    logger.info(f"Updated standard shift hours for '{model_role}' to {hours}")
+    return True
 
 
 def get_model_role_from_standard_display(display_name: str) -> Optional[str]:

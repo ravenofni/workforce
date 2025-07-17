@@ -374,6 +374,7 @@
     <!-- F-6b: KPI summary groups -->
     <div class="section">
         <!-- Group 1: Facility Model Adherence -->
+        {% if show_facility_model_adherence %}
         <div class="kpi-group">
             <h3>Facility Model Adherence</h3>
             <div class="kpi-grid kpi-grid-2x2">
@@ -395,8 +396,10 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <!-- Group 2: Facility Role Adherence -->
+        {% if show_facility_role_adherence %}
         <div class="kpi-group">
             <h3>Facility Role Adherence</h3>
             
@@ -446,9 +449,10 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
 
         <!-- Variance By Day of Week -->
-        {% if exceptions_list %}
+        {% if show_variance_by_day and exceptions_list %}
         <div class="kpi-group page-break">
             <h3>Variance By Day of Week</h3>
             <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
@@ -459,41 +463,164 @@
             {{ exception_management_table|safe }}
         </div>
         {% endif %}
+
+        <!-- Unmapped Hours Breakdown -->
+        {% if show_unmapped_hours and unmapped_hours.has_unmapped_hours %}
+        <div class="kpi-group page-break">
+            <h3>Unmapped Hours Breakdown</h3>
+            <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
+                Detailed breakdown of unmapped hours by category and employee for the analysis period<br>
+                Shows employees who worked in unmapped categories and their total hours contribution
+            </p>
+            
+            <!-- Summary Statistics -->
+            <div style="margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+                <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
+                    <div>Total Unmapped Hours: <span style="color: #e74c3c;">{{ unmapped_hours.total_unmapped_hours|round(2) }}</span></div>
+                    <div>Categories: <span style="color: #3498db;">{{ unmapped_hours.total_categories }}</span></div>
+                    <div>Employees: <span style="color: #27ae60;">{{ unmapped_hours.total_employees }}</span></div>
+                </div>
+            </div>
+            
+            <!-- Category Breakdown Tables -->
+            {% for category in unmapped_hours.categories %}
+            <div style="margin-bottom: 25px;">
+                <h4 style="color: #2c3e50; margin-bottom: 10px; padding: 8px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ category.display_name }} 
+                    <span style="font-weight: normal; font-size: 12px; color: #666;">
+                        ({{ category.total_hours|round(2) }} hours, {{ category.percentage_of_total_unmapped|round(1) }}% of total unmapped)
+                    </span>
+                </h4>
+                
+                {% if category.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 8px; text-align: left; width: 40%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 8px; text-align: center; width: 20%;">Employee ID</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 8px; text-align: center; width: 20%;">Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 8px; text-align: center; width: 20%;">% of Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in category.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 6px;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 6px; text-align: center;">{{ employee.employee_id }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; font-weight: bold;">{{ employee.total_hours|round(2) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 6px; text-align: center;">{{ employee.percentage_of_category|round(1) }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <div style="font-size: 11px; color: #666; margin-bottom: 10px;">
+                    Category Summary: {{ category.employee_count }} employees, {{ category.average_hours_per_employee|round(2) }} avg hours per employee
+                </div>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 15px;">No employees found in this category for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Top N Overtime Section -->
+        {% if show_top_overtime and overtime_analysis.top_employees %}
+        <div class="kpi-group">
+            <h3>Top {{ overtime_analysis.top_count_requested }} Overtime</h3>
+            
+            <!-- Summary Statistics -->
+            <div style="margin-bottom: 12px; padding: 8px; background-color: #f8f9fa; border-radius: 5px;">
+                <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
+                    <div>Total Facility Overtime: <span style="color: #e74c3c;">{{ overtime_analysis.total_overtime_hours_facility|round(2) }} hours</span></div>
+                    <div>Employees w/ Overtime: <span style="color: #3498db;">{{ overtime_analysis.total_employees_with_overtime }}</span></div>
+                </div>
+            </div>
+            
+            <!-- Top Overtime Employees Table -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
+                <thead>
+                    <tr style="background-color: #34495e; color: white;">
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Role</th>
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">OT Hours</th>
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">OT Days</th>
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">OT Average</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in overtime_analysis.top_employees %}
+                    <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                        <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
+                        <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
+                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_overtime_hours|round(2) }}</td>
+                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_overtime }}</td>
+                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_overtime|round(2) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <!-- Footer Note -->
+            <div style="font-size: 10px; color: #666; margin-top: 5px; line-height: 1.3;">
+                Total hours includes overtime hours from all roles worked by an employee. Only their primary role is shown. The overtime hours were calculated independently for each position.
+            </div>
+        </div>
+        {% elif show_top_overtime %}
+        <div class="kpi-group">
+            <h3>Top {{ overtime_analysis.top_count_requested }} Overtime</h3>
+            <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
+                No overtime found for the analysis period
+            </p>
+            
+            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 5px; color: #27ae60;">
+                <span style="font-size: 24px;">✅</span><br>
+                <strong>Excellent!</strong> No employees worked overtime during this period.
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <!-- F-6c: Variance heat-map & trend charts -->
+    {% if show_visual_analysis %}
     <div class="section page-break">
         <h2>Visual Analysis</h2>
         
+        {% if show_kpi_chart %}
         <h3>Key Performance Indicators</h3>
         <div class="chart-container">
             <img src="data:image/png;base64,{{ kpi_chart }}" alt="KPI Summary Chart">
         </div>
+        {% endif %}
 
-        {% if variance_heatmap %}
+        {% if show_variance_heatmap and variance_heatmap %}
         <h3>Variance Heat-map</h3>
         <div class="chart-container">
             <img src="data:image/png;base64,{{ variance_heatmap }}" alt="Variance Heat-map">
         </div>
         {% endif %}
 
-        {% if trend_charts %}
+        {% if show_trend_charts and trend_charts %}
         <h3>Trend Analysis</h3>
         <div class="chart-container">
             <img src="data:image/png;base64,{{ trend_charts }}" alt="Trend Analysis Charts">
         </div>
         {% endif %}
 
-        {% if control_limits_chart %}
+        {% if show_control_limits_chart and control_limits_chart %}
         <h3>Statistical Control Limits</h3>
         <div class="chart-container">
             <img src="data:image/png;base64,{{ control_limits_chart }}" alt="Control Limits Chart">
         </div>
         {% endif %}
     </div>
+    {% endif %}
 
     <!-- F-6d: Detailed exception list -->
-    {% if exceptions_list %}
+    {% if show_exception_details and exceptions_list %}
     <div class="section page-break">
         <h2>Exception Details</h2>
         
@@ -570,7 +697,7 @@
     {% endif %}
 
     <!-- Statistical Summary -->
-    {% if statistics_summary %}
+    {% if show_statistical_summary and statistics_summary %}
     <div class="section page-break">
         <h2>Statistical Summary</h2>
         

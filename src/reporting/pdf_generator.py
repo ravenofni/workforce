@@ -11,7 +11,16 @@ from typing import List, Dict, Any, Optional
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import tempfile
 
-from config.constants import PDF_FORMAT, PDF_MARGIN_INCHES, DATE_FORMAT, FileColumns
+from config.constants import (
+    PDF_FORMAT, PDF_MARGIN_INCHES, DATE_FORMAT, FileColumns,
+    REPORT_SHOW_FACILITY_MODEL_ADHERENCE, REPORT_SHOW_FACILITY_ROLE_ADHERENCE,
+    REPORT_SHOW_VARIANCE_BY_DAY, REPORT_SHOW_UNMAPPED_HOURS,
+    REPORT_SHOW_VISUAL_ANALYSIS, REPORT_SHOW_KPI_CHART,
+    REPORT_SHOW_VARIANCE_HEATMAP, REPORT_SHOW_TREND_CHARTS,
+    REPORT_SHOW_CONTROL_LIMITS_CHART, REPORT_SHOW_EXCEPTION_DETAILS,
+    REPORT_SHOW_STATISTICAL_SUMMARY, REPORT_SHOW_TOP_OVERTIME,
+    REPORT_TOP_OVERTIME_COUNT
+)
 from src.models.data_models import (
     StatisticalSummary,
     VarianceResult, 
@@ -19,7 +28,7 @@ from src.models.data_models import (
     ExceptionSummary,
     FacilityKPI
 )
-from src.utils.role_display_mapper import get_short_display_name
+from src.utils.role_display_mapper import get_short_display_name, get_standard_display_name
 from src.reporting.chart_generator import (
     create_variance_heatmap,
     create_trend_charts,
@@ -34,6 +43,8 @@ from src.reporting.exceptions import (
 )
 from src.utils.error_handlers import ReportGenerationError, handle_exceptions
 from src.utils.weekday_converter import sunday_first_to_python_weekday
+from src.analysis.unmapped_analysis import analyze_unmapped_hours_for_facility, format_unmapped_hours_for_display
+from src.analysis.overtime_analysis import calculate_overtime_analysis
 
 
 logger = logging.getLogger(__name__)
@@ -488,6 +499,77 @@ class PDFReportGenerator:
                 sign = "+" if row['signed_deviation'] >= 0 else ""
                 top_problem_roles.append(f"{display_role}|{sign}{row['signed_deviation']:.0f}h")
         
+        # Analyze unmapped hours for this facility using daily data
+        logger.debug(f"Analyzing unmapped hours for {facility}")
+        try:
+            # Use daily_facility_data if available (has employee details), otherwise fall back to facility_data
+            data_for_unmapped = daily_facility_data if daily_facility_data is not None else facility_data
+            
+            unmapped_results, category_summaries = analyze_unmapped_hours_for_facility(
+                data_for_unmapped, facility, analysis_start_date, analysis_end_date
+            )
+            unmapped_hours_data = format_unmapped_hours_for_display(unmapped_results, category_summaries)
+            
+            if unmapped_hours_data['has_unmapped_hours']:
+                logger.info(f"Found {unmapped_hours_data['total_unmapped_hours']} unmapped hours across {unmapped_hours_data['total_categories']} categories for {facility}")
+            else:
+                logger.info(f"No unmapped hours found for {facility}")
+                
+        except Exception as e:
+            logger.warning(f"Failed to analyze unmapped hours for {facility}: {str(e)}")
+            unmapped_hours_data = {
+                'has_unmapped_hours': False,
+                'total_unmapped_hours': 0,
+                'total_categories': 0,
+                'total_employees': 0,
+                'categories': [],
+                'detailed_results': []
+            }
+        
+        # Analyze overtime for this facility
+        logger.debug(f"Analyzing overtime for {facility}")
+        try:
+            # Use daily facility data for overtime analysis (need individual daily records)
+            data_for_overtime = daily_facility_data if daily_facility_data is not None else facility_data
+            
+            # Debug: Check what facilities are in the data
+            if not data_for_overtime.empty and FileColumns.FACILITY_LOCATION_NAME in data_for_overtime.columns:
+                unique_facilities = data_for_overtime[FileColumns.FACILITY_LOCATION_NAME].unique()
+                logger.debug(f"Available facilities in overtime data: {unique_facilities}")
+                logger.debug(f"Looking for facility: '{facility}'")
+                logger.debug(f"Using {'daily' if daily_facility_data is not None else 'weekly'} data for overtime analysis")
+            
+            # Filter facility data for this specific facility
+            facility_df = data_for_overtime[data_for_overtime[FileColumns.FACILITY_LOCATION_NAME] == facility].copy()
+            logger.debug(f"Filtered overtime data shape: {facility_df.shape}")
+            
+            overtime_analysis = calculate_overtime_analysis(
+                facility_df=facility_df,
+                facility_name=facility,
+                analysis_start_date=analysis_start_date,
+                analysis_end_date=analysis_end_date,
+                top_count=REPORT_TOP_OVERTIME_COUNT
+            )
+            
+            if overtime_analysis.total_employees_with_overtime > 0:
+                logger.info(f"Found {overtime_analysis.total_employees_with_overtime} employees with overtime "
+                           f"({overtime_analysis.total_overtime_hours_facility:.2f} total hours) for {facility}")
+            else:
+                logger.info(f"No overtime found for {facility}")
+                
+        except Exception as e:
+            logger.warning(f"Failed to analyze overtime for {facility}: {str(e)}")
+            from src.models.data_models import OvertimeAnalysis
+            overtime_analysis = OvertimeAnalysis(
+                facility=facility,
+                top_employees=[],
+                total_employees_with_overtime=0,
+                top_count_requested=REPORT_TOP_OVERTIME_COUNT,
+                total_overtime_hours_facility=0.0,
+                analysis_period_start=analysis_start_date,
+                analysis_period_end=analysis_end_date
+            )
+        
         return {
             'facility_name': facility,
             'analysis_start_date': analysis_start_date.strftime(DATE_FORMAT),
@@ -509,7 +591,22 @@ class PDFReportGenerator:
                 'roles_analyzed': len(facility_statistics)
             },
             'total_data_points': len(facility_data[facility_data[FileColumns.FACILITY_LOCATION_NAME] == facility]) if not facility_data.empty else 0,
-            'top_problem_roles': top_problem_roles
+            'top_problem_roles': top_problem_roles,
+            'unmapped_hours': unmapped_hours_data,
+            'overtime_analysis': overtime_analysis,
+            # Report display controls
+            'show_facility_model_adherence': REPORT_SHOW_FACILITY_MODEL_ADHERENCE,
+            'show_facility_role_adherence': REPORT_SHOW_FACILITY_ROLE_ADHERENCE,
+            'show_variance_by_day': REPORT_SHOW_VARIANCE_BY_DAY,
+            'show_unmapped_hours': REPORT_SHOW_UNMAPPED_HOURS,
+            'show_visual_analysis': REPORT_SHOW_VISUAL_ANALYSIS,
+            'show_kpi_chart': REPORT_SHOW_KPI_CHART,
+            'show_variance_heatmap': REPORT_SHOW_VARIANCE_HEATMAP,
+            'show_trend_charts': REPORT_SHOW_TREND_CHARTS,
+            'show_control_limits_chart': REPORT_SHOW_CONTROL_LIMITS_CHART,
+            'show_exception_details': REPORT_SHOW_EXCEPTION_DETAILS,
+            'show_statistical_summary': REPORT_SHOW_STATISTICAL_SUMMARY,
+            'show_top_overtime': REPORT_SHOW_TOP_OVERTIME
         }
     
     def _render_html_template(self, report_data: Dict[str, Any]) -> str:

@@ -409,59 +409,8 @@ def main():
         if all_data_quality_exceptions:
             display_data_quality_summary(all_data_quality_exceptions)
     
-    # Step 3: Weekly Aggregation
-    logger.info("Step 3: Weekly Aggregation")
-    
-    with TimedOperation(logger, "Weekly Aggregation"):
-        weekly_facility_df = aggregate_to_weekly(normalized_facility_df)
-        logger.info(f"Aggregated to {len(weekly_facility_df)} weekly records")
-    
-    # Step 4: Statistical Analysis
-    logger.info("Step 4: Statistical Analysis")
-    
-    with TimedOperation(logger, "Descriptive Statistics Calculation"):
-        statistics = calculate_facility_role_statistics(weekly_facility_df, normalized_model_df)
-        logger.info(f"Calculated statistics for {len(statistics)} facility-role combinations")
-    
-    # Display statistics table (F-1a requirement for model data already handled in loader)
-    display_statistics_table(statistics)
-    
-    # Step 5: Variance Detection
-    logger.info("Step 5: Variance Detection")
-    
-    with TimedOperation(logger, "Variance Detection"):
-        variances = detect_all_variances(
-            normalized_facility_df,  # Use daily data for day-specific variance analysis
-            normalized_model_df, 
-            settings.control_variables
-        )
-        logger.info(f"Detected {len(variances)} variance exceptions")
-    
-    display_variance_summary(variances)
-    
-    # Step 6: Trend Analysis
-    logger.info("Step 6: Trend Analysis")
-    
-    with TimedOperation(logger, "Trend Analysis"):
-        trend_results = analyze_trends_for_all_facilities(
-            normalized_facility_df,  # Use daily data for trend analysis which needs date information
-            settings.control_variables
-        )
-        logger.info(f"Analyzed trends for {len(trend_results)} facility-role combinations")
-    
-    display_trend_summary(trend_results)
-    
-    # Step 7: Exception Compilation
-    logger.info("Step 7: Exception Compilation")
-    
-    with TimedOperation(logger, "Exception Compilation"):
-        exceptions_df = compile_exceptions(variances, trend_results)
-        logger.info(f"Compiled {len(exceptions_df)} exceptions for reporting")
-    
-    display_exceptions_summary(exceptions_df)
-    
-    # Step 8: Calculate Analysis Date Range
-    logger.info("Step 8: Calculate Analysis Date Range")
+    # Step 3: Calculate Analysis Date Range
+    logger.info("Step 3: Calculate Analysis Date Range")
     
     with TimedOperation(logger, "Date Range Calculation"):
         # Calculate analysis date range using F-0 control variables and overrides
@@ -481,9 +430,76 @@ def main():
         logger.info(f"Final analysis period: {analysis_start_date.strftime('%m/%d/%Y')} to {analysis_end_date.strftime('%m/%d/%Y')}")
         logger.info(f"Analysis period duration: {(analysis_end_date - analysis_start_date).days + 1} days")
     
-    # Step 9: Export Results (if requested)
+    # Step 4: Filter Data for Analysis Period
+    logger.info("Step 4: Filter Data for Analysis Period")
+    
+    with TimedOperation(logger, "Data Filtering for Analysis Period"):
+        # Filter daily facility data to analysis period
+        filtered_facility_df = normalized_facility_df[
+            (normalized_facility_df[FileColumns.FACILITY_HOURS_DATE] >= analysis_start_date) &
+            (normalized_facility_df[FileColumns.FACILITY_HOURS_DATE] <= analysis_end_date)
+        ].copy()
+        
+        logger.info(f"Filtered facility data: {len(filtered_facility_df)} records from {len(normalized_facility_df)} total")
+        logger.info(f"Data reduction: {((len(normalized_facility_df) - len(filtered_facility_df)) / len(normalized_facility_df) * 100):.1f}% of records excluded")
+        
+        if filtered_facility_df.empty:
+            logger.warning("No facility data remains after date filtering - check analysis date range")
+    
+    # Step 5: Weekly Aggregation
+    logger.info("Step 5: Weekly Aggregation")
+    
+    with TimedOperation(logger, "Weekly Aggregation"):
+        weekly_facility_df = aggregate_to_weekly(filtered_facility_df)
+        logger.info(f"Aggregated to {len(weekly_facility_df)} weekly records from filtered data")
+    
+    # Step 6: Statistical Analysis
+    logger.info("Step 6: Statistical Analysis")
+    
+    with TimedOperation(logger, "Descriptive Statistics Calculation"):
+        statistics = calculate_facility_role_statistics(weekly_facility_df, normalized_model_df)
+        logger.info(f"Calculated statistics for {len(statistics)} facility-role combinations")
+    
+    # Display statistics table (F-1a requirement for model data already handled in loader)
+    display_statistics_table(statistics)
+    
+    # Step 7: Variance Detection
+    logger.info("Step 7: Variance Detection")
+    
+    with TimedOperation(logger, "Variance Detection"):
+        variances = detect_all_variances(
+            filtered_facility_df,  # Use filtered daily data for day-specific variance analysis
+            normalized_model_df, 
+            settings.control_variables
+        )
+        logger.info(f"Detected {len(variances)} variance exceptions")
+    
+    display_variance_summary(variances)
+    
+    # Step 8: Trend Analysis
+    logger.info("Step 8: Trend Analysis")
+    
+    with TimedOperation(logger, "Trend Analysis"):
+        trend_results = analyze_trends_for_all_facilities(
+            filtered_facility_df,  # Use filtered daily data for trend analysis
+            settings.control_variables
+        )
+        logger.info(f"Analyzed trends for {len(trend_results)} facility-role combinations")
+    
+    display_trend_summary(trend_results)
+    
+    # Step 9: Exception Compilation
+    logger.info("Step 9: Exception Compilation")
+    
+    with TimedOperation(logger, "Exception Compilation"):
+        exceptions_df = compile_exceptions(variances, trend_results)
+        logger.info(f"Compiled {len(exceptions_df)} exceptions for reporting")
+    
+    display_exceptions_summary(exceptions_df)
+    
+    # Step 10: Export Results (if requested)
     if args.export_csv:
-        logger.info("Step 9: Exporting Results to CSV")
+        logger.info("Step 10: Exporting Results to CSV")
         
         # Export exceptions
         exceptions_csv_path = os.path.join(args.output_dir, 'exceptions.csv')
@@ -497,9 +513,9 @@ def main():
         stats_df.to_csv(stats_csv_path, index=False)
         logger.info(f"Exported statistics summary to {stats_csv_path}")
     
-    # Step 10: PDF Report Generation (if not display-only)
+    # Step 11: PDF Report Generation (if not display-only)
     if not args.display_only:
-        logger.info("Step 10: PDF Report Generation")
+        logger.info("Step 11: PDF Report Generation")
         
         # Check if PDF generation is available
         if check_pdf_generation_availability():
@@ -511,14 +527,14 @@ def main():
                     report_results = asyncio.run(generate_comprehensive_reports(
                         settings=settings,
                         exceptions_df=exceptions_df,
-                        facility_data=weekly_facility_df,
+                        facility_data=weekly_facility_df,  # Already filtered weekly data
                         model_data=normalized_model_df,
                         statistics=statistics,
                         trend_results=trend_results,
                         analysis_start_date=analysis_start_date,
                         analysis_end_date=analysis_end_date,
                         data_quality_exceptions=all_data_quality_exceptions,
-                        daily_facility_data=normalized_facility_df  # Pass daily data for trend charts
+                        daily_facility_data=filtered_facility_df  # Pass filtered daily data for trend charts
                     ))
                     
                     if report_results['success']:

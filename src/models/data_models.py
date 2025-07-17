@@ -214,6 +214,40 @@ class DataQualityException(BaseModel):
         return v
 
 
+class UnmappedHoursResult(BaseModel):
+    """Result of unmapped hours analysis by category and employee"""
+    
+    facility: str = Field(description="Facility name")
+    category: str = Field(description="Unmapped category (e.g., 'Unmapped Nursing')")
+    employee_name: str = Field(description="Employee name")
+    employee_id: str = Field(description="Employee identifier")
+    total_hours: float = Field(description="Total hours worked in this category", ge=0)
+    percentage_of_category: float = Field(description="Percentage of this category's total hours", ge=0.0, le=100.0)
+    analysis_period_start: datetime = Field(description="Start of analysis period")
+    analysis_period_end: datetime = Field(description="End of analysis period")
+    
+    @validator('total_hours', 'percentage_of_category')
+    def round_values(cls, v):
+        return round(v, 2)
+
+
+class UnmappedCategorySummary(BaseModel):
+    """Summary statistics for an unmapped category"""
+    
+    facility: str = Field(description="Facility name")
+    category: str = Field(description="Unmapped category (e.g., 'Unmapped Nursing')")
+    total_hours: float = Field(description="Total hours in this category", ge=0)
+    employee_count: int = Field(description="Number of employees in this category", ge=0)
+    percentage_of_total_unmapped: float = Field(description="Percentage of all unmapped hours", ge=0.0, le=100.0)
+    average_hours_per_employee: float = Field(description="Average hours per employee", ge=0)
+    analysis_period_start: datetime = Field(description="Start of analysis period")
+    analysis_period_end: datetime = Field(description="End of analysis period")
+    
+    @validator('total_hours', 'percentage_of_total_unmapped', 'average_hours_per_employee')
+    def round_values(cls, v):
+        return round(v, 2)
+
+
 class DataQualitySummary(BaseModel):
     """Summary of data quality issues for reporting"""
     
@@ -227,4 +261,36 @@ class DataQualitySummary(BaseModel):
     
     @validator('data_quality_score')
     def round_quality_score(cls, v):
+        return round(v, 2)
+
+
+class OvertimeEmployee(BaseModel):
+    """Employee overtime data for reporting"""
+    
+    employee_id: str = Field(description="Employee identifier")
+    employee_name: str = Field(description="Employee name")
+    total_overtime_hours: float = Field(description="Total overtime hours during period", ge=0)
+    days_with_overtime: int = Field(description="Number of days with overtime", ge=0)
+    average_daily_overtime: float = Field(description="Average daily overtime hours", ge=0)
+    primary_role: str = Field(description="Most common role worked during period")
+    rank: int = Field(description="Rank in top overtime list (1, 2, 3, etc.)", ge=1)
+    
+    @validator('total_overtime_hours', 'average_daily_overtime')
+    def round_hours(cls, v):
+        return round(v, 2)
+
+
+class OvertimeAnalysis(BaseModel):
+    """Overtime analysis results for a facility"""
+    
+    facility: str = Field(description="Facility name")
+    top_employees: List[OvertimeEmployee] = Field(description="Top N employees by overtime hours")
+    total_employees_with_overtime: int = Field(description="Total employees with any overtime", ge=0)
+    top_count_requested: int = Field(description="Number of top employees requested", ge=1)
+    total_overtime_hours_facility: float = Field(description="Total overtime hours for entire facility", ge=0)
+    analysis_period_start: datetime = Field(description="Start of analysis period")
+    analysis_period_end: datetime = Field(description="End of analysis period")
+    
+    @validator('total_overtime_hours_facility')
+    def round_facility_hours(cls, v):
         return round(v, 2)

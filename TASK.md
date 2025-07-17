@@ -74,6 +74,11 @@
 
 ### 🔄 Current Tasks
 
+#### Report Configuration & Controls (2025-07-17)
+- [ ] **Report element visibility controls** - Add true/false constants to selectively enable/disable report sections
+- [ ] **PDF generator integration** - Update PDF generator to read and pass control constants to template
+- [ ] **Template conditional rendering** - Modify HTML template to conditionally show/hide sections based on control flags
+
 #### Testing & Quality Assurance
 - [ ] **Unit test framework setup** - Create pytest structure with fixtures
 - [ ] **Core function testing** - Test statistical calculations and data processing
@@ -129,6 +134,15 @@
 - [x] **Display mapping functions** - Built complete API with get_standard, get_short, reverse lookup, validation, and convenience functions
 - [x] **Comprehensive testing** - Created 24 test cases covering all mapping scenarios, validation, model data integration, and display name quality
 - [x] **Data integrity preservation** - Ensured model role names remain unchanged for data processing while enabling flexible display options
+
+#### Unmapped Hours Breakout Report (2025-07-15)
+- [x] **Unmapped hours analysis module** - Created comprehensive analysis module (src/analysis/unmapped_analysis.py) with functions for extraction, aggregation, and summary statistics
+- [x] **Data models enhancement** - Added UnmappedHoursResult and UnmappedCategorySummary Pydantic models for type safety and validation
+- [x] **PDF generator integration** - Extended PDF report generator to include unmapped hours analysis and integrate with existing report pipeline
+- [x] **HTML template enhancement** - Added professional unmapped hours section to facility report template with category breakdowns, employee details, and summary statistics
+- [x] **Report integration** - Seamlessly integrated unmapped hours analysis into existing report generation pipeline without disrupting existing functionality
+- [x] **Comprehensive testing** - Created 24 unit tests covering unmapped role detection, data extraction, aggregation, summary calculations, and end-to-end workflow
+- [x] **Display formatting** - Implemented formatted display showing categories → employees → hours with percentages and summary statistics
 
 ### 🚀 Future Roadmap
 
