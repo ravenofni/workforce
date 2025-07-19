@@ -74,6 +74,12 @@
 
 ### 🔄 Current Tasks
 
+#### Report Text & Filtering Improvements (2025-07-18)
+- [x] **Terminology standardization** - Replace all instances of "over"/"under" with "above model"/"below model" throughout reporting
+- [x] **Report title update** - Change top-level report title from "workforce model report" to "workforce model utilization"
+- [x] **Variance filter configuration** - Add configurable flag in constants file to control variance display (all/above model/below model)
+- [x] **Top 3 variance roles filtering** - Apply variance filter to top 3 variance roles table and other report sections
+
 #### Report Configuration & Controls (2025-07-17)
 - [ ] **Report element visibility controls** - Add true/false constants to selectively enable/disable report sections
 - [ ] **PDF generator integration** - Update PDF generator to read and pass control constants to template
@@ -126,6 +132,17 @@
 
 #### Utility Module Development (2025-07-15)
 - [x] **Weekday converter utility** - Created comprehensive weekday conversion module with full test suite
+
+#### Performance Optimization & Model Data Service Enhancement (2025-07-18)
+- [x] **PDF generation performance fix** - Fixed critical hanging issue during PDF generation (2+ minutes hang resolved)
+- [x] **Role shift hours caching** - Implemented caching in overtime analysis to eliminate O(n*m) complexity
+- [x] **Model data service format detection fix** - Corrected format detection logic that was incorrectly identifying new format as legacy
+- [x] **Facility-specific model hours fix** - Fixed issue where facility model adherence showed 143,000 hours (all facilities) instead of facility-specific hours
+- [x] **Period calculation optimization** - Replaced date iteration loops with vectorized arithmetic operations in ModelDataService
+- [x] **Variance calculation performance** - Optimized _calculate_period_variance_by_role method to use simple arithmetic instead of date loops
+- [x] **Backward compatibility removal** - Removed legacy model functions and unnecessary compatibility code as requested
+- [x] **Debug logging cleanup** - Removed excessive debug logging that was impacting performance
+- [x] **Model data service integration** - Full integration of ModelDataService throughout the application for consistent facility-aware operations
 
 #### Role Display Mapping System (2025-07-15)
 - [x] **Model data role analysis** - Extracted and analyzed 44 unique roles from model data to understand display mapping requirements

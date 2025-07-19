@@ -24,11 +24,25 @@ Example Usage:
 """
 
 import logging
+import pandas as pd
 from typing import Dict, Optional, List, Tuple, Union, Any
 
-from config.constants import RoleDisplayPreference, DEFAULT_ROLE_DISPLAY_PREFERENCES
+from config.constants import RoleDisplayPreference, DEFAULT_ROLE_DISPLAY_PREFERENCES, FileColumns, DISPLAY_UNMAPPED_TERM
 
 logger = logging.getLogger(__name__)
+
+
+def _apply_display_term_replacement(display_name: str) -> str:
+    """
+    Replace 'Unmapped' with the configurable display term in role display names.
+    
+    Args:
+        display_name: Original display name
+        
+    Returns:
+        Display name with unmapped term replaced
+    """
+    return display_name.replace("Unmapped", DISPLAY_UNMAPPED_TERM)
 
 
 # Complete role display mappings for all 44 model data roles
@@ -263,7 +277,7 @@ ROLE_DISPLAY_MAPPINGS: Dict[str, Dict[str, Union[str, float]]] = {
         "function": "non-clinical"
     },
     "HC Navigator (5 days)": {
-        "standard": "Healthcare Navigator (5 days)",
+        "standard": "Healthcare Navigator",
         "short": "Navigator",
         "standard_shift_hours": 8.0,
         "function": "non-clinical"
@@ -347,7 +361,7 @@ def get_standard_display_name(model_role: str) -> str:
         model_role: Exact model role name from data
         
     Returns:
-        User-friendly standard display name
+        User-friendly standard display name with configurable unmapped term
         
     Raises:
         KeyError: If model role is not found in mappings
@@ -356,7 +370,8 @@ def get_standard_display_name(model_role: str) -> str:
         logger.warning(f"Model role '{model_role}' not found in display mappings")
         raise KeyError(f"No display mapping found for model role: '{model_role}'")
     
-    return ROLE_DISPLAY_MAPPINGS[model_role]["standard"]
+    standard_name = ROLE_DISPLAY_MAPPINGS[model_role]["standard"]
+    return _apply_display_term_replacement(standard_name)
 
 
 def get_short_display_name(model_role: str) -> str:
@@ -367,7 +382,7 @@ def get_short_display_name(model_role: str) -> str:
         model_role: Exact model role name from data
         
     Returns:
-        Abbreviated display name for space-constrained contexts
+        Abbreviated display name for space-constrained contexts with configurable unmapped term
         
     Raises:
         KeyError: If model role is not found in mappings
@@ -376,12 +391,15 @@ def get_short_display_name(model_role: str) -> str:
         logger.warning(f"Model role '{model_role}' not found in display mappings")
         raise KeyError(f"No display mapping found for model role: '{model_role}'")
     
-    return ROLE_DISPLAY_MAPPINGS[model_role]["short"]
+    short_name = ROLE_DISPLAY_MAPPINGS[model_role]["short"]
+    return _apply_display_term_replacement(short_name)
 
 
 def get_standard_shift_hours(model_role: str) -> float:
     """
     Get the standard shift hours for a model role.
+    LEGACY FUNCTION: Uses static mappings only.
+    For dynamic hours from model data, use get_dynamic_shift_hours() instead.
     
     Args:
         model_role: Exact model role name from data
@@ -397,6 +415,161 @@ def get_standard_shift_hours(model_role: str) -> float:
         raise KeyError(f"No display mapping found for model role: '{model_role}'")
     
     return float(ROLE_DISPLAY_MAPPINGS[model_role]["standard_shift_hours"])
+
+
+def get_dynamic_shift_hours(model_role: str, model_data: Optional[pd.DataFrame] = None, 
+                          facility: Optional[str] = None) -> float:
+    """
+    Get shift hours for a role, preferring dynamic model data over static mappings.
+    
+    Args:
+        model_role: Exact model role name from data
+        model_data: DataFrame with model data (optional)
+        facility: Facility name for facility-specific lookup (optional)
+        
+    Returns:
+        Shift hours for the role (dynamic if available, static fallback)
+        
+    Raises:
+        KeyError: If model role is not found in either model data or static mappings
+    """
+    # Try to get dynamic hours from model data first
+    if model_data is not None and not model_data.empty:
+        dynamic_hours = _get_hours_from_model_data(model_role, model_data, facility)
+        if dynamic_hours is not None:
+            logger.debug(f"Using dynamic shift hours for {model_role}: {dynamic_hours}")
+            return dynamic_hours
+    
+    # Fallback to static mapping
+    logger.debug(f"Using static shift hours for {model_role}")
+    return get_standard_shift_hours(model_role)
+
+
+def _get_hours_from_model_data(model_role: str, model_data: pd.DataFrame, 
+                              facility: Optional[str] = None) -> Optional[float]:
+    """
+    Extract shift hours from model data for a specific role.
+    
+    Args:
+        model_role: Role name to look up
+        model_data: DataFrame with model data
+        facility: Facility name for filtering (optional)
+        
+    Returns:
+        Daily hours per role if found, None otherwise
+    """
+    try:
+        # Check if new format columns are available
+        if FileColumns.MODEL_DAILY_HOURS_PER_ROLE not in model_data.columns:
+            logger.debug("DAILY_HOURS_PER_ROLE column not found in model data")
+            return None
+        
+        # Filter by facility if provided
+        if facility and FileColumns.MODEL_LOCATION_NAME in model_data.columns:
+            facility_data = model_data[model_data[FileColumns.MODEL_LOCATION_NAME] == facility]
+            if facility_data.empty:
+                logger.debug(f"No model data found for facility: {facility}")
+                return None
+        else:
+            facility_data = model_data
+        
+        # Filter by role
+        role_data = facility_data[facility_data[FileColumns.MODEL_STAFF_ROLE_NAME] == model_role]
+        
+        if role_data.empty:
+            logger.debug(f"No model data found for role: {model_role}")
+            return None
+        
+        # Get daily hours per role (should be consistent across days)
+        daily_hours = float(role_data.iloc[0][FileColumns.MODEL_DAILY_HOURS_PER_ROLE])
+        logger.debug(f"Found daily hours for {model_role}: {daily_hours}")
+        return daily_hours
+        
+    except Exception as e:
+        logger.warning(f"Error extracting hours from model data for {model_role}: {e}")
+        return None
+
+
+def get_role_shift_hours_by_facility(model_data: pd.DataFrame, facility: str) -> Dict[str, float]:
+    """
+    Get shift hours for all roles in a specific facility from model data.
+    
+    Args:
+        model_data: DataFrame with model data
+        facility: Facility name
+        
+    Returns:
+        Dictionary mapping role names to their daily shift hours for the facility
+    """
+    role_hours = {}
+    
+    # Check if new format is available
+    if FileColumns.MODEL_DAILY_HOURS_PER_ROLE not in model_data.columns:
+        logger.warning("DAILY_HOURS_PER_ROLE column not found, cannot get facility-specific hours")
+        return role_hours
+    
+    # Filter by facility
+    if FileColumns.MODEL_LOCATION_NAME not in model_data.columns:
+        logger.warning("LOCATION_NAME column not found, cannot filter by facility")
+        return role_hours
+    
+    facility_data = model_data[model_data[FileColumns.MODEL_LOCATION_NAME] == facility]
+    
+    if facility_data.empty:
+        logger.warning(f"No model data found for facility: {facility}")
+        return role_hours
+    
+    # Get unique roles and their hours
+    for role in facility_data[FileColumns.MODEL_STAFF_ROLE_NAME].unique():
+        role_data = facility_data[facility_data[FileColumns.MODEL_STAFF_ROLE_NAME] == role]
+        if not role_data.empty:
+            daily_hours = float(role_data.iloc[0][FileColumns.MODEL_DAILY_HOURS_PER_ROLE])
+            role_hours[role] = daily_hours
+    
+    logger.info(f"Retrieved shift hours for {len(role_hours)} roles in {facility}")
+    return role_hours
+
+
+def update_role_shift_hours_from_model_data(model_data: pd.DataFrame, facility: Optional[str] = None) -> int:
+    """
+    Update static role mappings with dynamic hours from model data.
+    WARNING: This modifies the global ROLE_DISPLAY_MAPPINGS dictionary.
+    
+    Args:
+        model_data: DataFrame with model data
+        facility: Facility to get data from (uses first facility if None)
+        
+    Returns:
+        Number of roles updated
+    """
+    if model_data.empty:
+        logger.warning("Cannot update mappings from empty model data")
+        return 0
+    
+    # If no facility specified, use the first facility in the data
+    if facility is None:
+        if FileColumns.MODEL_LOCATION_NAME in model_data.columns:
+            facility = model_data[FileColumns.MODEL_LOCATION_NAME].iloc[0]
+            logger.info(f"Using first facility for mapping update: {facility}")
+        else:
+            logger.warning("No facility column found in model data")
+            return 0
+    
+    # Get role hours for the facility
+    role_hours = get_role_shift_hours_by_facility(model_data, facility)
+    
+    updated_count = 0
+    for role, hours in role_hours.items():
+        if role in ROLE_DISPLAY_MAPPINGS:
+            old_hours = ROLE_DISPLAY_MAPPINGS[role]["standard_shift_hours"]
+            ROLE_DISPLAY_MAPPINGS[role]["standard_shift_hours"] = hours
+            logger.info(f"Updated {role}: {old_hours} → {hours} hours")
+            updated_count += 1
+        else:
+            logger.warning(f"Role '{role}' not found in static mappings, skipping")
+    
+    logger.info(f"Updated {updated_count} role mappings from model data")
+    return updated_count
 
 
 def get_role_function(model_role: str) -> str:

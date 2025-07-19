@@ -12,7 +12,8 @@ from datetime import datetime
 from config.constants import (
     MODEL_REQUIRED_COLUMNS,
     DATE_FORMAT,
-    FileColumns
+    FileColumns,
+    ComparisonType
 )
 from src.models.data_models import ModelHours, DataQualityException
 
@@ -44,6 +45,27 @@ def load_model_data(file_path: str) -> tuple[pd.DataFrame, List[DataQualityExcep
         # PATTERN: CSV loading with column validation
         df = pd.read_csv(file_path)
         logger.info(f"Loaded {len(df)} rows from model data file")
+        
+        # Check for and handle row number column if present
+        if FileColumns.MODEL_ROW_NUMBER in df.columns:
+            logger.info("Detected row number column in model data - removing for processing")
+            df = df.drop(columns=[FileColumns.MODEL_ROW_NUMBER])
+        
+        # Log new columns if present (for future use)
+        new_columns = [
+            FileColumns.MODEL_COMPANY_WORKDAY_ID,
+            FileColumns.MODEL_LOCATION_WORKDAY_ID,
+            FileColumns.MODEL_TOTAL_MINUTES,
+            FileColumns.MODEL_WORKDAY_MODEL_WID,
+            FileColumns.MODEL_COST_CENTER,
+            FileColumns.MODEL_STAFF_COUNT,
+            FileColumns.MODEL_DAILY_HOURS_PER_ROLE
+        ]
+        
+        detected_new_columns = [col for col in new_columns if col in df.columns]
+        if detected_new_columns:
+            logger.info(f"Detected new model data columns: {detected_new_columns}")
+            logger.info("These columns are available for future use but will not affect current processing")
         
         # CRITICAL: Validate all required columns exist
         missing_cols = [col for col in MODEL_REQUIRED_COLUMNS if col not in df.columns]
@@ -328,6 +350,8 @@ def get_model_hours_for_facility_role(df: pd.DataFrame, facility: str, role: str
 def get_model_hours_for_facility_role_day(df: pd.DataFrame, facility: str, role: str, day_of_week: str) -> float:
     """
     Get model hours for a specific facility, role, and day of week combination.
+    LEGACY FUNCTION: Uses TOTAL_HOURS for backward compatibility.
+    For new model data format, use ModelDataService instead.
     
     Args:
         df: DataFrame with model data
@@ -345,3 +369,122 @@ def get_model_hours_for_facility_role_day(df: pd.DataFrame, facility: str, role:
     
     logger.debug(f"No model hours found for {facility} - {role} - {day_of_week}")
     return 0.0
+
+
+def get_facility_model_hours_new_format(df: pd.DataFrame, facility: str, role: str, day_of_week: str, 
+                                       comparison_type: ComparisonType = ComparisonType.TOTAL_STAFF) -> float:
+    """
+    Get model hours for a specific facility, role, and day using the new model data format.
+    Supports both total-staff and per-person comparisons.
+    
+    Args:
+        df: DataFrame with model data (new format)
+        facility: Facility name
+        role: Role name
+        day_of_week: Day of the week (e.g., 'Monday', 'Sunday')
+        comparison_type: Type of comparison (TOTAL_STAFF or PER_PERSON)
+        
+    Returns:
+        Expected hours based on comparison type, or 0.0 if not found
+    """
+    # Check if new format columns are available
+    required_new_cols = [FileColumns.MODEL_DAILY_HOURS_PER_ROLE, FileColumns.MODEL_STAFF_COUNT]
+    if not all(col in df.columns for col in required_new_cols):
+        logger.warning("New format columns not found, falling back to legacy function")
+        return get_model_hours_for_facility_role_day(df, facility, role, day_of_week)
+    
+    match = df[
+        (df[FileColumns.MODEL_LOCATION_NAME] == facility) & 
+        (df[FileColumns.MODEL_STAFF_ROLE_NAME] == role) & 
+        (df[FileColumns.MODEL_DAY_OF_WEEK] == day_of_week)
+    ]
+    
+    if match.empty:
+        logger.debug(f"No model data found for {facility} - {role} - {day_of_week}")
+        return 0.0
+    
+    record = match.iloc[0]
+    daily_hours_per_role = float(record[FileColumns.MODEL_DAILY_HOURS_PER_ROLE])
+    staff_count = float(record[FileColumns.MODEL_STAFF_COUNT])
+    
+    if comparison_type == ComparisonType.TOTAL_STAFF:
+        return daily_hours_per_role * staff_count
+    elif comparison_type == ComparisonType.PER_PERSON:
+        return daily_hours_per_role
+    else:
+        raise ValueError(f"Unknown comparison type: {comparison_type}")
+
+
+def get_facility_daily_hours_per_role(df: pd.DataFrame, facility: str, role: str) -> float:
+    """
+    Get daily hours per role for a facility/role combination from new model format.
+    
+    Args:
+        df: DataFrame with model data (new format)
+        facility: Facility name
+        role: Role name
+        
+    Returns:
+        Daily hours per role, or 0.0 if not found
+    """
+    if FileColumns.MODEL_DAILY_HOURS_PER_ROLE not in df.columns:
+        logger.warning("DAILY_HOURS_PER_ROLE column not found in model data")
+        return 0.0
+    
+    facility_data = df[df[FileColumns.MODEL_LOCATION_NAME] == facility]
+    role_data = facility_data[facility_data[FileColumns.MODEL_STAFF_ROLE_NAME] == role]
+    
+    if role_data.empty:
+        logger.debug(f"No model data found for {facility} - {role}")
+        return 0.0
+    
+    # Return the daily hours per role (should be consistent across days for same role)
+    return float(role_data.iloc[0][FileColumns.MODEL_DAILY_HOURS_PER_ROLE])
+
+
+def get_facility_staff_count(df: pd.DataFrame, facility: str, role: str) -> float:
+    """
+    Get staff count for a facility/role combination from new model format.
+    
+    Args:
+        df: DataFrame with model data (new format)
+        facility: Facility name
+        role: Role name
+        
+    Returns:
+        Staff count for the role, or 0.0 if not found
+    """
+    if FileColumns.MODEL_STAFF_COUNT not in df.columns:
+        logger.warning("STAFF_COUNT column not found in model data")
+        return 0.0
+    
+    facility_data = df[df[FileColumns.MODEL_LOCATION_NAME] == facility]
+    role_data = facility_data[facility_data[FileColumns.MODEL_STAFF_ROLE_NAME] == role]
+    
+    if role_data.empty:
+        logger.debug(f"No model data found for {facility} - {role}")
+        return 0.0
+    
+    # Return the staff count (should be consistent across days for same role)
+    return float(role_data.iloc[0][FileColumns.MODEL_STAFF_COUNT])
+
+
+def get_facility_roles(df: pd.DataFrame, facility: str) -> List[str]:
+    """
+    Get list of all roles for a specific facility.
+    
+    Args:
+        df: DataFrame with model data
+        facility: Facility name
+        
+    Returns:
+        List of role names for the facility
+    """
+    facility_data = df[df[FileColumns.MODEL_LOCATION_NAME] == facility]
+    
+    if facility_data.empty:
+        logger.debug(f"No model data found for facility: {facility}")
+        return []
+    
+    roles = facility_data[FileColumns.MODEL_STAFF_ROLE_NAME].unique().tolist()
+    return sorted(roles)

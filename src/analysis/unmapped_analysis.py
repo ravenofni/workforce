@@ -290,6 +290,7 @@ def format_unmapped_hours_for_display(
         category_details[result.category].append({
             'employee_name': result.employee_name,
             'employee_id': result.employee_id,
+            'category': result.category,  # Include the role/category for display
             'total_hours': result.total_hours,
             'percentage_of_category': result.percentage_of_category
         })

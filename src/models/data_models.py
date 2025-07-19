@@ -312,15 +312,64 @@ class OvertimeAnalysis(BaseModel):
         return round(v, 2)
 
 
-class UnmappedEmployee(BaseModel):
-    """Employee unmapped hours data for reporting"""
+class VarianceEmployee(BaseModel):
+    """Employee variance data for reporting (hours above model)"""
     
     employee_id: str = Field(description="Employee identifier")
     employee_name: str = Field(description="Employee name")
-    total_unmapped_hours: float = Field(description="Total unmapped hours during period", ge=0)
-    days_with_unmapped: int = Field(description="Number of days with unmapped hours", ge=0)
-    average_daily_unmapped: float = Field(description="Average daily unmapped hours", ge=0)
-    primary_category: str = Field(description="Most common unmapped category worked during period")
+    total_variance_hours: float = Field(description="Total variance hours above model during period", ge=0)
+    days_with_variance: int = Field(description="Number of days with variance above model", ge=0)
+    average_daily_variance: float = Field(description="Average daily variance hours above model", ge=0)
+    primary_role: str = Field(description="Most common role worked during period")
+    rank: int = Field(description="Rank in top variance list (1, 2, 3, etc.)", ge=1)
+    
+    @validator('total_variance_hours', 'average_daily_variance')
+    def round_hours(cls, v):
+        return round(v, 2)
+
+
+class VarianceFunctionGroup(BaseModel):
+    """Variance employees grouped by function (clinical/non-clinical)"""
+    
+    function: str = Field(description="Function type: clinical or non-clinical")
+    display_name: str = Field(description="Display name for the function group")
+    employees: List[VarianceEmployee] = Field(description="Top employees in this function group")
+    total_variance_hours: float = Field(description="Total variance hours for this function", ge=0)
+    total_employees_in_function: int = Field(description="Total employees with variance in this function", ge=0)
+    
+    @validator('total_variance_hours')
+    def round_group_hours(cls, v):
+        return round(v, 2)
+
+
+class VarianceEmployeesAnalysis(BaseModel):
+    """Variance employees analysis results for a facility (hours above model)"""
+    
+    facility: str = Field(description="Facility name")
+    top_employees: List[VarianceEmployee] = Field(description="Top N employees by variance hours (legacy)")
+    clinical_group: Optional[VarianceFunctionGroup] = Field(default=None, description="Clinical employees group")
+    non_clinical_group: Optional[VarianceFunctionGroup] = Field(default=None, description="Non-clinical employees group")
+    total_employees_with_variance: int = Field(description="Total employees with any variance above model", ge=0)
+    top_count_requested: int = Field(description="Number of top employees requested", ge=1)
+    total_variance_hours_facility: float = Field(description="Total variance hours for entire facility", ge=0)
+    analysis_period_start: datetime = Field(description="Start of analysis period")
+    analysis_period_end: datetime = Field(description="End of analysis period")
+    
+    @validator('total_variance_hours_facility')
+    def round_facility_hours(cls, v):
+        return round(v, 2)
+
+
+class UnmappedEmployee(BaseModel):
+    """Employee unmapped hours data for reporting (per employee-role combination)"""
+    
+    employee_id: str = Field(description="Employee identifier")
+    employee_name: str = Field(description="Employee name")
+    role: str = Field(description="Role being worked by the employee")
+    total_unmapped_hours: float = Field(description="Total unmapped hours during period for this role", ge=0)
+    days_with_unmapped: int = Field(description="Number of days with unmapped hours for this role", ge=0)
+    average_daily_unmapped: float = Field(description="Average daily unmapped hours for this role", ge=0)
+    primary_category: str = Field(description="Most common unmapped category worked during period for this role")
     rank: int = Field(description="Rank in top unmapped list (1, 2, 3, etc.)", ge=1)
     
     @validator('total_unmapped_hours', 'average_daily_unmapped')
@@ -339,6 +388,33 @@ class UnmappedFunctionGroup(BaseModel):
     
     @validator('total_unmapped_hours')
     def round_group_hours(cls, v):
+        return round(v, 2)
+
+
+class EmployeeOvertimeSummary(BaseModel):
+    """Summary of overtime hours for a single employee"""
+    
+    employee_id: str = Field(description="Employee identifier")
+    employee_name: str = Field(description="Employee name")
+    total_hours: float = Field(description="Total hours worked across all roles", ge=0)
+    overtime_hours: float = Field(description="Hours over the overtime threshold", ge=0)
+    primary_role: str = Field(description="Role where employee worked most hours")
+    
+    @validator('total_hours', 'overtime_hours')
+    def round_hours(cls, v):
+        return round(v, 2)
+
+
+class OvertimeResult(BaseModel):
+    """Result of overtime analysis for a facility"""
+    
+    facility: str = Field(description="Facility name")
+    total_overtime_hours: float = Field(description="Total overtime hours for the facility", ge=0)
+    employee_count: int = Field(description="Number of employees with overtime", ge=0)
+    top_overtime_employees: List[EmployeeOvertimeSummary] = Field(description="Top employees by overtime hours")
+    
+    @validator('total_overtime_hours')
+    def round_hours(cls, v):
         return round(v, 2)
 
 

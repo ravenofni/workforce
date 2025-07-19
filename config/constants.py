@@ -21,6 +21,16 @@ class FileColumns:
     MODEL_WORKFORCE_MODEL_ROLE_SORT = "WORKFORCE_MODEL_ROLE_SORT"
     MODEL_COST_CENTER_SORT = "COST_CENTER_SORT"
     
+    # New model data columns (added in updated format)
+    MODEL_ROW_NUMBER = "1"  # First column appears to be row number
+    MODEL_COMPANY_WORKDAY_ID = "COMPANY_WORKDAY_ID"
+    MODEL_LOCATION_WORKDAY_ID = "LOCATION_WORKDAY_ID"
+    MODEL_TOTAL_MINUTES = "TOTAL_MINUTES"
+    MODEL_WORKDAY_MODEL_WID = "WORKDAY_MODEL_WID"
+    MODEL_COST_CENTER = "COST_CENTER"
+    MODEL_STAFF_COUNT = "STAFF_COUNT"
+    MODEL_DAILY_HOURS_PER_ROLE = "DAILY_HOURS_PER_ROLE"
+    
     # Facility data columns (from SampleFacilityData.csv)
     FACILITY_LOCATION_KEY = "LOCATION_KEY"
     FACILITY_LOCATION_NAME = "LOCATION_NAME"
@@ -48,6 +58,12 @@ class ControlMethod(str, Enum):
     """Statistical control methods based on normality testing"""
     NORMAL = "normal"        # Standard deviation method for normal distributions
     MAD = "mad"             # Median Absolute Deviation for non-normal distributions
+
+
+class ComparisonType(str, Enum):
+    """Types of variance comparison analysis"""
+    TOTAL_STAFF = "total_staff"      # Compare total actual vs total expected hours (budget/efficiency focus)
+    PER_PERSON = "per_person"        # Compare average actual vs expected hours per person (workload focus)
 
 
 class DayOfWeek(int, Enum):
@@ -90,6 +106,13 @@ DEFAULT_WEEKS_FOR_CONTROL = 12     # Default weeks for control limit calculation
 DEFAULT_WEEKS_FOR_TRENDS = 8       # Default weeks for trend analysis
 
 # Role display preferences
+class VarianceFilter(str, Enum):
+    """Variance filter options for report sections"""
+    ALL = "all"                    # Show all variances (above and below model)
+    ABOVE_MODEL = "above_model"    # Show only above model variances
+    BELOW_MODEL = "below_model"    # Show only below model variances
+
+
 class RoleDisplayPreference(str, Enum):
     """Role display name preferences for different contexts"""
     STANDARD = "standard"  # Full, user-friendly display names
@@ -106,10 +129,14 @@ DEFAULT_ROLE_DISPLAY_PREFERENCES = {
     "export": RoleDisplayPreference.STANDARD,     # Data exports use readable names
 }
 
+# Overtime calculation constants
+OVERTIME_THRESHOLD = 35.0                        # Standard work week hours for overtime calculation (lowered for testing)
+REPORT_SHOW_TOP_OVERTIME = True                  # Show top N overtime employees section
+REPORT_TOP_OVERTIME_COUNT = 3                    # Number of top overtime employees to show
+
 # Report Display Controls - Toggle visibility of report sections
 # These constants control which sections appear in the generated PDF reports
 REPORT_SHOW_FACILITY_MODEL_ADHERENCE = True     # KPI group showing model vs actual hours
-REPORT_SHOW_FACILITY_ROLE_ADHERENCE = True      # KPI group showing role-level exceptions
 REPORT_SHOW_VARIANCE_BY_DAY = False             # Variance by day of week table
 REPORT_SHOW_UNMAPPED_HOURS = True              # Unmapped hours breakdown section
 REPORT_SHOW_VISUAL_ANALYSIS = False             # Visual analysis section with all charts
@@ -119,10 +146,16 @@ REPORT_SHOW_TREND_CHARTS = False                # Trend analysis charts
 REPORT_SHOW_CONTROL_LIMITS_CHART = False        # Statistical control limits chart
 REPORT_SHOW_EXCEPTION_DETAILS = False           # Detailed exception list section
 REPORT_SHOW_STATISTICAL_SUMMARY = False         # Statistical summary table
-REPORT_SHOW_TOP_OVERTIME = True                 # Top N overtime employees section
-REPORT_TOP_OVERTIME_COUNT = 3                   # Number of top overtime employees to show
+REPORT_SHOW_TOP_VARIANCE_EMPLOYEES = True       # Top N variance employees section
+REPORT_TOP_VARIANCE_EMPLOYEES_COUNT = 3         # Number of top variance employees to show
 REPORT_SHOW_TOP_UNMAPPED = True                 # Top N unmapped hours employees section
 REPORT_TOP_UNMAPPED_COUNT = 3                   # Number of top unmapped employees to show
+REPORT_SHOW_TOP_VARIANCE_ROLES = True           # Top 3 variance roles section
+REPORT_TOP_VARIANCE_ROLES_COUNT = 3             # Number of top variance roles to show per function group
+REPORT_VARIANCE_FILTER = VarianceFilter.ABOVE_MODEL  # Filter for variance display (all/above_model/below_model)
+
+# Display terminology settings
+DISPLAY_UNMAPPED_TERM = "Uncategorized"         # Term to display instead of "unmapped" in reports
 
 # Required columns for validation
 MODEL_REQUIRED_COLUMNS: List[str] = [

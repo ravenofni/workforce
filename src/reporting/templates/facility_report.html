@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workforce Model Report - {{ facility_name }}</title>
+    <title>Workforce Model Utilization - {{ facility_name }}</title>
     <style>
         /* Professional styling for PDF reports */
         
@@ -50,7 +50,6 @@
         
         .section {
             margin: 30px 0;
-            page-break-inside: avoid;
         }
         
         /* Eliminate top margin for first section after header */
@@ -357,7 +356,6 @@
         @media print {
             body { margin: 0; }
             .header { page-break-after: avoid; }
-            .section { page-break-inside: avoid; }
             .chart-container { page-break-inside: avoid; }
         }
     </style>
@@ -365,9 +363,8 @@
 <body>
     <!-- F-6a: Cover page with date range -->
     <div class="header">
-        <h1>Workforce Model Report</h1>
-        <div class="subtitle">{{ facility_name }}</div>
-        <div class="analysis-info">Analysis Period: {{ analysis_start_date }} to {{ analysis_end_date }}</div>
+        <h1>{{ facility_name }} - Workforce Model Utilization</h1>
+        <div class="analysis-info" style="font-size: 16px;">Analysis Period: {{ analysis_start_date }} to {{ analysis_end_date }}</div>
         <div class="generation-info">Generated: {{ generation_date }}</div>
     </div>
 
@@ -377,83 +374,31 @@
         {% if show_facility_model_adherence %}
         <div class="kpi-group">
             <h3>Facility Model Adherence</h3>
-            <div class="kpi-grid kpi-grid-2x2">
-                <div class="kpi-card kpi-card-compact hours">
-                    <span class="kpi-value">{{ kpis.total_model_hours|round(0)|int }}</span>
-                    <div class="kpi-label">Model Hours</div>
+            <div class="kpi-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                <div style="border-left: 4px solid #3498db; background: white !important; background-color: white !important; border: 1px solid #ddd; border-radius: 8px; padding: 7.5px 15px; text-align: center; box-shadow: none !important; min-width: 0; overflow: hidden;">
+                    <span style="font-size: min(22px, 4vw); font-weight: bold; color: #2c3e50; display: block; margin-bottom: 2.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ kpis.total_model_hours|round(0)|int }}</span>
+                    <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Model</div>
                 </div>
-                <div class="kpi-card kpi-card-compact hours">
-                    <span class="kpi-value">{{ kpis.total_actual_hours|round(0)|int }}</span>
-                    <div class="kpi-label">Actual Hours</div>
+                <div style="border-left: 4px solid #3498db; background: white !important; background-color: white !important; border: 1px solid #ddd; border-radius: 8px; padding: 7.5px 15px; text-align: center; box-shadow: none !important; min-width: 0; overflow: hidden;">
+                    <span style="font-size: min(22px, 4vw); font-weight: bold; color: #2c3e50; display: block; margin-bottom: 2.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ kpis.total_actual_hours|round(0)|int }}</span>
+                    <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Actual</div>
                 </div>
-                <div class="kpi-card kpi-card-compact variance">
-                    <span class="kpi-value">{{ kpis.variance_percentage|round(1) }}%</span>
-                    <div class="kpi-label">Overall Variance</div>
+                <div style="border-left: 4px solid #3498db; background: white !important; background-color: white !important; border: 1px solid #ddd; border-radius: 8px; padding: 7.5px 15px; text-align: center; box-shadow: none !important; min-width: 0; overflow: hidden;">
+                    <span style="font-size: min(22px, 4vw); font-weight: bold; color: #2c3e50; display: block; margin-bottom: 2.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{% if kpis.variance_percentage < 0 %}- {{ "%.2f"|format(-kpis.variance_percentage) }}%{% else %}+ {{ "%.2f"|format(kpis.variance_percentage) }}%{% endif %}</span>
+                    <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Variance</div>
                 </div>
-                <div class="kpi-card kpi-card-compact roles">
-                    <span class="kpi-value">{{ (100 - kpis.exception_rate)|round(1) }}%</span>
-                    <div class="kpi-label">Compliance Rate</div>
+                <div style="border-left: 4px solid #3498db; background: white !important; background-color: white !important; border: 1px solid #ddd; border-radius: 8px; padding: 7.5px 15px; text-align: center; box-shadow: none !important; min-width: 0; overflow: hidden;">
+                    <span style="font-size: min(22px, 4vw); font-weight: bold; color: #2c3e50; display: block; margin-bottom: 2.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ "%.2f"|format(100 - kpis.exception_rate) }}%</span>
+                    <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Compliance</div>
                 </div>
             </div>
         </div>
         {% endif %}
 
-        <!-- Group 2: Facility Role Adherence -->
-        {% if show_facility_role_adherence %}
-        <div class="kpi-group">
-            <h3>Facility Role Adherence</h3>
-            
-            <!-- First row: Summary metrics -->
-            <div class="kpi-grid" style="margin-bottom: 5px;">
-                <div class="kpi-card exceptions">
-                    <span class="kpi-value">{{ summary.total_exceptions }}</span>
-                    <div class="kpi-label">Total Exceptions</div>
-                </div>
-                <div class="kpi-card roles">
-                    <span class="kpi-value">{{ kpis.roles_analyzed }}</span>
-                    <div class="kpi-label">Roles Analyzed</div>
-                </div>
-                <div class="kpi-card exceptions">
-                    <span class="kpi-value">{{ kpis.exception_rate|round(1) }}%</span>
-                    <div class="kpi-label">Exception Rate</div>
-                </div>
-            </div>
-            
-            <!-- Second row: Top 3 problem roles -->
-            <div class="kpi-grid" style="grid-template-columns: 1fr 1fr 1fr; max-width: 800px;">
-                {% if top_problem_roles %}
-                    {% for role in top_problem_roles[:3] %}
-                        <div class="kpi-card exceptions">
-                            <span class="kpi-value" style="font-size: 24px; line-height: 1.2;">
-                                {{ role.split('|')[0] }}<br>
-                                <span style="font-size: 16px; color: #e74c3c; font-weight: bold;">{{ role.split('|')[1] }}</span>
-                            </span>
-                            <div class="kpi-label">#{{ loop.index }} Variance</div>
-                        </div>
-                    {% endfor %}
-                    <!-- Fill empty slots if less than 3 problem roles -->
-                    {% for i in range(top_problem_roles|length, 3) %}
-                        <div class="kpi-card roles">
-                            <span class="kpi-value" style="font-size: 14px;">✓</span>
-                            <div class="kpi-label">#{{ i + 1 }} Variance</div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <!-- No problem roles - show all as good -->
-                    {% for i in range(3) %}
-                        <div class="kpi-card roles">
-                            <span class="kpi-value" style="font-size: 14px;">✓</span>
-                            <div class="kpi-label">#{{ i + 1 }} Variance</div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
 
         <!-- Variance By Day of Week -->
         {% if show_variance_by_day and exceptions_list %}
-        <div class="kpi-group page-break">
+        <div class="kpi-group">
             <h3>Variance By Day of Week</h3>
             <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
                 Total actual hours and variance percentages by role and day of week (summed across analysis period)<br>
@@ -464,47 +409,474 @@
         </div>
         {% endif %}
 
-        <!-- Unmapped Hours Breakdown -->
-        {% if show_unmapped_hours and unmapped_hours.has_unmapped_hours %}
-        <div class="kpi-group page-break">
-            <h3>Unmapped Hours Breakdown</h3>
+
+        <!-- Top N {{ display_unmapped_term_title }} Hours Section -->
+        {% if show_top_unmapped and (top_unmapped_analysis.clinical_group or top_unmapped_analysis.non_clinical_group or top_unmapped_analysis.top_employees) %}
+        <div class="kpi-group">
+            <h3 style="margin-bottom: 4px;">Top {{ top_unmapped_analysis.top_count_requested }} {{ display_unmapped_term_title }} Hours</h3>
+            
+            <!-- Clinical Associates Group -->
+            {% if top_unmapped_analysis.clinical_group %}
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ top_unmapped_analysis.clinical_group.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ "%.2f"|format(top_unmapped_analysis.clinical_group.total_unmapped_hours) }} hours, {{ top_unmapped_analysis.clinical_group.total_employees_in_function }} employees with {{ display_unmapped_term }} hours)
+                    </span>
+                </h4>
+                
+                {% if top_unmapped_analysis.clinical_group.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 30%;">Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Days</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in top_unmapped_analysis.clinical_group.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.role|replace("Unmapped", display_unmapped_term_title) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ "%.2f"|format(employee.total_unmapped_hours) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No clinical employees found with {{ display_unmapped_term }} hours for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Non-Clinical Associates Group -->
+            {% if top_unmapped_analysis.non_clinical_group %}
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ top_unmapped_analysis.non_clinical_group.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ "%.2f"|format(top_unmapped_analysis.non_clinical_group.total_unmapped_hours) }} hours, {{ top_unmapped_analysis.non_clinical_group.total_employees_in_function }} employees with {{ display_unmapped_term }} hours)
+                    </span>
+                </h4>
+                
+                {% if top_unmapped_analysis.non_clinical_group.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 30%;">Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Days</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in top_unmapped_analysis.non_clinical_group.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.role|replace("Unmapped", display_unmapped_term_title) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ "%.2f"|format(employee.total_unmapped_hours) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No non-clinical employees found with {{ display_unmapped_term }} hours for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Fallback: Show ungrouped data if no function groups are available -->
+            {% if not top_unmapped_analysis.clinical_group and not top_unmapped_analysis.non_clinical_group and top_unmapped_analysis.top_employees %}
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    Top {{ display_unmapped_term_title }} Associates
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        (Function grouping unavailable)
+                    </span>
+                </h4>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 30%;">Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Days</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in top_unmapped_analysis.top_employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.role|replace("Unmapped", display_unmapped_term_title) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ "%.2f"|format(employee.total_unmapped_hours) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            
+        </div>
+        {% elif show_top_unmapped %}
+        <div class="kpi-group">
+            <h3>Top {{ top_unmapped_analysis.top_count_requested }} {{ display_unmapped_term_title }} Hours</h3>
+            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 5px; color: #27ae60;">
+                <span style="font-size: 24px;">✅</span><br>
+                <strong>Excellent!</strong> No {{ display_unmapped_term }} hours found during this period.
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Top N Overtime Employees Section -->
+        {% if show_top_overtime and overtime_analysis %}
+        <div class="kpi-group">
+            <h3 style="margin-bottom: 4px;">Top {{ top_overtime_count }} Overtime Employees</h3>
             
             <!-- Summary Statistics -->
-            <div style="margin-bottom: 12px; padding: 8px; background-color: #f8f9fa; border-radius: 5px;">
+            <div style="margin-bottom: 10px; padding: 6px; background-color: #f8f9fa; border-radius: 5px;">
                 <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
-                    <div>Total Unmapped Hours: <span style="color: #e74c3c;">{{ unmapped_hours.total_unmapped_hours|round(2) }}</span></div>
-                    <div>Categories: <span style="color: #e74c3c;">{{ unmapped_hours.total_categories }}</span></div>
+                    <div>Total Overtime Hours: <span style="color: #e74c3c;">{{ "%.2f"|format(overtime_analysis.total_overtime_hours) }}</span></div>
+                    <div>Employees with Overtime: <span style="color: #e74c3c;">{{ overtime_analysis.employee_count }}</span></div>
+                </div>
+            </div>
+            
+            {% if overtime_analysis.top_employees %}
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                <thead>
+                    <tr style="background-color: #34495e; color: white;">
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 30%;">Primary Role</th>
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Total Hours</th>
+                        <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">OT Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in overtime_analysis.top_employees %}
+                    <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                        <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.name }}</td>
+                        <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
+                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ "%.2f"|format(employee.total_hours) }}</td>
+                        <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ "%.2f"|format(employee.overtime_hours) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: #666; font-style: italic; margin-bottom: 10px;">No employees found with overtime for the analysis period.</p>
+            {% endif %}
+        </div>
+        {% elif show_top_overtime %}
+        <div class="kpi-group">
+            <h3>Top {{ top_overtime_count }} Overtime Employees</h3>
+            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 5px; color: #27ae60;">
+                <span style="font-size: 24px;">✅</span><br>
+                <strong>Excellent!</strong> No employees worked overtime during this period.
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Page break before variance roles -->
+        <div style="page-break-before: always;"></div>
+
+        <!-- Top N Variance Roles Section -->
+        {% if show_top_variance_roles and variance_roles_data and (variance_roles_data.clinical_roles or variance_roles_data.non_clinical_roles) %}
+        <div class="kpi-group">
+            <h3 style="margin-bottom: 4px;">Top {{ top_variance_roles_count }} Variance Roles</h3>
+            
+            {% if variance_roles_data.clinical_roles %}
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    Clinical Roles
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ variance_roles_data.clinical_roles|length }} clinical roles with variances)
+                    </span>
+                </h4>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">Rank</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 50%;">Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">Variance Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for role in variance_roles_data.clinical_roles[:top_variance_roles_count] %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #2c3e50;">{{ loop.index }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ role.split('|')[0] }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">
+                                {% if role.split('|')[1].startswith('-') %}
+                                    - {{ role.split('|')[1][1:] }}
+                                {% else %}
+                                    {{ role.split('|')[1] }}
+                                {% endif %}
+                            </td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; color: #000;">
+                                {% if role.split('|')[1].startswith('+') %}
+                                    Above Model
+                                {% else %}
+                                    Below Model
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <!-- Fill empty slots if less than configured count clinical roles -->
+                        {% for i in range(variance_roles_data.clinical_roles[:top_variance_roles_count]|length, top_variance_roles_count) %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #2c3e50;">{{ i + 1 }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; color: #27ae60; font-style: italic;">No significant variance</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; color: #e74c3c;">-</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; color: #000;">✓</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            
+            <!-- Non-Clinical Roles Group -->
+            {% if variance_roles_data.non_clinical_roles %}
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    Non-Clinical Roles
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ variance_roles_data.non_clinical_roles|length }} non-clinical roles with variances)
+                    </span>
+                </h4>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">Rank</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 50%;">Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">Variance Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for role in variance_roles_data.non_clinical_roles[:top_variance_roles_count] %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #2c3e50;">{{ loop.index }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ role.split('|')[0] }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">
+                                {% if role.split('|')[1].startswith('-') %}
+                                    - {{ role.split('|')[1][1:] }}
+                                {% else %}
+                                    {{ role.split('|')[1] }}
+                                {% endif %}
+                            </td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; color: #000;">
+                                {% if role.split('|')[1].startswith('+') %}
+                                    Above Model
+                                {% else %}
+                                    Below Model
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <!-- Fill empty slots if less than configured count non-clinical roles -->
+                        {% for i in range(variance_roles_data.non_clinical_roles[:top_variance_roles_count]|length, top_variance_roles_count) %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #2c3e50;">{{ i + 1 }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; color: #27ae60; font-style: italic;">No significant variance</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; color: #e74c3c;">-</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; color: #000;">✓</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+        {% elif show_top_variance_roles %}
+        <div class="kpi-group">
+            <h3>Top {{ top_variance_roles_count }} Variance Roles</h3>
+            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 5px; color: #27ae60;">
+                <span style="font-size: 24px;">✅</span><br>
+                <strong>Excellent!</strong> No significant role variances found during this period.
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Top N Variance Employees Section -->
+        {% if show_top_variance_employees and (variance_employees_analysis.clinical_group or variance_employees_analysis.non_clinical_group or variance_employees_analysis.top_employees) %}
+        <div class="kpi-group">
+            <h3 style="margin-bottom: 4px;">Top {{ variance_employees_analysis.top_count_requested }} Variance Employees</h3>
+            
+            <!-- Clinical Associates Group -->
+            {% if variance_employees_analysis.clinical_group %}
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ variance_employees_analysis.clinical_group.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ "%.2f"|format(variance_employees_analysis.clinical_group.total_variance_hours) }} hours, {{ variance_employees_analysis.clinical_group.total_employees_in_function }} employees with variance)
+                    </span>
+                </h4>
+                
+                {% if variance_employees_analysis.clinical_group.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 30%;">Primary Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Variance Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Variance Days</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in variance_employees_analysis.clinical_group.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ "%.2f"|format(employee.total_variance_hours) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_variance }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No clinical employees found with variance for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Non-Clinical Associates Group -->
+            {% if variance_employees_analysis.non_clinical_group %}
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    {{ variance_employees_analysis.non_clinical_group.display_name }}
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        ({{ "%.2f"|format(variance_employees_analysis.non_clinical_group.total_variance_hours) }} hours, {{ variance_employees_analysis.non_clinical_group.total_employees_in_function }} employees with variance)
+                    </span>
+                </h4>
+                
+                {% if variance_employees_analysis.non_clinical_group.employees %}
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 30%;">Primary Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Variance Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Variance Days</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in variance_employees_analysis.non_clinical_group.employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ "%.2f"|format(employee.total_variance_hours) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_variance }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No non-clinical employees found with variance for the analysis period.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Fallback: Show ungrouped data if no function groups are available -->
+            {% if not variance_employees_analysis.clinical_group and not variance_employees_analysis.non_clinical_group and variance_employees_analysis.top_employees %}
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+                    Top Variance Employees Associates
+                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
+                        (Function grouping unavailable)
+                    </span>
+                </h4>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #34495e; color: white;">
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 30%;">Primary Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Variance Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Variance Days</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in variance_employees_analysis.top_employees %}
+                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ "%.2f"|format(employee.total_variance_hours) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_variance }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            
+        </div>
+        {% elif show_top_variance_employees %}
+        <div class="kpi-group">
+            <h3>Top {{ top_variance_employees_count }} Variance Employees</h3>
+            <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
+                No variance employees found for the analysis period
+            </p>
+            
+            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 5px; color: #27ae60;">
+                <span style="font-size: 24px;">✅</span><br>
+                <strong>Excellent!</strong> No employees had variance during this period.
+            </div>
+        </div>
+        {% endif %}
+
+
+        <!-- Page break before {{ display_unmapped_term }} hours breakdown -->
+        <div style="page-break-before: always;"></div>
+
+        <!-- {{ display_unmapped_term_title }} Hours Breakdown -->
+        {% if show_unmapped_hours and unmapped_hours.has_unmapped_hours %}
+        <div class="kpi-group">
+            <h3 style="margin-bottom: 4px;">{{ display_unmapped_term_title }} Hours Breakdown</h3>
+            
+            <!-- Summary Statistics -->
+            <div style="margin-bottom: 0px; padding: 6px; background-color: #f8f9fa; border-radius: 5px;">
+                <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
+                    <div>Total {{ display_unmapped_term_title }} Hours: <span style="color: #e74c3c;">{{ "%.2f"|format(unmapped_hours.total_unmapped_hours) }}</span></div>
                     <div>Employees: <span style="color: #e74c3c;">{{ unmapped_hours.total_employees }}</span></div>
                 </div>
             </div>
             
             <!-- Category Breakdown Tables -->
             {% for category in unmapped_hours.categories %}
-            <div style="margin-bottom: 15px;">
-                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
+            <div style="margin-bottom: 4px;">
+                <h4 style="color: #2c3e50; margin-top: 4px; margin-bottom: 4px; padding: 4px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
                     {{ category.display_name }}
                     <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
-                        ({{ category.total_hours|round(2) }} hours, {{ category.percentage_of_total_unmapped|round(1) }}% of total unmapped)
+                        ({{ "%.2f"|format(category.total_hours) }} hours, {{ "%.2f"|format(category.percentage_of_total_unmapped) }}% of total {{ display_unmapped_term }})
                     </span>
                 </h4>
                 
                 {% if category.employees %}
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 12px;">
                     <thead>
                         <tr style="background-color: #34495e; color: white;">
                             <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 40%;">Employee Name</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">ID</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">Hours</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 20%;">% of Category</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 30%;">Role</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">Hours</th>
+                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 15%;">% of Category</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for employee in category.employees %}
                         <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
                             <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.employee_name }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold;">{{ employee.total_hours|round(2) }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.percentage_of_category|round(1) }}%</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.category|replace("Unmapped", display_unmapped_term_title) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ "%.2f"|format(employee.total_hours) }}</td>
+                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ "%.2f"|format(employee.percentage_of_category) }}%</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -514,312 +886,6 @@
                 {% endif %}
             </div>
             {% endfor %}
-        </div>
-        {% endif %}
-
-        <!-- Top N Unmapped Hours Section -->
-        {% if show_top_unmapped and (top_unmapped_analysis.clinical_group or top_unmapped_analysis.non_clinical_group or top_unmapped_analysis.top_employees) %}
-        <div class="kpi-group">
-            <h3 style="margin-bottom: 8px;">Top {{ top_unmapped_analysis.top_count_requested }} Unmapped Hours</h3>
-            
-            <!-- Summary Statistics -->
-            <div style="margin-bottom: 12px; padding: 8px; background-color: #f8f9fa; border-radius: 5px;">
-                <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
-                    <div>Total Facility Unmapped: <span style="color: #e74c3c;">{{ top_unmapped_analysis.total_unmapped_hours_facility|round(2) }} hours</span></div>
-                    <div>Employees w/ Unmapped: <span style="color: #e74c3c;">{{ top_unmapped_analysis.total_employees_with_unmapped }}</span></div>
-                </div>
-            </div>
-            
-            <!-- Clinical Associates Group -->
-            {% if top_unmapped_analysis.clinical_group %}
-            <div style="margin-bottom: 15px;">
-                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
-                    {{ top_unmapped_analysis.clinical_group.display_name }}
-                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
-                        ({{ top_unmapped_analysis.clinical_group.total_unmapped_hours|round(2) }} hours, {{ top_unmapped_analysis.clinical_group.total_employees_in_function }} employees with unmapped hours)
-                    </span>
-                </h4>
-                
-                {% if top_unmapped_analysis.clinical_group.employees %}
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
-                    <thead>
-                        <tr style="background-color: #34495e; color: white;">
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Category</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">Unmapped Hours</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">Unmapped Days</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">Average Daily</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for employee in top_unmapped_analysis.clinical_group.employees %}
-                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_category }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_unmapped_hours|round(2) }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_unmapped|round(2) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No clinical employees found with unmapped hours for the analysis period.</p>
-                {% endif %}
-            </div>
-            {% endif %}
-            
-            <!-- Non-Clinical Associates Group -->
-            {% if top_unmapped_analysis.non_clinical_group %}
-            <div style="margin-bottom: 15px;">
-                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
-                    {{ top_unmapped_analysis.non_clinical_group.display_name }}
-                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
-                        ({{ top_unmapped_analysis.non_clinical_group.total_unmapped_hours|round(2) }} hours, {{ top_unmapped_analysis.non_clinical_group.total_employees_in_function }} employees with unmapped hours)
-                    </span>
-                </h4>
-                
-                {% if top_unmapped_analysis.non_clinical_group.employees %}
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
-                    <thead>
-                        <tr style="background-color: #34495e; color: white;">
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Category</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">Unmapped Hours</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">Unmapped Days</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">Average Daily</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for employee in top_unmapped_analysis.non_clinical_group.employees %}
-                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_category }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_unmapped_hours|round(2) }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_unmapped|round(2) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No non-clinical employees found with unmapped hours for the analysis period.</p>
-                {% endif %}
-            </div>
-            {% endif %}
-            
-            <!-- Fallback: Show ungrouped data if no function groups are available -->
-            {% if not top_unmapped_analysis.clinical_group and not top_unmapped_analysis.non_clinical_group and top_unmapped_analysis.top_employees %}
-            <div style="margin-bottom: 15px;">
-                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
-                    Top Unmapped Associates
-                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
-                        (Function grouping unavailable)
-                    </span>
-                </h4>
-                
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
-                    <thead>
-                        <tr style="background-color: #34495e; color: white;">
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Category</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">Unmapped Hours</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">Unmapped Days</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">Average Daily</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for employee in top_unmapped_analysis.top_employees %}
-                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_category }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_unmapped_hours|round(2) }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_unmapped }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_unmapped|round(2) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% endif %}
-            
-            <!-- Footer Note -->
-            <div style="font-size: 10px; color: #666; margin-top: 5px; line-height: 1.3;">
-                Total hours includes unmapped hours from all categories worked by an employee. Only their primary category is shown. Unmapped hours were aggregated across all unmapped categories.
-            </div>
-        </div>
-        {% elif show_top_unmapped %}
-        <div class="kpi-group">
-            <h3>Top {{ top_unmapped_analysis.top_count_requested }} Unmapped Hours</h3>
-            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 5px; color: #27ae60;">
-                <span style="font-size: 24px;">✅</span><br>
-                <strong>Excellent!</strong> No unmapped hours found during this period.
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Top N Overtime Section -->
-        {% if show_top_overtime and (overtime_analysis.clinical_group or overtime_analysis.non_clinical_group or overtime_analysis.top_employees) %}
-        <div class="kpi-group">
-            <h3 style="margin-bottom: 8px;">Top {{ overtime_analysis.top_count_requested }} Overtime</h3>
-            
-            <!-- DEBUG INFO -->
-            <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 8px; margin: 8px 0; font-size: 11px;">
-                DEBUG: Total employees with overtime: {{ overtime_analysis.total_employees_with_overtime }} | 
-                Clinical group exists: {{ overtime_analysis.clinical_group is not none }} | 
-                Non-clinical group exists: {{ overtime_analysis.non_clinical_group is not none }} | 
-                Legacy top employees count: {{ overtime_analysis.top_employees|length }}
-            </div>
-            
-            <!-- Summary Statistics -->
-            <div style="margin-bottom: 12px; padding: 8px; background-color: #f8f9fa; border-radius: 5px;">
-                <div style="display: flex; justify-content: space-around; font-weight: bold; font-size: 14px;">
-                    <div>Total Facility Overtime: <span style="color: #e74c3c;">{{ overtime_analysis.total_overtime_hours_facility|round(2) }} hours</span></div>
-                    <div>Employees w/ Overtime: <span style="color: #e74c3c;">{{ overtime_analysis.total_employees_with_overtime }}</span></div>
-                </div>
-            </div>
-            
-            <!-- Clinical Associates Group -->
-            {% if overtime_analysis.clinical_group %}
-            <div style="margin-bottom: 15px;">
-                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
-                    {{ overtime_analysis.clinical_group.display_name }}
-                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
-                        ({{ overtime_analysis.clinical_group.total_overtime_hours|round(2) }} hours, {{ overtime_analysis.clinical_group.total_employees_in_function }} employees with overtime)
-                    </span>
-                </h4>
-                
-                {% if overtime_analysis.clinical_group.employees %}
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
-                    <thead>
-                        <tr style="background-color: #34495e; color: white;">
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Role</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">OT Hours</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">OT Days</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">OT Average</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for employee in overtime_analysis.clinical_group.employees %}
-                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_overtime_hours|round(2) }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_overtime }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_overtime|round(2) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No clinical employees found with overtime for the analysis period.</p>
-                {% endif %}
-            </div>
-            {% endif %}
-            
-            <!-- Non-Clinical Associates Group -->
-            {% if overtime_analysis.non_clinical_group %}
-            <div style="margin-bottom: 15px;">
-                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
-                    {{ overtime_analysis.non_clinical_group.display_name }}
-                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
-                        ({{ overtime_analysis.non_clinical_group.total_overtime_hours|round(2) }} hours, {{ overtime_analysis.non_clinical_group.total_employees_in_function }} employees with overtime)
-                    </span>
-                </h4>
-                
-                {% if overtime_analysis.non_clinical_group.employees %}
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
-                    <thead>
-                        <tr style="background-color: #34495e; color: white;">
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Role</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">OT Hours</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">OT Days</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">OT Average</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for employee in overtime_analysis.non_clinical_group.employees %}
-                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_overtime_hours|round(2) }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_overtime }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_overtime|round(2) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p style="color: #666; font-style: italic; margin-bottom: 10px;">No non-clinical employees found with overtime for the analysis period.</p>
-                {% endif %}
-            </div>
-            {% endif %}
-            
-            <!-- Fallback: Show ungrouped data if no function groups are available -->
-            {% if not overtime_analysis.clinical_group and not overtime_analysis.non_clinical_group and overtime_analysis.top_employees %}
-            <div style="margin-bottom: 15px;">
-                <h4 style="color: #2c3e50; margin-bottom: 8px; padding: 6px; background-color: #ecf0f1; border-left: 4px solid #3498db;">
-                    Top Overtime Associates
-                    <span style="font-weight: normal; font-size: 12px; color: #666; margin-left: 10px;">
-                        (Function grouping unavailable)
-                    </span>
-                </h4>
-                
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 12px;">
-                    <thead>
-                        <tr style="background-color: #34495e; color: white;">
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 35%;">Employee Name</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">ID</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: left; width: 20%;">Primary Role</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 12%;">OT Hours</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 10%;">OT Days</th>
-                            <th style="border: 1px solid #bdc3c7; padding: 6px; text-align: center; width: 11%;">OT Average</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for employee in overtime_analysis.top_employees %}
-                        <tr style="{% if loop.index % 2 == 0 %}background-color: #f8f9fa;{% endif %}">
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; font-weight: bold;">{{ employee.employee_name }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.employee_id }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px;">{{ employee.primary_role }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center; font-weight: bold; color: #e74c3c;">{{ employee.total_overtime_hours|round(2) }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.days_with_overtime }}</td>
-                            <td style="border: 1px solid #bdc3c7; padding: 4px; text-align: center;">{{ employee.average_daily_overtime|round(2) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% endif %}
-            
-            <!-- Footer Note -->
-            <div style="font-size: 10px; color: #666; margin-top: 5px; line-height: 1.3;">
-                Total hours includes overtime hours from all roles worked by an employee. Only their primary role is shown. The overtime hours were calculated independently for each position.
-            </div>
-        </div>
-        {% elif show_top_overtime %}
-        <div class="kpi-group">
-            <h3>Top {{ overtime_analysis.top_count_requested }} Overtime</h3>
-            <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
-                No overtime found for the analysis period
-            </p>
-            
-            <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 5px; color: #27ae60;">
-                <span style="font-size: 24px;">✅</span><br>
-                <strong>Excellent!</strong> No employees worked overtime during this period.
-            </div>
         </div>
         {% endif %}
     </div>
@@ -870,7 +936,7 @@
             <p><strong>Statistical Exceptions:</strong> {{ summary.statistical_exceptions }} exceptions</p>
             <p><strong>Trend Exceptions:</strong> {{ summary.trend_exceptions }} exceptions</p>
             <p><strong>Most Problematic Role:</strong> {{ kpis.most_problematic_role or 'N/A' }}</p>
-            <p><strong>Average Severity:</strong> {{ summary.severity_score|round(1) }}/100</p>
+            <p><strong>Average Severity:</strong> {{ "%.2f"|format(summary.severity_score) }}/100</p>
         </div>
 
         <h3>Detailed Exception List</h3>
@@ -902,20 +968,20 @@
                     <td>{{ exception.date.strftime('%m/%d/%Y') if exception.date else 'N/A' }}</td>
                     <td>{{ exception.role }}</td>
                     <td>{{ exception.exception_type.title() }}</td>
-                    <td>{{ exception.severity|round(1) }}</td>
+                    <td>{{ "%.2f"|format(exception.severity) }}</td>
                     <td>{{ exception.description }}</td>
                     <td>
                         {% if exception.variance_percentage %}
-                            {{ exception.variance_percentage|round(1) }}%
+                            {{ "%.2f"|format(exception.variance_percentage) }}%
                         {% elif exception.variance_value %}
-                            {{ exception.variance_value|round(2) }}
+                            {{ "%.2f"|format(exception.variance_value) }}
                         {% else %}
                             N/A
                         {% endif %}
                     </td>
                     <td>
                         {% if exception.threshold_used %}
-                            {{ exception.threshold_used|round(1) }}{% if exception.exception_type == 'model' %}%{% endif %}
+                            {{ "%.2f"|format(exception.threshold_used) }}{% if exception.exception_type == 'model' %}%{% endif %}
                         {% else %}
                             N/A
                         {% endif %}
@@ -929,7 +995,7 @@
         <div class="summary-box">
             <h4>Dataset Summary</h4>
             <p><strong>Total Exceptions:</strong> {{ exceptions_pagination.total_exceptions }}</p>
-            <p><strong>Displayed:</strong> {{ exceptions_list|length }} ({{ ((exceptions_list|length / exceptions_pagination.total_exceptions) * 100)|round(1) }}%)</p>
+            <p><strong>Displayed:</strong> {{ exceptions_list|length }} ({{ "%.2f"|format((exceptions_list|length / exceptions_pagination.total_exceptions) * 100) }}%)</p>
             <p><strong>Report Optimization:</strong> Large datasets are summarized for optimal PDF performance. Consider filtering by role or time period for detailed analysis.</p>
         </div>
         {% endif %}
@@ -958,15 +1024,37 @@
                 <tr>
                     <td>{{ stat.role }}</td>
                     <td>{{ stat.n_samples }}</td>
-                    <td>{{ stat.mean|round(2) }}</td>
+                    <td>{{ "%.2f"|format(stat.mean) }}</td>
                     <td>{{ stat.control_method.title() }}</td>
-                    <td>{{ stat.upper_control_limit|round(2) }}</td>
-                    <td>{{ stat.lower_control_limit|round(2) }}</td>
+                    <td>{{ "%.2f"|format(stat.upper_control_limit) }}</td>
+                    <td>{{ "%.2f"|format(stat.lower_control_limit) }}</td>
                     <td>{{ 'Yes' if stat.is_normal_distribution else 'No' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+    {% endif %}
+
+    <!-- Consolidated Footnotes Section -->
+    {% if show_facility_model_adherence or show_top_variance_roles %}
+    <div class="section page-break">
+        <h2>Footnotes</h2>
+        
+        {% if show_facility_model_adherence %}
+        <div style="font-size: 11px; color: #666; margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #3498db; line-height: 1.4;">
+            <h4 style="color: #2c3e50; margin-top: 0; margin-bottom: 8px;">Facility Model Adherence</h4>
+            <strong>Overall Variance:</strong> Calculated as the percentage difference between total actual hours and total model hours across all roles and days in the analysis period. A positive variance indicates actual hours above model, while negative indicates below model relative to the staffing plan.<br><br>
+            <strong>Compliance Rate:</strong> Represents the percentage of role-day combinations that operated within acceptable variance thresholds of the workforce model. This is calculated as 100% minus the exception rate, providing a measure of how well the facility adhered to planned staffing levels.
+        </div>
+        {% endif %}
+        
+        {% if show_top_variance_roles %}
+        <div style="font-size: 11px; color: #666; margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-left: 3px solid #3498db; line-height: 1.4;">
+            <h4 style="color: #2c3e50; margin-top: 0; margin-bottom: 8px;">Top {{ top_variance_roles_count }} Variance Roles</h4>
+            <strong>Exception Rate:</strong> Calculated as the percentage of role-day combinations that deviated from the workforce model during the analysis period. This metric represents the frequency of variances across all roles and days, providing an overall measure of adherence to the staffing model.
+        </div>
+        {% endif %}
     </div>
     {% endif %}
 

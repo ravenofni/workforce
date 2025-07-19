@@ -9,13 +9,14 @@ from typing import List, Dict, Any, Optional
 import logging
 from datetime import datetime
 
-from config.constants import VarianceType, DATE_FORMAT, FileColumns
+from config.constants import VarianceType, DATE_FORMAT, FileColumns, ComparisonType
 from src.models.data_models import (
     VarianceResult, 
     TrendAnalysisResult, 
     ExceptionSummary, 
     FacilityKPI
 )
+from src.services.model_data_service import ModelDataService
 
 
 logger = logging.getLogger(__name__)
@@ -192,8 +193,8 @@ def _generate_variance_description(variance: VarianceResult) -> str:
     """
     if variance.variance_type == VarianceType.MODEL:
         if variance.variance_percentage is not None:
-            direction = "above" if variance.variance_percentage > 0 else "below"
-            return (f"Actual hours {direction} model by {abs(variance.variance_percentage):.1f}% "
+            direction = "above model" if variance.variance_percentage > 0 else "below model"
+            return (f"Actual hours {direction} by {abs(variance.variance_percentage):.1f}% "
                    f"(threshold: {variance.threshold_used}%)")
         else:
             return "Variance from model hours detected"
@@ -260,64 +261,41 @@ def filter_exceptions_by_severity(exceptions_df: pd.DataFrame,
 def calculate_period_model_hours(model_data: pd.DataFrame, 
                                  facility: str,
                                  analysis_start_date: datetime, 
-                                 analysis_end_date: datetime) -> float:
+                                 analysis_end_date: datetime,
+                                 comparison_type: ComparisonType = ComparisonType.TOTAL_STAFF) -> float:
     """
-    Calculate expected model hours for a specific facility and time period using actual calendar days.
+    Calculate expected model hours for a specific facility and time period using ModelDataService.
     
     Args:
         model_data: DataFrame with model hours data
         facility: Facility name
         analysis_start_date: Start date of analysis period
         analysis_end_date: End date of analysis period
+        comparison_type: Type of comparison (TOTAL_STAFF or PER_PERSON)
         
     Returns:
         Total expected model hours for the period
     """
-    from datetime import timedelta
-    
     if model_data.empty:
         return 0.0
     
-    # Filter model data for this facility
-    facility_model = model_data[model_data[FileColumns.MODEL_LOCATION_NAME] == facility] if FileColumns.MODEL_LOCATION_NAME in model_data.columns else pd.DataFrame()
-    
-    if facility_model.empty:
-        logger.warning(f"No model data found for facility: {facility}")
+    try:
+        # Use ModelDataService for enhanced model data handling
+        model_service = ModelDataService(model_data)
+        
+        # Calculate period model hours using the service
+        period_hours = model_service.calculate_period_model_hours(
+            facility, analysis_start_date, analysis_end_date, comparison_type
+        )
+        
+        logger.debug(f"Period model calculation for {facility} ({comparison_type.value}): "
+                    f"{(analysis_end_date - analysis_start_date).days + 1} calendar days = {period_hours:.2f} total hours")
+        
+        return period_hours
+        
+    except Exception as e:
+        logger.error(f"Error calculating period model hours for {facility}: {str(e)}")
         return 0.0
-    
-    # Iterate through each actual calendar day in the analysis period
-    current_date = analysis_start_date
-    total_period_hours = 0.0
-    days_processed = 0
-    
-    while current_date <= analysis_end_date:
-        # Convert Python weekday to model DAY_NUMBER convention
-        # Python: Monday=0, Tuesday=1, ..., Sunday=6
-        # Model: Sunday=1, Monday=2, Tuesday=3, ..., Saturday=7
-        python_weekday = current_date.weekday()  # 0=Monday, 6=Sunday
-        model_day_number = (python_weekday + 2) % 7  # Convert to model convention
-        if model_day_number == 0:  # Handle Sunday case
-            model_day_number = 7
-        
-        # Get model hours for this specific day of week
-        day_model_hours = facility_model[
-            facility_model[FileColumns.MODEL_DAY_NUMBER] == model_day_number
-        ][FileColumns.MODEL_TOTAL_HOURS].sum()
-        
-        total_period_hours += day_model_hours
-        days_processed += 1
-        
-        # Move to next day
-        current_date += timedelta(days=1)
-        
-        # Safety check to prevent infinite loops
-        if days_processed > 400:  # More than a year worth of days
-            logger.error(f"Period model calculation exceeded safety limit for {facility}")
-            break
-    
-    logger.debug(f"Period model calculation for {facility}: {days_processed} actual calendar days = {total_period_hours:.2f} total hours")
-    
-    return total_period_hours
 
 
 def generate_facility_exception_summary(exceptions_df: pd.DataFrame, 
@@ -381,7 +359,8 @@ def calculate_facility_kpis(exceptions_df: pd.DataFrame,
                           model_data: pd.DataFrame,
                           facility: str,
                           analysis_start_date: datetime,
-                          analysis_end_date: datetime) -> FacilityKPI:
+                          analysis_end_date: datetime,
+                          comparison_type: ComparisonType = ComparisonType.TOTAL_STAFF) -> FacilityKPI:
     """
     Calculate Key Performance Indicators for a facility.
     
@@ -392,6 +371,7 @@ def calculate_facility_kpis(exceptions_df: pd.DataFrame,
         facility: Facility name
         analysis_start_date: Start date of analysis period
         analysis_end_date: End date of analysis period
+        comparison_type: Type of comparison (TOTAL_STAFF or PER_PERSON)
         
     Returns:
         FacilityKPI object with calculated metrics
@@ -404,9 +384,9 @@ def calculate_facility_kpis(exceptions_df: pd.DataFrame,
     # Calculate basic metrics
     total_actual_hours = facility_hours[FileColumns.FACILITY_TOTAL_HOURS].sum() if not facility_hours.empty else 0.0
     
-    # Calculate period-specific model hours instead of total model hours
+    # Calculate period-specific model hours using comparison type
     total_model_hours = calculate_period_model_hours(
-        model_data, facility, analysis_start_date, analysis_end_date
+        model_data, facility, analysis_start_date, analysis_end_date, comparison_type
     )
     
     # Calculate variance percentage

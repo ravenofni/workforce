@@ -9,47 +9,68 @@ from typing import List, Dict, Any, Optional
 import logging
 from datetime import datetime
 
-from config.constants import VarianceType, DEFAULT_VARIANCE_THRESHOLD, FileColumns
+from config.constants import VarianceType, DEFAULT_VARIANCE_THRESHOLD, FileColumns, ComparisonType
 from config.settings import ControlVariables
 from src.models.data_models import VarianceResult, StatisticalSummary
 from src.analysis.statistics import calculate_control_limits, detect_control_violations
-from src.ingestion.model_loader import get_model_hours_for_facility_role, get_model_hours_for_facility_role_day
+# Legacy model functions no longer needed - using ModelDataService instead
+from src.services.model_data_service import ModelDataService
 
 
 logger = logging.getLogger(__name__)
 
 
 def detect_model_variances(df: pd.DataFrame, model_df: pd.DataFrame, 
-                          control_vars: ControlVariables) -> List[VarianceResult]:
+                          control_vars: ControlVariables,
+                          comparison_type: ComparisonType = ComparisonType.TOTAL_STAFF) -> List[VarianceResult]:
     """
-    Detect variances from model hours (F-0f implementation).
+    Detect variances from model hours (F-0f implementation) with dual comparison support.
     
     Args:
         df: DataFrame with actual hours data
         model_df: DataFrame with model hours data
         control_vars: Control variables including variance threshold
+        comparison_type: Type of comparison (TOTAL_STAFF or PER_PERSON)
         
     Returns:
         List of VarianceResult objects for model variances
     """
+    # Use new service for enhanced model data handling
+    model_service = ModelDataService(model_df)
+    
     variances = []
     
     if df.empty or model_df.empty:
         logger.warning("Empty DataFrame(s) provided for model variance detection")
         return variances
     
-    logger.info(f"Detecting model variances with threshold {control_vars.variance_threshold}%")
+    logger.info(f"Detecting model variances with threshold {control_vars.variance_threshold}% "
+               f"using {comparison_type.value} comparison")
     
     # Group by facility, role, AND day of week for proper model comparison
     grouped = df.groupby([FileColumns.FACILITY_LOCATION_NAME, FileColumns.FACILITY_STAFF_ROLE_NAME, FileColumns.FACILITY_DAY_OF_WEEK])
     
     for (facility, role, day_of_week), group in grouped:
         try:
-            # Get model hours for this facility/role/day combination
-            model_hours = get_model_hours_for_facility_role_day(model_df, facility, role, day_of_week)
+            # Get model hours for this facility/role/day combination using new service
+            model_hours = model_service.calculate_expected_hours(facility, role, day_of_week, comparison_type)
             
-            # Calculate mean actual hours for comparison
-            actual_hours_mean = group[FileColumns.FACILITY_TOTAL_HOURS].mean()
+            # Calculate actual hours for comparison based on comparison type
+            if comparison_type == ComparisonType.TOTAL_STAFF:
+                # Total staff comparison: use total actual hours
+                actual_hours_mean = group[FileColumns.FACILITY_TOTAL_HOURS].mean()
+            elif comparison_type == ComparisonType.PER_PERSON:
+                # Per-person comparison: calculate average hours per person
+                total_actual_hours = group[FileColumns.FACILITY_TOTAL_HOURS].sum()
+                total_employees = len(group)  # Number of employee records for this role/day
+                actual_hours_mean = total_actual_hours / total_employees if total_employees > 0 else 0.0
+                logger.debug(f"Per-person calculation for {facility}-{role}-{day_of_week}: "
+                           f"{total_actual_hours} total hours ÷ {total_employees} employees = {actual_hours_mean:.2f} avg per person")
+            else:
+                raise ValueError(f"Unknown comparison type: {comparison_type}")
+            
+            logger.debug(f"Variance calculation: {facility}-{role}-{day_of_week}: "
+                        f"actual={actual_hours_mean:.2f}, model={model_hours:.2f}, type={comparison_type.value}")
             
             # Calculate percentage variance using utility function
             variance_percentage = calculate_variance_percentage(actual_hours_mean, model_hours)
@@ -234,7 +255,8 @@ def detect_statistical_variances_by_employee_role(df: pd.DataFrame,
 
 
 def detect_all_variances(df: pd.DataFrame, model_df: pd.DataFrame, 
-                        control_vars: ControlVariables) -> List[VarianceResult]:
+                        control_vars: ControlVariables,
+                        comparison_type: ComparisonType = ComparisonType.TOTAL_STAFF) -> List[VarianceResult]:
     """
     Detect all types of variances (model, statistical facility-level, statistical employee-level).
     
@@ -242,16 +264,17 @@ def detect_all_variances(df: pd.DataFrame, model_df: pd.DataFrame,
         df: DataFrame with facility hours data
         model_df: DataFrame with model hours data
         control_vars: Control variables for analysis
+        comparison_type: Type of comparison for model variances (TOTAL_STAFF or PER_PERSON)
         
     Returns:
         Combined list of all VarianceResult objects
     """
-    logger.info("Starting comprehensive variance detection")
+    logger.info(f"Starting comprehensive variance detection with {comparison_type.value} comparison")
     
     all_variances = []
     
-    # 1. Model variances (F-0f)
-    model_variances = detect_model_variances(df, model_df, control_vars)
+    # 1. Model variances (F-0f) with specified comparison type
+    model_variances = detect_model_variances(df, model_df, control_vars, comparison_type)
     all_variances.extend(model_variances)
     
     # 2. Statistical variances by Role × Day × Facility (F-3a)
@@ -267,7 +290,8 @@ def detect_all_variances(df: pd.DataFrame, model_df: pd.DataFrame,
         'model_variances': len(model_variances),
         'facility_statistical_variances': len(statistical_variances_facility),
         'employee_statistical_variances': len(statistical_variances_employee),
-        'total_variances': len(all_variances)
+        'total_variances': len(all_variances),
+        'comparison_type': comparison_type.value
     }
     
     logger.info(f"Variance detection complete: {variance_summary}")

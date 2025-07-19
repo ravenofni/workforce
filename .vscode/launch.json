@@ -26,8 +26,8 @@
             "console": "integratedTerminal",
             "args": [
                 "--debug",
-                "--analysis-start-date", "2025-05-01",
-                "--analysis-end-date", "2025-05-07"
+                "--analysis-start-date", "2025-05-11",
+                "--analysis-end-date", "2025-05-17"
             ],
             "cwd": "${workspaceFolder}",
             "env": {

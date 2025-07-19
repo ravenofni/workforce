@@ -98,14 +98,16 @@ def get_employee_primary_unmapped_category(employee_df: pd.DataFrame) -> str:
 
 def calculate_employee_unmapped_hours(employee_df: pd.DataFrame, 
                                     employee_id: str, 
-                                    employee_name: str) -> Optional[Dict]:
+                                    employee_name: str,
+                                    role: str) -> Optional[Dict]:
     """
-    Calculate unmapped hours statistics for a single employee.
+    Calculate unmapped hours statistics for a single employee-role combination.
     
     Args:
-        employee_df: DataFrame containing all records for the employee
+        employee_df: DataFrame containing all records for the employee-role combination
         employee_id: Employee identifier
         employee_name: Employee name
+        role: Role being worked by the employee
         
     Returns:
         Dictionary with unmapped hours statistics or None if no unmapped hours
@@ -146,6 +148,7 @@ def calculate_employee_unmapped_hours(employee_df: pd.DataFrame,
     return {
         'employee_id': employee_id,
         'employee_name': employee_name,
+        'role': role,
         'total_unmapped_hours': total_unmapped_hours,
         'days_with_unmapped': days_with_unmapped,
         'average_daily_unmapped': average_daily_unmapped,
@@ -195,20 +198,20 @@ def calculate_top_unmapped_analysis(facility_df: pd.DataFrame,
     employee_unmapped_data = []
     total_facility_unmapped = 0.0
     
-    # Group by employee ID and name
-    employee_groups = facility_df.groupby([FileColumns.FACILITY_EMPLOYEE_ID, FileColumns.FACILITY_EMPLOYEE_NAME])
+    # Group by employee ID, name, AND role to treat each employee-role combination independently
+    employee_role_groups = facility_df.groupby([FileColumns.FACILITY_EMPLOYEE_ID, FileColumns.FACILITY_EMPLOYEE_NAME, FileColumns.FACILITY_STAFF_ROLE_NAME])
     
-    logger.debug(f"Processing {len(employee_groups)} employee groups for unmapped analysis")
+    logger.debug(f"Processing {len(employee_role_groups)} employee-role combinations for unmapped analysis")
     
-    for (employee_id, employee_name), employee_df in employee_groups:
+    for (employee_id, employee_name, role), employee_df in employee_role_groups:
         # Skip if employee info is missing
-        if pd.isna(employee_id) or pd.isna(employee_name):
-            logger.debug(f"Skipping employee with missing ID or name: {employee_id}, {employee_name}")
+        if pd.isna(employee_id) or pd.isna(employee_name) or pd.isna(role):
+            logger.debug(f"Skipping employee with missing ID, name, or role: {employee_id}, {employee_name}, {role}")
             continue
         
         try:
-            # Calculate unmapped hours for this employee
-            unmapped_stats = calculate_employee_unmapped_hours(employee_df, str(employee_id), str(employee_name))
+            # Calculate unmapped hours for this employee-role combination
+            unmapped_stats = calculate_employee_unmapped_hours(employee_df, str(employee_id), str(employee_name), str(role))
             
             if unmapped_stats:
                 logger.debug(f"Employee {employee_name} has {unmapped_stats['total_unmapped_hours']:.2f} unmapped hours")
@@ -250,6 +253,7 @@ def calculate_top_unmapped_analysis(facility_df: pd.DataFrame,
         unmapped_employee = UnmappedEmployee(
             employee_id=emp_data['employee_id'],
             employee_name=emp_data['employee_name'],
+            role=emp_data['role'],
             total_unmapped_hours=emp_data['total_unmapped_hours'],
             days_with_unmapped=emp_data['days_with_unmapped'],
             average_daily_unmapped=emp_data['average_daily_unmapped'],
@@ -306,6 +310,7 @@ def calculate_top_unmapped_analysis(facility_df: pd.DataFrame,
         unmapped_employee = UnmappedEmployee(
             employee_id=emp_data['employee_id'],
             employee_name=emp_data['employee_name'],
+            role=emp_data['role'],
             total_unmapped_hours=emp_data['total_unmapped_hours'],
             days_with_unmapped=emp_data['days_with_unmapped'],
             average_daily_unmapped=emp_data['average_daily_unmapped'],

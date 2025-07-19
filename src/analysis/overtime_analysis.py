@@ -1,482 +1,137 @@
 """
-Overtime Analysis Module for Workforce Analytics.
-
-This module calculates overtime hours for employees based on role-specific standard shift hours.
-It identifies employees who worked more than their expected shift hours and provides
-ranking and analysis for reporting.
-
-The system:
-- Uses role-specific standard shift hours from the role display mapper
-- Calculates daily overtime by comparing actual hours to standard shift hours
-- Aggregates overtime across the analysis period
-- Provides ranking and statistical analysis of overtime patterns
-- Supports configurable top-N reporting
-
-Example Usage:
-    from src.analysis.overtime_analysis import calculate_overtime_analysis
-    
-    # Calculate top 5 overtime employees for a facility
-    overtime_result = calculate_overtime_analysis(
-        facility_df=filtered_facility_data,
-        facility_name="Ansley Park",
-        analysis_start_date=start_date,
-        analysis_end_date=end_date,
-        top_count=5
-    )
+Overtime hours analysis module for workforce analytics system.
+Calculates overtime based on total hours worked per employee across all roles.
 """
 
-import logging
 import pandas as pd
-from datetime import datetime
-from typing import List, Dict, Tuple, Optional
-from collections import defaultdict
-
-from src.models.data_models import OvertimeEmployee, OvertimeAnalysis, OvertimeFunctionGroup
-from src.utils.role_display_mapper import get_standard_shift_hours, get_short_display_name, get_role_function
-from config.constants import FileColumns
+from typing import Dict, Any, Optional
+import logging
+from config.constants import OVERTIME_THRESHOLD, REPORT_TOP_OVERTIME_COUNT
+from src.models.data_models import OvertimeResult, EmployeeOvertimeSummary
+from src.utils.role_display_mapper import get_short_display_name
 
 logger = logging.getLogger(__name__)
 
 
-def calculate_daily_overtime(actual_hours: float, standard_shift_hours: float) -> float:
+def analyze_overtime(
+    facility_df: pd.DataFrame,
+    facility: str,
+    week_start_date: Optional[pd.Timestamp] = None,
+    week_end_date: Optional[pd.Timestamp] = None
+) -> OvertimeResult:
     """
-    Calculate overtime hours for a single day.
+    Analyze overtime hours for employees in a facility.
+    
+    Overtime is calculated based on total hours worked by each employee
+    across all roles, compared to the standard work week threshold.
     
     Args:
-        actual_hours: Hours actually worked
-        standard_shift_hours: Expected hours for the role
+        facility_df: Facility hours DataFrame filtered for the specific facility
+        facility: Facility name for logging and reporting
+        week_start_date: Optional start date for analysis period
+        week_end_date: Optional end date for analysis period
         
     Returns:
-        Overtime hours (0.0 if no overtime)
+        OvertimeResult: Analysis results including top overtime employees
     """
-    if actual_hours <= standard_shift_hours:
-        return 0.0
-    return actual_hours - standard_shift_hours
-
-
-def get_employee_primary_role(employee_df: pd.DataFrame) -> str:
-    """
-    Determine the primary role for an employee based on most hours worked.
+    logger.info(f"Analyzing overtime hours for facility: {facility}")
     
-    Args:
-        employee_df: DataFrame containing all records for a single employee
-        
-    Returns:
-        Primary role name (most common role by total hours)
-    """
-    if employee_df.empty:
-        return "Unknown"
+    # Filter by date range if provided
+    if week_start_date and week_end_date:
+        facility_df = facility_df[
+            (facility_df['date'] >= week_start_date) & 
+            (facility_df['date'] <= week_end_date)
+        ]
     
-    # Filter out NULL/NaN roles and unmapped categories
-    valid_roles_df = employee_df[
-        employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME].notna() & 
-        (employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME] != "NULL") &
-        (employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME] != "") &
-        (~employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME].str.startswith("Unmapped", na=False)) &
-        (employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME] != "Other Unmapped")
-    ]
+    # Group by employee to sum total hours across all roles
+    employee_hours = facility_df.groupby(['employee_id', 'employee_name']).agg({
+        'actual_hours': 'sum',
+        'week_start': 'first'  # Get the week for grouping
+    }).reset_index()
     
-    if valid_roles_df.empty:
-        return "Unknown"
+    # Calculate overtime hours (hours over threshold)
+    employee_hours['overtime_hours'] = (
+        employee_hours['actual_hours'] - OVERTIME_THRESHOLD
+    ).clip(lower=0)
     
-    # Group by role and sum hours to find the role with most hours
-    role_hours = valid_roles_df.groupby(FileColumns.FACILITY_STAFF_ROLE_NAME)[FileColumns.FACILITY_TOTAL_HOURS].sum()
+    # Filter to only employees with overtime
+    overtime_employees = employee_hours[employee_hours['overtime_hours'] > 0].copy()
     
-    if role_hours.empty:
-        return "Unknown"
-    
-    # Return the role with the highest total hours
-    primary_role = role_hours.idxmax()
-    return primary_role if pd.notna(primary_role) else "Unknown"
-
-
-def calculate_employee_overtime(employee_df: pd.DataFrame, 
-                              employee_id: str, 
-                              employee_name: str) -> Optional[Dict]:
-    """
-    Calculate overtime statistics for a single employee.
-    
-    Args:
-        employee_df: DataFrame containing all records for the employee
-        employee_id: Employee identifier
-        employee_name: Employee name
-        
-    Returns:
-        Dictionary with overtime statistics or None if no overtime
-    """
-    if employee_df.empty:
-        return None
-    
-    # Filter out NULL/NaN roles and unmapped categories for overtime calculation
-    valid_work_df = employee_df[
-        employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME].notna() & 
-        (employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME] != "NULL") &
-        (employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME] != "") &
-        (~employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME].str.startswith("Unmapped", na=False)) &
-        (employee_df[FileColumns.FACILITY_STAFF_ROLE_NAME] != "Other Unmapped")
-    ]
-    
-    if valid_work_df.empty:
-        return None
-    
-    # Determine primary role (for display purposes)
-    primary_role = get_employee_primary_role(employee_df)
-    logger.debug(f"Employee {employee_name} primary role: {primary_role}")
-    
-    # Calculate role-specific overtime for each work record
-    total_overtime_hours = 0.0
-    days_with_overtime = 0
-    
-    for _, row in valid_work_df.iterrows():
-        role = row[FileColumns.FACILITY_STAFF_ROLE_NAME]
-        actual_hours = row[FileColumns.FACILITY_TOTAL_HOURS]
-        
-        # Get standard shift hours for THIS specific role
-        try:
-            role_standard_hours = get_standard_shift_hours(role)
-            logger.debug(f"Employee {employee_name} worked {actual_hours} hours as {role} (standard: {role_standard_hours})")
-        except KeyError:
-            logger.warning(f"No standard shift hours found for role '{role}', skipping record")
-            continue
-        
-        # Skip unmapped roles (they have 0.0 standard hours)
-        if role_standard_hours == 0.0:
-            logger.debug(f"Skipping unmapped/unknown role '{role}' for overtime calculation")
-            continue
-        
-        # Calculate overtime for this specific role/day
-        daily_overtime = calculate_daily_overtime(actual_hours, role_standard_hours)
-        
-        if daily_overtime > 0:
-            total_overtime_hours += daily_overtime
-            days_with_overtime += 1
-            logger.debug(f"Employee {employee_name} had {daily_overtime:.2f} overtime hours as {role}")
-    
-    # Only return data if employee has overtime
-    if total_overtime_hours <= 0:
-        return None
-    
-    # Calculate average daily overtime (only for days with overtime)
-    average_daily_overtime = total_overtime_hours / max(days_with_overtime, 1)
-    
-    return {
-        'employee_id': employee_id,
-        'employee_name': employee_name,
-        'total_overtime_hours': total_overtime_hours,
-        'days_with_overtime': days_with_overtime,
-        'average_daily_overtime': average_daily_overtime,
-        'primary_role': primary_role
-    }
-
-
-def calculate_overtime_analysis(facility_df: pd.DataFrame,
-                              facility_name: str,
-                              analysis_start_date: datetime,
-                              analysis_end_date: datetime,
-                              top_count: int = 3) -> OvertimeAnalysis:
-    """
-    Calculate overtime analysis for a facility.
-    
-    Args:
-        facility_df: DataFrame with facility hours data (already filtered by date)
-        facility_name: Name of the facility
-        analysis_start_date: Start date of analysis period
-        analysis_end_date: End date of analysis period
-        top_count: Number of top overtime employees to include
-        
-    Returns:
-        OvertimeAnalysis object with top employees and summary statistics
-    """
-    logger.info(f"Calculating overtime analysis for {facility_name} from {analysis_start_date} to {analysis_end_date}")
-    
-    # Debug: Log details about the facility data received
-    logger.debug(f"Facility DataFrame shape: {facility_df.shape}")
-    if not facility_df.empty:
-        logger.debug(f"Facility DataFrame columns: {list(facility_df.columns)}")
-        logger.debug(f"Unique facilities in data: {facility_df[FileColumns.FACILITY_LOCATION_NAME].unique() if FileColumns.FACILITY_LOCATION_NAME in facility_df.columns else 'NO FACILITY COLUMN'}")
-        high_hours = facility_df[facility_df[FileColumns.FACILITY_TOTAL_HOURS] > 8.0] if FileColumns.FACILITY_TOTAL_HOURS in facility_df.columns else pd.DataFrame()
-        logger.debug(f"Records with > 8 hours: {len(high_hours)}")
-    
-    if facility_df.empty:
-        logger.warning(f"No facility data provided for overtime analysis: {facility_name}")
-        return OvertimeAnalysis(
-            facility=facility_name,
-            top_employees=[],
-            total_employees_with_overtime=0,
-            top_count_requested=top_count,
-            total_overtime_hours_facility=0.0,
-            analysis_period_start=analysis_start_date,
-            analysis_period_end=analysis_end_date
+    if overtime_employees.empty:
+        logger.info(f"No overtime found for facility: {facility}")
+        return OvertimeResult(
+            facility=facility,
+            total_overtime_hours=0.0,
+            employee_count=0,
+            top_overtime_employees=[]
         )
     
-    # Group by employee to calculate individual overtime
-    employee_overtime_data = []
-    total_facility_overtime = 0.0
+    # For each employee with overtime, find their primary role (most hours)
+    employee_summaries = []
     
-    # Clean the data first - remove any header contamination
-    clean_df = facility_df.copy()
-    
-    # Filter out any rows where employee_id might be the header text
-    if FileColumns.FACILITY_EMPLOYEE_ID in clean_df.columns:
-        # Remove rows where employee ID contains header text
-        header_mask = clean_df[FileColumns.FACILITY_EMPLOYEE_ID].astype(str).str.contains('EMPLOYEE', na=False, case=False)
-        if header_mask.any():
-            logger.warning(f"Found {header_mask.sum()} header rows in data, removing them")
-            clean_df = clean_df[~header_mask]
-    
-    # Group by employee ID and name
-    employee_groups = clean_df.groupby([FileColumns.FACILITY_EMPLOYEE_ID, FileColumns.FACILITY_EMPLOYEE_NAME])
-    
-    logger.debug(f"Processing {len(employee_groups)} employee groups")
-    
-    for (employee_id, employee_name), employee_df in employee_groups:
-        # Skip if employee info is missing
-        if pd.isna(employee_id) or pd.isna(employee_name):
-            logger.debug(f"Skipping employee with missing ID or name: {employee_id}, {employee_name}")
-            continue
+    for _, emp_row in overtime_employees.iterrows():
+        emp_id = emp_row['employee_id']
+        emp_name = emp_row['employee_name']
         
-        # Debug: Log employee details
-        max_hours = employee_df[FileColumns.FACILITY_TOTAL_HOURS].max()
-        logger.debug(f"Processing employee: {employee_name} ({employee_id}) - Max daily hours: {max_hours}")
+        # Get role breakdown for this employee
+        emp_roles = facility_df[facility_df['employee_id'] == emp_id].groupby('role').agg({
+            'actual_hours': 'sum'
+        }).reset_index()
         
-        try:
-            # Calculate overtime for this employee
-            overtime_stats = calculate_employee_overtime(employee_df, str(employee_id), str(employee_name))
-            
-            if overtime_stats:
-                logger.debug(f"Employee {employee_name} has {overtime_stats['total_overtime_hours']:.2f} overtime hours")
-                employee_overtime_data.append(overtime_stats)
-                total_facility_overtime += overtime_stats['total_overtime_hours']
-            else:
-                logger.debug(f"Employee {employee_name} has no overtime")
-        except Exception as e:
-            logger.warning(f"Error calculating overtime for employee {employee_name} ({employee_id}): {str(e)}")
-            continue
-    
-    # Sort employees by total overtime hours (descending)
-    employee_overtime_data.sort(key=lambda x: x['total_overtime_hours'], reverse=True)
-    
-    # Group employees by function (clinical vs non-clinical)
-    clinical_employees = []
-    non_clinical_employees = []
-    
-    for emp_data in employee_overtime_data:
-        # Determine function of the employee's primary role
-        try:
-            role_function = get_role_function(emp_data['primary_role'])
-            logger.debug(f"Employee {emp_data['employee_name']} primary role '{emp_data['primary_role']}' classified as: {role_function}")
-        except KeyError:
-            logger.warning(f"No function found for role '{emp_data['primary_role']}', defaulting to non-clinical")
-            role_function = "non-clinical"
-        except Exception as e:
-            logger.error(f"Error getting function for role '{emp_data['primary_role']}': {str(e)}, defaulting to non-clinical")
-            role_function = "non-clinical"
+        # Find the role with most hours
+        primary_role = emp_roles.loc[emp_roles['actual_hours'].idxmax(), 'role']
         
-        # Convert role to short display name for reporting
-        try:
-            display_role = get_short_display_name(emp_data['primary_role'])
-        except KeyError:
-            logger.warning(f"No short display name found for role '{emp_data['primary_role']}', using original")
-            display_role = emp_data['primary_role']
-        
-        # Create OvertimeEmployee object
-        overtime_employee = OvertimeEmployee(
-            employee_id=emp_data['employee_id'],
-            employee_name=emp_data['employee_name'],
-            total_overtime_hours=emp_data['total_overtime_hours'],
-            days_with_overtime=emp_data['days_with_overtime'],
-            average_daily_overtime=emp_data['average_daily_overtime'],
-            primary_role=display_role,
-            rank=1  # Will be set properly when creating function groups
-        )
-        
-        # Group by function
-        if role_function == "clinical":
-            clinical_employees.append(overtime_employee)
-        else:
-            non_clinical_employees.append(overtime_employee)
-    
-    # Create function groups with top N employees each
-    clinical_group = None
-    non_clinical_group = None
-    
-    if clinical_employees:
-        # Set ranks for clinical employees
-        for rank, emp in enumerate(clinical_employees[:top_count], 1):
-            emp.rank = rank
-        
-        clinical_total_hours = sum(emp.total_overtime_hours for emp in clinical_employees)
-        clinical_group = OvertimeFunctionGroup(
-            function="clinical",
-            display_name="Clinical Associates",
-            employees=clinical_employees[:top_count],
-            total_overtime_hours=clinical_total_hours,
-            total_employees_in_function=len(clinical_employees)
+        employee_summaries.append(
+            EmployeeOvertimeSummary(
+                employee_id=emp_id,
+                employee_name=emp_name,
+                total_hours=float(emp_row['actual_hours']),
+                overtime_hours=float(emp_row['overtime_hours']),
+                primary_role=primary_role
+            )
         )
     
-    if non_clinical_employees:
-        # Set ranks for non-clinical employees
-        for rank, emp in enumerate(non_clinical_employees[:top_count], 1):
-            emp.rank = rank
-        
-        non_clinical_total_hours = sum(emp.total_overtime_hours for emp in non_clinical_employees)
-        non_clinical_group = OvertimeFunctionGroup(
-            function="non-clinical",
-            display_name="Non-Clinical Associates",
-            employees=non_clinical_employees[:top_count],
-            total_overtime_hours=non_clinical_total_hours,
-            total_employees_in_function=len(non_clinical_employees)
-        )
+    # Sort by overtime hours descending and take top N
+    employee_summaries.sort(key=lambda x: x.overtime_hours, reverse=True)
+    top_employees = employee_summaries[:REPORT_TOP_OVERTIME_COUNT]
     
-    # Create legacy top N list (for backward compatibility)
-    top_employees = []
-    for rank, emp_data in enumerate(employee_overtime_data[:top_count], 1):
-        try:
-            display_role = get_short_display_name(emp_data['primary_role'])
-        except KeyError:
-            display_role = emp_data['primary_role']
-        
-        overtime_employee = OvertimeEmployee(
-            employee_id=emp_data['employee_id'],
-            employee_name=emp_data['employee_name'],
-            total_overtime_hours=emp_data['total_overtime_hours'],
-            days_with_overtime=emp_data['days_with_overtime'],
-            average_daily_overtime=emp_data['average_daily_overtime'],
-            primary_role=display_role,
-            rank=rank
-        )
-        top_employees.append(overtime_employee)
+    # Calculate totals
+    total_overtime = sum(emp.overtime_hours for emp in employee_summaries)
     
-    logger.info(f"Overtime analysis complete: {len(employee_overtime_data)} employees with overtime, "
-                f"{total_facility_overtime:.2f} total facility overtime hours")
-    logger.info(f"Clinical employees with overtime: {len(clinical_employees)}, "
-                f"Non-clinical employees with overtime: {len(non_clinical_employees)}")
-    logger.info(f"Clinical group created: {clinical_group is not None}, Non-clinical group created: {non_clinical_group is not None}")
+    logger.info(
+        f"Overtime analysis complete for {facility}: "
+        f"{len(employee_summaries)} employees with {total_overtime:.1f} total overtime hours"
+    )
     
-    return OvertimeAnalysis(
-        facility=facility_name,
-        top_employees=top_employees,
-        clinical_group=clinical_group,
-        non_clinical_group=non_clinical_group,
-        total_employees_with_overtime=len(employee_overtime_data),
-        top_count_requested=top_count,
-        total_overtime_hours_facility=total_facility_overtime,
-        analysis_period_start=analysis_start_date,
-        analysis_period_end=analysis_end_date
+    return OvertimeResult(
+        facility=facility,
+        total_overtime_hours=total_overtime,
+        employee_count=len(employee_summaries),
+        top_overtime_employees=top_employees
     )
 
 
-def get_overtime_summary_statistics(overtime_analysis: OvertimeAnalysis) -> Dict[str, float]:
+def format_overtime_display(overtime_result: OvertimeResult) -> Dict[str, Any]:
     """
-    Calculate summary statistics from overtime analysis results.
+    Format overtime analysis results for display in reports.
     
     Args:
-        overtime_analysis: OvertimeAnalysis object
+        overtime_result: OvertimeResult object with analysis data
         
     Returns:
-        Dictionary with summary statistics
+        Dict containing formatted display data
     """
-    if not overtime_analysis.top_employees:
-        return {
-            'average_overtime_per_employee': 0.0,
-            'highest_individual_overtime': 0.0,
-            'average_days_with_overtime': 0.0,
-            'overtime_concentration_ratio': 0.0  # Top N vs total facility overtime
-        }
-    
-    # Calculate statistics from top employees (representative sample)
-    total_top_overtime = sum(emp.total_overtime_hours for emp in overtime_analysis.top_employees)
-    total_top_days = sum(emp.days_with_overtime for emp in overtime_analysis.top_employees)
-    
-    highest_overtime = max(emp.total_overtime_hours for emp in overtime_analysis.top_employees)
-    average_overtime = total_top_overtime / len(overtime_analysis.top_employees)
-    average_days = total_top_days / len(overtime_analysis.top_employees)
-    
-    # Calculate concentration ratio (what % of total facility overtime is from top N employees)
-    concentration_ratio = 0.0
-    if overtime_analysis.total_overtime_hours_facility > 0:
-        concentration_ratio = (total_top_overtime / overtime_analysis.total_overtime_hours_facility) * 100
-    
     return {
-        'average_overtime_per_employee': average_overtime,
-        'highest_individual_overtime': highest_overtime,
-        'average_days_with_overtime': average_days,
-        'overtime_concentration_ratio': concentration_ratio
+        'facility': overtime_result.facility,
+        'total_overtime_hours': overtime_result.total_overtime_hours,
+        'employee_count': overtime_result.employee_count,
+        'top_employees': [
+            {
+                'name': emp.employee_name,
+                'total_hours': emp.total_hours,
+                'overtime_hours': emp.overtime_hours,
+                'primary_role': get_short_display_name(emp.primary_role)
+            }
+            for emp in overtime_result.top_overtime_employees
+        ]
     }
-
-
-def validate_overtime_data(facility_df: pd.DataFrame) -> Tuple[bool, List[str]]:
-    """
-    Validate that facility data contains required columns for overtime analysis.
-    
-    Args:
-        facility_df: Facility hours DataFrame
-        
-    Returns:
-        Tuple of (is_valid: bool, missing_columns: List[str])
-    """
-    required_columns = [
-        FileColumns.FACILITY_EMPLOYEE_ID,
-        FileColumns.FACILITY_EMPLOYEE_NAME,
-        FileColumns.FACILITY_TOTAL_HOURS,
-        FileColumns.FACILITY_STAFF_ROLE_NAME,
-        FileColumns.FACILITY_HOURS_DATE
-    ]
-    
-    missing_columns = [col for col in required_columns if col not in facility_df.columns]
-    
-    is_valid = len(missing_columns) == 0
-    
-    if not is_valid:
-        logger.error(f"Missing required columns for overtime analysis: {missing_columns}")
-    
-    return is_valid, missing_columns
-
-
-def analyze_overtime_by_role(facility_df: pd.DataFrame) -> Dict[str, Dict[str, float]]:
-    """
-    Analyze overtime patterns by role for additional insights.
-    
-    Args:
-        facility_df: Facility hours DataFrame
-        
-    Returns:
-        Dictionary mapping role names to overtime statistics
-    """
-    role_overtime_stats = defaultdict(lambda: {
-        'total_overtime': 0.0,
-        'employee_count': 0,
-        'total_employees_with_overtime': 0,
-        'average_overtime_per_employee': 0.0
-    })
-    
-    # Group by employee and role to calculate individual overtime
-    employee_groups = facility_df.groupby([
-        FileColumns.FACILITY_EMPLOYEE_ID, 
-        FileColumns.FACILITY_EMPLOYEE_NAME
-    ])
-    
-    for (employee_id, employee_name), employee_df in employee_groups:
-        if pd.isna(employee_id) or pd.isna(employee_name):
-            continue
-        
-        primary_role = get_employee_primary_role(employee_df)
-        overtime_stats = calculate_employee_overtime(employee_df, str(employee_id), str(employee_name))
-        
-        role_stats = role_overtime_stats[primary_role]
-        role_stats['employee_count'] += 1
-        
-        if overtime_stats:
-            role_stats['total_overtime'] += overtime_stats['total_overtime_hours']
-            role_stats['total_employees_with_overtime'] += 1
-    
-    # Calculate averages
-    for role, stats in role_overtime_stats.items():
-        if stats['employee_count'] > 0:
-            stats['average_overtime_per_employee'] = stats['total_overtime'] / stats['employee_count']
-    
-    return dict(role_overtime_stats)
-
-
-# Initialize logging for this module
-logger.info("Overtime analysis module initialized")
